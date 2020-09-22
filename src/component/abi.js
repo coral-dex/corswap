@@ -8,15 +8,448 @@ import {JsonRpc} from "./utils/jsonrpc";
 
 const config = {
     name: "SWAP",
-    contractAddress: "659RzToQvuW43NQAoMEKP4cLFJq2y3Xt1mudUkr1iPNHu1q6Ns5T7svRUVfi4RJ65t2syuYfqrYkwBGc6vAkEKo8",
+    contractAddress: "3bkm8Dgxf7iiVJtWAKJH8zUjKJHbjwtx5746Czpf7rVRsV3dUxYQiRLYDayHPjAV1Hn5GUAfhJ7jjoYuYgFNJtTD",
     github: "https://github.com/coswap",
     author: "coswap",
     url: document.location.href,
     logo: document.location.protocol + '//' + document.location.host + '/logo.png'
 };
 
-const abiJson = [{"inputs":[{"internalType":"address","name":"_tokenPool","type":"address"}],"stateMutability":"payable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"uint256","name":"_sharesBurned","type":"uint256"},{"internalType":"uint256","name":"_minTokenA","type":"uint256"},{"internalType":"uint256","name":"_minTokenB","type":"uint256"}],"name":"divestLiquidity","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"drawRateMap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"bytes32","name":"tokenIn","type":"bytes32"},{"internalType":"uint256","name":"amountIn","type":"uint256"}],"name":"estimateSwap","outputs":[{"internalType":"uint256","name":"value","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"feeRateMap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32[]","name":"tokens","type":"bytes32[]"}],"name":"getGroupTokens","outputs":[{"internalType":"bytes32[][]","name":"rets","type":"bytes32[][]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"token","type":"bytes32"}],"name":"getTokens","outputs":[{"internalType":"bytes32[]","name":"rets","type":"bytes32[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"initializePair","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_minShares","type":"uint256"}],"name":"investLiquidity","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastIndexsMap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"orderIds","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"orderList","outputs":[{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_startDay","type":"uint256"}],"name":"output","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"pairInfo","outputs":[{"components":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"},{"internalType":"uint256","name":"totalShares","type":"uint256"},{"internalType":"uint256","name":"myShare","type":"uint256"},{"internalType":"uint256","name":"shareRreward","type":"uint256"},{"internalType":"uint256","name":"totalVolume","type":"uint256"},{"internalType":"uint256","name":"selfVolume","type":"uint256"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"orderList","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"myOrderList","type":"tuple[]"}],"internalType":"struct SwapExchange.Pair","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"pairInfoWithOrders","outputs":[{"components":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"},{"internalType":"uint256","name":"totalShares","type":"uint256"},{"internalType":"uint256","name":"myShare","type":"uint256"},{"internalType":"uint256","name":"shareRreward","type":"uint256"},{"internalType":"uint256","name":"totalVolume","type":"uint256"},{"internalType":"uint256","name":"selfVolume","type":"uint256"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"orderList","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"myOrderList","type":"tuple[]"}],"internalType":"struct SwapExchange.Pair","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"pairKeys","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_start","type":"uint256"},{"internalType":"uint256","name":"_end","type":"uint256"}],"name":"pairList","outputs":[{"components":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"},{"internalType":"uint256","name":"totalShares","type":"uint256"},{"internalType":"uint256","name":"myShare","type":"uint256"},{"internalType":"uint256","name":"shareRreward","type":"uint256"},{"internalType":"uint256","name":"totalVolume","type":"uint256"},{"internalType":"uint256","name":"selfVolume","type":"uint256"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"orderList","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"myOrderList","type":"tuple[]"}],"internalType":"struct SwapExchange.Pair[]","name":"rets","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"token","type":"bytes32"},{"internalType":"uint256","name":"_start","type":"uint256"},{"internalType":"uint256","name":"_end","type":"uint256"}],"name":"pairListByToken","outputs":[{"components":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"},{"internalType":"uint256","name":"totalShares","type":"uint256"},{"internalType":"uint256","name":"myShare","type":"uint256"},{"internalType":"uint256","name":"shareRreward","type":"uint256"},{"internalType":"uint256","name":"totalVolume","type":"uint256"},{"internalType":"uint256","name":"selfVolume","type":"uint256"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"orderList","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"amountOut","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"orderType","type":"uint8"}],"internalType":"struct SwapExchange.Order[]","name":"myOrderList","type":"tuple[]"}],"internalType":"struct SwapExchange.Pair[]","name":"rets","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"uint256","name":"_drawRate","type":"uint256"}],"name":"setDrawRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"uint256","name":"_feeRate","type":"uint256"}],"name":"setFeeRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_start","type":"uint256"},{"internalType":"uint256[]","name":"_outputs","type":"uint256[]"}],"name":"setOutputs","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_tokenPool","type":"address"}],"name":"setTokenPool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"start","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"uint256","name":"_minTokensReceived","type":"uint256"},{"internalType":"uint256","name":"_timeout","type":"uint256"},{"internalType":"address","name":"_recipient","type":"address"}],"name":"swap","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"volumes","outputs":[{"internalType":"uint256","name":"lastIndex","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"wholeVolume","outputs":[{"internalType":"uint256","name":"lastIndex","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"withdrawShareReward","outputs":[],"stateMutability":"nonpayable","type":"function"}]
-const contract = serojs.callContract(abiJson, "659RzToQvuW43NQAoMEKP4cLFJq2y3Xt1mudUkr1iPNHu1q6Ns5T7svRUVfi4RJ65t2syuYfqrYkwBGc6vAkEKo8");
+const abiJson = [{
+    "inputs": [{"internalType": "address", "name": "_tokenPool", "type": "address"}],
+    "stateMutability": "payable",
+    "type": "constructor"
+}, {
+    "anonymous": false,
+    "inputs": [{
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+    }, {"indexed": true, "internalType": "address", "name": "newOwner", "type": "address"}],
+    "name": "OwnershipTransferred",
+    "type": "event"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}, {
+        "internalType": "uint256",
+        "name": "_sharesBurned",
+        "type": "uint256"
+    }, {"internalType": "uint256", "name": "_minTokenA", "type": "uint256"}, {
+        "internalType": "uint256",
+        "name": "_minTokenB",
+        "type": "uint256"
+    }], "name": "divestLiquidity", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+    "name": "drawRateMap",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}, {
+        "internalType": "bytes32",
+        "name": "tokenIn",
+        "type": "bytes32"
+    }, {"internalType": "uint256", "name": "amountIn", "type": "uint256"}],
+    "name": "estimateSwap",
+    "outputs": [{"internalType": "uint256", "name": "value", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+    "name": "feeRateMap",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32[]", "name": "tokens", "type": "bytes32[]"}],
+    "name": "getGroupTokens",
+    "outputs": [{"internalType": "bytes32[][]", "name": "rets", "type": "bytes32[][]"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "token", "type": "bytes32"}],
+    "name": "getTokens",
+    "outputs": [{"internalType": "bytes32[]", "name": "rets", "type": "bytes32[]"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [],
+    "name": "initializePair",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "uint256", "name": "_minShares", "type": "uint256"}],
+    "name": "investLiquidity",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "name": "lastIndexsMap",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}],
+    "name": "orderIds",
+    "outputs": [{"internalType": "uint256[]", "name": "", "type": "uint256[]"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}],
+    "name": "orderList",
+    "outputs": [{
+        "components": [{
+            "internalType": "uint256",
+            "name": "amountIn",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+        }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+        "internalType": "struct SwapExchange.Order[]",
+        "name": "",
+        "type": "tuple[]"
+    }, {
+        "components": [{"internalType": "uint256", "name": "amountIn", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "amountOut",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "timestamp", "type": "uint256"}, {
+            "internalType": "uint8",
+            "name": "orderType",
+            "type": "uint8"
+        }], "internalType": "struct SwapExchange.Order[]", "name": "", "type": "tuple[]"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "uint256", "name": "_startDay", "type": "uint256"}],
+    "name": "output",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}], "name": "pairInfo", "outputs": [{
+        "components": [{"internalType": "bytes32", "name": "tokenA", "type": "bytes32"}, {
+            "internalType": "bytes32",
+            "name": "tokenB",
+            "type": "bytes32"
+        }, {"internalType": "uint256", "name": "reserveA", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "reserveB",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "totalShares", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "myShare",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "shareRreward", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "totalVolume",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "selfVolume",
+            "type": "uint256"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "orderList",
+            "type": "tuple[]"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "myOrderList",
+            "type": "tuple[]"
+        }], "internalType": "struct SwapExchange.Pair", "name": "", "type": "tuple"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}],
+    "name": "pairInfoWithOrders",
+    "outputs": [{
+        "components": [{"internalType": "bytes32", "name": "tokenA", "type": "bytes32"}, {
+            "internalType": "bytes32",
+            "name": "tokenB",
+            "type": "bytes32"
+        }, {"internalType": "uint256", "name": "reserveA", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "reserveB",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "totalShares", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "myShare",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "shareRreward", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "totalVolume",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "selfVolume",
+            "type": "uint256"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "orderList",
+            "type": "tuple[]"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "myOrderList",
+            "type": "tuple[]"
+        }], "internalType": "struct SwapExchange.Pair", "name": "", "type": "tuple"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "name": "pairKeys",
+    "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "uint256", "name": "_start", "type": "uint256"}, {
+        "internalType": "uint256",
+        "name": "_end",
+        "type": "uint256"
+    }], "name": "pairList", "outputs": [{
+        "components": [{"internalType": "bytes32", "name": "tokenA", "type": "bytes32"}, {
+            "internalType": "bytes32",
+            "name": "tokenB",
+            "type": "bytes32"
+        }, {"internalType": "uint256", "name": "reserveA", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "reserveB",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "totalShares", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "myShare",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "shareRreward", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "totalVolume",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "selfVolume",
+            "type": "uint256"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "orderList",
+            "type": "tuple[]"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "myOrderList",
+            "type": "tuple[]"
+        }], "internalType": "struct SwapExchange.Pair[]", "name": "rets", "type": "tuple[]"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "token", "type": "bytes32"}, {
+        "internalType": "uint256",
+        "name": "_start",
+        "type": "uint256"
+    }, {"internalType": "uint256", "name": "_end", "type": "uint256"}], "name": "pairListByToken", "outputs": [{
+        "components": [{"internalType": "bytes32", "name": "tokenA", "type": "bytes32"}, {
+            "internalType": "bytes32",
+            "name": "tokenB",
+            "type": "bytes32"
+        }, {"internalType": "uint256", "name": "reserveA", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "reserveB",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "totalShares", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "myShare",
+            "type": "uint256"
+        }, {"internalType": "uint256", "name": "shareRreward", "type": "uint256"}, {
+            "internalType": "uint256",
+            "name": "totalVolume",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "selfVolume",
+            "type": "uint256"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "orderList",
+            "type": "tuple[]"
+        }, {
+            "components": [{
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            }, {"internalType": "uint256", "name": "amountOut", "type": "uint256"}, {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }, {"internalType": "uint8", "name": "orderType", "type": "uint8"}],
+            "internalType": "struct SwapExchange.Order[]",
+            "name": "myOrderList",
+            "type": "tuple[]"
+        }], "internalType": "struct SwapExchange.Pair[]", "name": "rets", "type": "tuple[]"
+    }], "stateMutability": "view", "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}, {
+        "internalType": "uint256",
+        "name": "_drawRate",
+        "type": "uint256"
+    }], "name": "setDrawRate", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}, {
+        "internalType": "uint256",
+        "name": "_feeRate",
+        "type": "uint256"
+    }], "name": "setFeeRate", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+}, {
+    "inputs": [{"internalType": "uint256", "name": "_start", "type": "uint256"}, {
+        "internalType": "uint256[]",
+        "name": "_outputs",
+        "type": "uint256[]"
+    }], "name": "setOutputs", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+}, {
+    "inputs": [{"internalType": "address", "name": "_tokenPool", "type": "address"}],
+    "name": "setTokenPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "inputs": [],
+    "name": "start",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}, {
+        "internalType": "uint256",
+        "name": "_minTokensReceived",
+        "type": "uint256"
+    }, {"internalType": "uint256", "name": "_timeout", "type": "uint256"}, {
+        "internalType": "address",
+        "name": "_recipient",
+        "type": "address"
+    }], "name": "swap", "outputs": [], "stateMutability": "payable", "type": "function"
+}, {
+    "inputs": [{"internalType": "address", "name": "newOwner", "type": "address"}],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
+    "name": "volumes",
+    "outputs": [{"internalType": "uint256", "name": "lastIndex", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [],
+    "name": "wholeVolume",
+    "outputs": [{"internalType": "uint256", "name": "lastIndex", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+}, {
+    "inputs": [{"internalType": "bytes32", "name": "key", "type": "bytes32"}],
+    "name": "withdrawShareReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+}];
+
+const contract = serojs.callContract(abiJson, "3bkm8Dgxf7iiVJtWAKJH8zUjKJHbjwtx5746Czpf7rVRsV3dUxYQiRLYDayHPjAV1Hn5GUAfhJ7jjoYuYgFNJtTD");
+
+const poolContract = serojs.callContract([{
+        "constant": true,
+        "inputs": [{"name": "amount", "type": "uint256"}],
+        "name": "showExchange",
+        "outputs": [{"name": "tokenList", "type": "bytes32[]"}, {"name": "amounts", "type": "uint256[]"}],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [],
+        "name": "info",
+        "outputs": [{"name": "", "type": "uint256"}, {"name": "", "type": "uint256"}],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [],
+        "name": "exchange",
+        "outputs": [{"name": "", "type": "bool"}],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    }],
+    "5H6Bu5S5yjM8mirj7XN75WXskSbZGKHVgj2ERoU3NXcBZUJpMPWCh1i2Yur8sGweVdBjEsuKLQ2JKLPamJKeQrQS");
 
 const rpc = new JsonRpc();
 
@@ -225,6 +658,7 @@ class Abi {
             });
         } else {
             this.callMethod(contract, 'pairList', from, [0, 1000], function (ret) {
+
                 let pairs = [];
                 ret.rets.forEach((pair) => {
                     pairs.push(self.convertToPair(pair));
@@ -241,7 +675,7 @@ class Abi {
         this.callMethod(contract, 'pairInfoWithOrders', from, [key], function (ret) {
             let pair = ret[0];
 
-            self.orderList(from, tokenA, tokenB, function(ret) {
+            self.orderList(from, tokenA, tokenB, function (ret) {
 
             })
             callback(self.convertToPair(pair));
@@ -270,6 +704,31 @@ class Abi {
     withdrawShareReward(pk, mainPKr, tokenA, tokenB, callback) {
         let key = hashKey(tokenA, tokenB);
         this.executeMethod(contract, 'withdrawShareReward', pk, mainPKr, [key], "", 0, callback);
+    }
+
+
+    poolInfo(from, callback) {
+        this.callMethod(poolContract, 'info', from, [], function (ret) {
+            callback(ret[0], ret[1]);
+        });
+    }
+
+    showExchange(from, amount, callback) {
+        this.callMethod(poolContract, 'showExchange', from, [amount], function (ret) {
+            let tokens = [];
+            ret[0].forEach(each => {
+                tokens.push(bytes32ToToken(each));
+            });
+            let amounts = [];
+            ret[1].forEach(each => {
+                amounts.push(each);
+            })
+            callback(tokens, amounts);
+        });
+    }
+
+    exchange(pk, mainPKr, amount, callback) {
+        this.executeMethod(contract, 'exchange', pk, mainPKr, [], "FHJG", amount, callback);
     }
 }
 
