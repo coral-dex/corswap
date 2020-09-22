@@ -150,7 +150,7 @@ export class PairList extends Component {
     }
     render() {
         let imgs = []
-        let {account,pictures} = this.state;
+        let {account,pictures,pairs} = this.state;
         imgs.push(pictures);
         let pic = "pic"
         account.imgs = pictures;
@@ -159,7 +159,8 @@ export class PairList extends Component {
         // console.log(account,"acccount");
         // console.log(account.balances.pic,"value值");
 
-        let pairs = this.state.pairs.map((pair, index) => {
+        console.log("pairs>>>",pairs);
+        pairs.map((pair, index) => {
             return (
                 <Card key={index} style={{marginBottom: '10px'}}>
                     <Card.Header
@@ -205,25 +206,7 @@ export class PairList extends Component {
             </div>)
         ++num;
         })
-        // for(var item in account){
-            
-        // }
 
-        // this.state.pictures.map(item=>{
-        //     card.push( <div className="am-card">
-        //         <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
-        //             <div><img width="50%" src={item}/> </div>
-        //             <div style={{color:"#f75552"}}>
-        //                 <div className="text-right"><img src={require("../images/user.png")} width="20%"/></div>
-        //                 <div style={{color:"#f75552",marginRight:"30px"}}>能量值:990</div>
-        //             </div>
-        //         </div>
-        //         <div className="text-center">
-        //             <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>CORAL - SERO</div>
-        //             <div style={{fontSize:"12px"}}>存入SERO赚CORAL</div>
-        //         </div>
-        // </div>)
-        // })
         return (
             <Layout selectedTab="3">
                 <div className="pairlist">
@@ -237,7 +220,7 @@ export class PairList extends Component {
                     <div className="text-right ">
                         <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" />只看我的质押</span>
                     </div>
-                    {card}
+                    {pairs}
                 </div>
             </Layout>
         )

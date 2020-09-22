@@ -81,6 +81,7 @@ export class Home extends Component {
         let options = [];
         let token;
         let amount;
+        console.log("初始化资金池...");
         account.balances.forEach((val, key) => {
             if(!token) {
                 token = key;
