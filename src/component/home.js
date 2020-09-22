@@ -383,7 +383,7 @@ export class Home extends Component {
             </div>
             <div>
                 <List>
-                    <input value={this.state.tokenInAmount==0?"":this.state.tokenInAmount} placeholder="请输入" onChange={(e) => {
+                    <input value={this.state.tokenInAmount} placeholder="请输入" onChange={(e) => {
                         this.showRate(e.target.value)
                     }} type="text" className="inputItem"/>
                 </List>
