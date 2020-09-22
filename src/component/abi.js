@@ -189,8 +189,6 @@ class Abi {
             callback(ret.rets);
         });
     }
-
-
     convertToPair(pair){
         console.log(pair,"pair");
         return {

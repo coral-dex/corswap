@@ -157,7 +157,7 @@ body{
 /* exchange.js */
     .header{
         margin:10px 0;
-        background-color:#fff;
+        /* background-color:#fff; */
         padding: 10px;
         border-radius: 10px;
         /* width: 98%;
@@ -165,9 +165,10 @@ body{
         /* box-shadow: #666 0 0 10px; */
     }
     .from{
-        border:1px solid #ccc;
+        /* border:1px solid #ccc; */
         border-radius: 10px;
         padding: 10px;
+        background: linear-gradient(to right,#dceaf0,#2d6786);
     }
     .am-list-item{
         padding-left: 0 !important;
@@ -177,17 +178,20 @@ body{
         /* height: 30px; */
         width: 100%;
     }
-    .max_sero>div:nth-child(odd){
+    /* .max_sero>div:nth-child(odd){
         width: 50%;
-    }
-    .max_sero>div:nth-child(2n){
+    } */
+    /* .max_sero>div:nth-child(2n){
         width: 60%;
-    }
+    } */
     .modal{
-        height:20px;
+        width: 80px;
+        /* height: 27px; */
+        /* height:20px !important; */
+        /* width: 100px; */
         /* background-color: #ccc; */
         border-radius: 5px;
-        margin-left: 3px;
+        /* margin-left: 3px; */
         /* padding: 0 5px; */
     }
     .modal:hover{
@@ -197,16 +201,29 @@ body{
         background-color: #00456b !important;
         color: #fff;
     }
+    .fontSize{
+        font-size: 12px;
+    }  
+    .am-list-body{
+        display: flex;
+        flex-direction: row-reverse;
+    }
     .inputItem{
-        text-indent: 0;
-        height: 30px ;
+        height: 27px ;
         display: flex;
         align-items: center;
+        /* border:1px solid #00456b; */
+        text-indent: 6px;
+        width: 80%;
+        border:none;
+    }
+    .select{
+        height:20px !important;
+        width: 100% !important;
         border:none !important;
-        /* background-color:green; */
     }
     .am-list-body,.am-list{
-        height: 30px;
+        /* height: 30px; */
         overflow: hidden;
         background:none !important;
     }
@@ -223,6 +240,9 @@ body{
         position: absolute;
         right: 0px;
         top: 0px;
+    }
+    .am-list-body{
+        border:none;
     }
     .am-modal-body{
         padding:10px
@@ -258,8 +278,9 @@ body{
         height: 40px;
         color: #627cf3;
     }
+
     input[type="text"]{
-        padding:0 !important;
+        /* padding:0 !important; */
     }
     .am-wingblank .am-wingblank-lg{
         padding: 0 !important;
@@ -301,14 +322,31 @@ body{
     .pairlist{
         color: #00456b;
     }
-    .select{
-        height:20px !important;
-        width: 100px !important;
-    }
     .shares{
-        margin-top: 10px;
+        margin-top: 5px;
     }
     .shares>img{
         margin:0 0 0 10px;
+    }
+    .fishing_tag{
+        width: 30%;
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+    }
+    .fishing_div{
+        position: relative;
+        margin-top: 5px;
+        /* border:1px solid #00456b; */
+        box-shadow: #cfdfe7 0px 0px 10px;
+    }
+    .nothing{
+        border:none;
+        outline: none;
+        width: 100%;
+        border-radius: 10px;
+        background-color: #ccc;
+        height: 40px;
+        color: #362e2b;
     }
 /* pairlist.js */

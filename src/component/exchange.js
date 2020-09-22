@@ -205,7 +205,8 @@ export class Exchange extends Component {
     }
     render() {
         
-
+        let {account} = this.state;
+        console.log(account,"account");
         let self = this;
         let options_1 = [];
         let options_2 = [];
@@ -235,20 +236,14 @@ export class Exchange extends Component {
         balance2 = showValue(balance, abi.getDecimalLocal(this.state.tokenIn));
         
         let froms = <div className="flex max_sero">
-                        <div>
-                            <List>
-                                <input defaultValue={this.state.tokenInAmount}   onChange={(e) => {
-                                        this.showRate(e.target.value)}} type="text"  className="inputItem" />
-                            </List>
-                        </div>
+                       
                         <div className="flex">
-                                    <Tag small className="tag" selected="true" onClick={()=>this.numberMax(balance2)}>MAX</Tag>
+                                    {/* <Tag small className="tag" selected="true" onClick={()=>this.numberMax(balance2)}>MAX</Tag> */}
                                     <div className="flex modal" onClick={()=>this.showModal('')}>
                                         {/* <img width="20%" src={require("../images/sero (1).png")}/>
                                         <span>{this.state.topOption}</span>
                                         <Icon type="down"/> */}
                                         <Select
-                                        style={{height:"22px"}}
                                         options={options_1}
                                         className="select"
                                         selectedOption={{value: this.state.tokenIn}}
@@ -262,15 +257,16 @@ export class Exchange extends Component {
                                         }}/>
                                     </div>  
                         </div>
+                        <div>
+                            <List>
+                                <input defaultValue={this.state.tokenInAmount}  id="tokenA"  onChange={(e) => {this.showRate(e.target.value)}} type="text"  className="inputItem" />
+                            </List>
+                        </div>
                     </div>
         let tos = <div className="space-between max_sero">
-            <div>
-                <List>
-                    <input value={0} value={this.state.tokenOutAmount} onChange={(e)=>{}} type="text" className="inputItem" />
-                </List>
-            </div>
+            
             <div className="end">
-                <div className="" onClick={()=>this.showModal("")}>
+                <div className="flex modal"  onClick={()=>this.showModal("")}>
                     {/* <span>{this.state.bottomOption}</span>
                     <Icon type="down"/> */}
                 <Select
@@ -285,6 +281,11 @@ export class Exchange extends Component {
                  }}/>
                 </div>  
             </div>
+            <div>
+                <List>
+                    <input readOnly value={0} value={this.state.tokenOutAmount} onChange={(e)=>{}} type="text" className="inputItem" />
+                </List>
+            </div>
         </div>
         return (
             <Layout selectedTab="2">
@@ -292,13 +293,12 @@ export class Exchange extends Component {
                     <div className="header">
                         <div className="from">
                             <div className="flex">
-                                <div>从</div>
-                                <div>Balance:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
+                                <div className="fontSize" style={{color:"#e94f4f"}}>选择要卖的币</div>
+                                <div className="fontSize">您可用的币:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
                             </div>
                             {this.state.flag?froms:tos}
                         </div>
                         <div style={{textAlign:"center",margin:"10px 0",height:"20px"}}>
-                            {/* <img onClick={()=>{}} src={require("../images/down.png")} width="20px"/> */}
                             {
                                 this.state.price > 0 &&
                                 <span>当前预估价: 1{this.state.tokenIn} = {this.state.price}{this.state.tokenOut}</span>
@@ -306,13 +306,13 @@ export class Exchange extends Component {
                         </div>
                         <div className="from">
                             <div className="flex">
-                                <div>到</div>
-                                <div>Balance:</div>
+                                <div className="fontSize" style={{color:"#108ee9"}}>选择要买的币</div>
+                                <div></div>
                             </div>
                             {this.state.flag?tos:froms}
                         </div>
                         <div style={{marginTop:"40px"}}>
-                            <input type="submit" className="inputs" value="Enter an amount" onClick={() => {
+                            <input type="submit"    className="inputs" value="发送" onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10,  abi.getDecimalLocal(self.state.tokenIn)));
                                 let minTokensReceived  = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10,  abi.getDecimalLocal(self.state.tokenOut))).toString(10);
                                 self.exchange(self.state.tokenIn, self.state.tokenOut, amount, minTokensReceived);

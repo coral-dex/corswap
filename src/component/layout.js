@@ -1,15 +1,121 @@
 import * as React from 'react';
-import {Flex, Modal, TabBar, WingBlank} from "antd-mobile";
-
-
-
+import {Flex, Modal,Tag, TabBar, WingBlank} from "antd-mobile";
+import {Select} from "./select";
+import abi from './abi'
+import BigNumber from "bignumber.js";
 class Layout extends React.Component{
-
+    constructor(props){
+        super(props)
+        this.state={
+            modal1:false,
+            account: {balances: new Map()},
+        }
+    }
+    componentDidMount(){
+        let self = this;
+        abi.init
+            .then(() => {
+                abi.accountList(function (accounts) {
+                    self.setState({account: accounts[0]});
+                });
+                abi.accountDetails(self.state.pk,function(account){
+                  self.setState({account:account},function(){
+                    self.init(account)
+                  })
+                })
+        });
+    }
     goPage=(uri)=>{
         window.location.href=uri
         // window.open(uri)
     }
+    init(account) {
+        console.log(account,"Account");
+        let self = this;
+        let tokens = [];
+        let amount = [];
+        account.balances.forEach((val, key) => {
+            tokens.push(key);
+            amount.push(val)
+            console.log(key,val,"values")
+        });
+        if (tokens.length == 0) {
+            return;
+        }
 
+        let tokenToTokens = new Map();
+        abi.getGroupTokens(account.mainPKr, tokens, function (tokens, tokenToTokens) {
+            if (tokens.length > 0) {
+                self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {
+                    self.setState({
+                        tokenIn: tokens[0],
+                        tokenIn2:tokens[1],
+                        tokenOut: tokenToTokens.get(tokens[0])[0],
+                        tokens: tokens,
+                        amount:amount,
+                        tokenToTokens: tokenToTokens,
+                        pair: pair
+                    })
+                  
+                });
+            }
+          });
+    }
+    initPair(tokenA, tokenB, callback) {
+        let self = this;
+        abi.pairInfoWithOrders(this.state.account.mainPKr, tokenA, tokenB, function (pair) {
+            callback(pair);
+        })
+    }
+    initExchange() {
+        let account = this.state.account;
+        let self = this;
+        let options = [];
+        let token;
+        let amount;
+        console.log("初始化资金池...");
+        account.balances.forEach((val, key) => {
+            if(!token) {
+                token = key;
+            }
+            if (val > 0) {
+                options.push({value: key, label: key})
+            }
+        });
+
+        alert("初始化资金池", <div>
+                <Flex>
+                    <Flex.Item style={{flex: 1}}><Select style={{marginTop: '22px'}} options={options} onChange={option => {
+                        token = option.value;
+                    }}/></Flex.Item>
+                    <Flex.Item style={{flex: 2}}><input style={{width: '95%', height: '25px'}}
+                                                        onChange={(e) => {
+                                                            amount = e.target.value;
+                                                        }}/></Flex.Item>
+                </Flex>
+            </div>,
+            [
+                {text: '取消', onPress: () => console.log('cancel'), style: 'default'},
+                {
+                    text: '确定', onPress: () => {
+                        abi.getDecimal(token, function (decimals) {
+                            let value = new BigNumber(amount).multipliedBy(Math.pow(10, decimals));
+                            abi.initializePair(account.pk, account.mainPKr, token, value);
+                        })
+                    }
+                },
+            ])
+    }
+    showModal(){
+        this.setState({
+          modal1: true,
+        });
+    }
+    onClose = key => () => {
+        this.setState({
+          [key]: false,
+        });
+      }
     render() {
         return (
             <div>
@@ -34,10 +140,27 @@ class Layout extends React.Component{
                         <img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>
                         <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
                     </div>
+                    <div className="text-center fishing_div">
+                        {/* <Tag className="fishing_tag">买币</Tag> */}
+                        <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
+                        {/* <Tag className="fishing_tag">买币</Tag> */}
+                    </div>
+                    <Modal
+                    visible={this.state.modal1}
+                    transparent
+                    maskClosable={false}
+                    onClose={this.onClose('modal1')}
+                    title=""
+                    footer={[{ text: '我知道了', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
+                >
+                    <div style={{ height: 100, width:"auto",textAlign:"center"}}>
+                        <img width="40%" src={require('../images/wx.jpg')}/>
+                    </div>
+                    </Modal>
                     {this.props.children}
                 </WingBlank>
 
-                <div style={{ position: 'fixed',width: '100%', bottom:0 }}>
+                <div style={{ position: 'fixed',width: '100%', bottom:"0",left:"0" }}>
                     <TabBar
                         unselectedTintColor="#fff"
                         tintColor="#f75552"
