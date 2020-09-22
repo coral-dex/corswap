@@ -1,27 +1,15 @@
 import React, {Component} from 'react'
+import Select from 'react-select'
 import './App.css';
-import {HashRouter as Router,Switch,Route} from 'react-router-dom'
-import {PairList} from "./component/pairlist";
-import {Shares} from './component/shares'
 import {Home} from "./component/home";
-import {Exchange} from './component/exchange'
+import {HashRouter} from 'react-router-dom'
 
-class App extends Component{
-
-    render() {
-        return <>
-            <Router>
-                <Switch>
-                    <Route exact path="/buy"  component={Home}/>
-                    <Route exact path="/sell" component={Exchange}/>
-                    <Route exact path="/pairlist" component={PairList}/>
-                    <Route exact path="/shares" component={Shares}/>
-
-                    <Route exact path="/"  component={Home}/>
-                </Switch>
-            </Router>
-        </>
-    }
+function App() {
+    return (
+        <div className="App">
+            <Home/>
+        </div>
+    );
 }
 
 export default App;
