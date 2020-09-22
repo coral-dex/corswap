@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Card, Flex, InputItem, List, Modal, SearchBar, Tabs, Toast, WhiteSpace, WingBlank} from "antd-mobile";
+import {Button, Card,NoticeBar,Icon, Flex, InputItem, List, Modal, SearchBar, Tabs, Toast, WhiteSpace, WingBlank} from "antd-mobile";
 import abi from "./abi";
 import BigNumber from 'bignumber.js'
 import {Select} from "./select";
@@ -17,7 +17,9 @@ export class PairList extends Component {
             pairs: [],
             pair: null,
             orderList: [],
-            showType: props.showType
+            showType: props.showType,
+            pictures:['./images/coral_sero.png','./images/coral_susd.png','./images/coral_aces.png'],
+            inputValue:""
         }
     }
 
@@ -37,8 +39,7 @@ export class PairList extends Component {
 
     componentDidMount() {
         let self = this;
-        abi.init
-            .then(() => {
+        abi.init.then(() => {
                 abi.accountDetails(self.state.pk, function (account) {
                     self.setState({account: account});
                     self.init(account);
@@ -63,6 +64,7 @@ export class PairList extends Component {
         let token = tokenA;
         let value;
         let minShare;
+        console.log(options,token,"options----token");
         alert("", <div>
                 <Flex>
                     <Flex.Item style={{flex: 1}}>最小份额:</Flex.Item>
@@ -137,8 +139,24 @@ export class PairList extends Component {
                 },
             ])
     }
-
+    searchcoral=(e)=>{
+        // console.log(e.target.value,"Eeeeee");
+        // let vals = e.target.value;
+        // let arr = [];
+        // let i =0;
+        // let {account} = this.state;
+      
+    }
     render() {
+        let imgs = []
+        let {account,pictures} = this.state;
+        imgs.push(pictures);
+        let pic = "pic"
+        account.imgs = pictures;
+        console.log(account,"对象添加");
+        // account.concat(this.state.pictures)
+        // console.log(account,"acccount");
+        // console.log(account.balances.pic,"value值");
 
         let pairs = this.state.pairs.map((pair, index) => {
             return (
@@ -164,26 +182,60 @@ export class PairList extends Component {
                 </Card>
             )
         });
-        return (
-            <div>
-                <WhiteSpace size="lg"/>
-                <SearchBar maxLength={6}
-                           onSubmit={(value) => {
-                               this.setState({search: value}, function () {
-                                   this.init(this.state.account, value);
-                               });
-                           }}
-
-                           onCancel={() => {
-                               this.setState({search: null}, function () {
-                                   this.init(this.state.account, null);
-                               });
-                           }}
-                />
-                <WhiteSpace size="lg"/>
-                <div>
-                    {pairs}
+        let card = [];
+        let images = [];
+        let that = this;
+        let num = 0;
+        account.balances.forEach((key,val)=>{
+            card.push( <div className="am-card">
+                <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
+                    <div>
+                        <img width="50%" src={pictures[num]}/> 
+                    </div>
+                    <div style={{color:"#f75552"}}>
+                        <div className="text-right"><img src={require("../images/user.png")} width="20%"/></div>
+                        <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>我持有的比例:%</div>
+                    </div>
                 </div>
+                <div className="text-center">
+                    <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>CORAL - {val}</div>
+                    <div style={{fontSize:"12px"}}>存入{val}赚CORAL</div>
+                </div>
+            </div>)
+        ++num;
+        })
+        // for(var item in account){
+            
+        // }
+
+        // this.state.pictures.map(item=>{
+        //     card.push( <div className="am-card">
+        //         <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
+        //             <div><img width="50%" src={item}/> </div>
+        //             <div style={{color:"#f75552"}}>
+        //                 <div className="text-right"><img src={require("../images/user.png")} width="20%"/></div>
+        //                 <div style={{color:"#f75552",marginRight:"30px"}}>能量值:990</div>
+        //             </div>
+        //         </div>
+        //         <div className="text-center">
+        //             <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>CORAL - SERO</div>
+        //             <div style={{fontSize:"12px"}}>存入SERO赚CORAL</div>
+        //         </div>
+        // </div>)
+        // })
+        return (
+            <div className="pairlist">
+                <p className="flex" style={{color:"#00456b",fontSize:"12px"}} className="text-center"> 
+                    <img width="14px" src={require('../images/horn.png')}/>
+                    <span>通过为不同交易池提供流动性，获得CORAL</span>
+                </p>
+                <div>
+                    <input type="text" onChange={(e)=>this.searchcoral(e)} placeholder="搜索CoralSwap对和令牌" className="input search"/>
+                </div>
+                <div className="text-right ">
+                    <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" />只看我的质押</span>
+                </div>
+                {card}
             </div>
         )
     }

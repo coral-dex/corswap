@@ -21,7 +21,6 @@ const contract = serojs.callContract(abiJson, "659RzToQvuW43NQAoMEKP4cLFJq2y3Xt1
 const rpc = new JsonRpc();
 
 class Abi {
-
     constructor() {
         let self = this;
         self.init = new Promise(
@@ -168,8 +167,7 @@ class Abi {
         tokens.forEach(each => {
             tokenBytes.push(tokenToBytes(each));
         });
-
-        this.callMethod(contract, 'getGroupTokens', from, [tokenBytes], function (ret) {
+        this.callMethod(contract, 'getGroupTokens', from, [tokenBytes],function (ret) {
             let _tokens = [];
             let _tokensList = new Map();
             ret[0].forEach((each, index) => {
@@ -193,7 +191,8 @@ class Abi {
     }
 
 
-    convertToPair(pair) {
+    convertToPair(pair){
+        console.log(pair,"pair");
         return {
             tokenA: bytes32ToToken(pair.tokenA),
             tokenB: bytes32ToToken(pair.tokenB),
@@ -267,7 +266,7 @@ class Abi {
     swap(pk, mainPKr, tokenA, tokenB, amount, minTokensReceived, callback) {
         let key = hashKey(tokenA, tokenB);
         let timeOut = Math.round(new Date() / 1000) + 600;
-        this.executeMethod(contract, 'swap', pk, mainPKr, [key, minTokensReceived, timeOut, mainPKr], tokenA, amount, callback);
+        this.executeMethod(contract, 'swap', pk, mainPKr, [key, 0, timeOut, mainPKr], tokenA, amount, callback);
     }
 
     withdrawShareReward(pk, mainPKr, tokenA, tokenB, callback) {

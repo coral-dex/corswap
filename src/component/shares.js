@@ -49,7 +49,7 @@ export class Shares extends Component {
             self.init(account);
         });
     }
-
+    
     render() {
         let pairs = this.state.pairs.map((pair, index) => {
             return (
@@ -102,3 +102,4 @@ export class Shares extends Component {
         )
     }
 }
+export default Shares;
