@@ -4,6 +4,7 @@ import abi from "./abi";
 import BigNumber from 'bignumber.js'
 import {Select} from "./select";
 import {showValue} from "./utils/common";
+import Layout from "./layout";
 
 const alert = Modal.alert;
 
@@ -68,6 +69,7 @@ export class Shares extends Component {
         });
 
         return (
+            <Layout selectedTab="4">
             <div>
                 <WhiteSpace size="lg"/>
                 <SearchBar maxLength={6}
@@ -99,6 +101,7 @@ export class Shares extends Component {
 
                 </div>
             </div>
+            </Layout>
         )
     }
 }

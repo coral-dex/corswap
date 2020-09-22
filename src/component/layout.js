@@ -39,7 +39,7 @@ class Layout extends React.Component{
                             }
                             selected={this.props.selectedTab === '1'}
                             onPress={() => {
-                                this.goPage("#/")
+                                this.goPage("#/buy")
                             }}
                             data-seed="logId"
                         >
@@ -64,7 +64,7 @@ class Layout extends React.Component{
                             key="Koubei"
                             selected={this.props.selectedTab === '2'}
                             onPress={() => {
-                                this.goPage("#/orderlist")
+                                this.goPage("#/sell")
                             }}
                             data-seed="logId1"
                         >
@@ -100,7 +100,7 @@ class Layout extends React.Component{
                             key="my"
                             selected={this.props.selectedTab === '4'}
                             onPress={() => {
-                                this.goPage("#/orderList")
+                                this.goPage("#/shares")
                             }}
                         >
                         </TabBar.Item>

@@ -225,7 +225,7 @@ export class PairList extends Component {
         // </div>)
         // })
         return (
-            <Layout selectTab="3">
+            <Layout selectedTab="3">
                 <div className="pairlist">
                     <p className="flex" style={{color:"#00456b",fontSize:"12px"}} className="text-center">
                         <img width="14px" src={require('../images/horn.png')}/>
