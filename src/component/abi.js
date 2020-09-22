@@ -647,6 +647,7 @@ class Abi {
     }
 
     pairList(from, token, callback) {
+        console.log("token>>> ",token);
         let self = this;
         if (token) {
             this.callMethod(contract, 'pairListByToken', from, [tokenToBytes(token), 0, 1000], function (ret) {
@@ -660,6 +661,7 @@ class Abi {
             this.callMethod(contract, 'pairList', from, [0, 1000], function (ret) {
 
                 let pairs = [];
+                console.log("pairList>>> ",ret);
                 ret.rets.forEach((pair) => {
                     pairs.push(self.convertToPair(pair));
                 })

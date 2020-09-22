@@ -91,6 +91,7 @@ export class Home extends Component {
         abi.init
             .then(() => {
                 abi.accountList(function (accounts) {
+                    const pk = localStorage.getItem("accountPK")
                     self.setState({account: accounts[0]});
                 });
                 abi.accountDetails(self.state.pk,function(account){
@@ -153,6 +154,7 @@ export class Home extends Component {
         if (!len) {
             len = 8;
         }
+        window.localStorage.setItem("accountPK",account.PK)
         return account.name + " " + account.mainPKr.slice(0, len) + "..." + account.mainPKr.slice(-len)
     }
     showModal=(key)=>{  

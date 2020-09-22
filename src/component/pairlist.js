@@ -25,6 +25,7 @@ export class PairList extends Component {
     }
 
     init(account, search) {
+        console.log("init",search);
         let self = this;
         if (!account) {
             account = this.state.account;
