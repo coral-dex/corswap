@@ -152,49 +152,28 @@ export class Home extends Component {
         return (
 
             <Layout selectedTab="1">
-                <WingBlank>
-                    <Flex className="flex">
-                        <Flex.Item style={{flex:1}}>
-                            <div>
-                                <img src={require("../images/logo.png")} alt="" width="70%"/>
-                            </div>
-                        </Flex.Item>
-                        <Flex.Item style={{flex:1}}>
-                            <div className="text-right">
-                                <div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>
-                            </div>
+
+                <Modal
+                    visible={this.state.modal1}
+                    transparent
+                    maskClosable={false}
+                    onClose={this.onClose('modal1')}
+                    title=""
+                    footer={[{ text: '我知道了', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
+                >
+                    <div style={{ height: 100, width:"auto",textAlign:"center"}}>
+                        <img width="40%" src={require('../images/wx.jpg')}/>
+                    </div>
+                </Modal>
+                <div className="fishing">
+                    <Flex>
+                        <Flex.Item style={{flex: 3}}>
+                            <div onClick={() => {
+                                this.changeAccount();
+                            }}>{this.showAccount(this.state.account, 8)}</div>
                         </Flex.Item>
                     </Flex>
-                    <div className="shares text-right">
-                        <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
-                        <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
-                        <img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>
-                        <img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>
-                        <img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>
-                        <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
-                    </div>
-                    <Modal
-                        visible={this.state.modal1}
-                        transparent
-                        maskClosable={false}
-                        onClose={this.onClose('modal1')}
-                        title=""
-                        footer={[{ text: '我知道了', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
-                    >
-                        <div style={{ height: 100, width:"auto",textAlign:"center"}}>
-                            <img width="40%" src={require('../images/wx.jpg')}/>
-                        </div>
-                    </Modal>
-                    <div className="fishing">
-                        <Flex>
-                            <Flex.Item style={{flex: 3}}>
-                                <div onClick={() => {
-                                    this.changeAccount();
-                                }}>{this.showAccount(this.state.account, 8)}</div>
-                            </Flex.Item>
-                        </Flex>
-                    </div>
-                </WingBlank>
+                </div>
             </Layout>
         )
     }
