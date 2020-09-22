@@ -26,6 +26,7 @@ class Layout extends React.Component{
         });
     }
     goPage=(uri)=>{
+        console.log(uri);
         window.location.href=uri
         // window.open(uri)
     }
