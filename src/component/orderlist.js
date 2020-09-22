@@ -5,6 +5,7 @@ import {Select} from "./select";
 import BigNumber from 'bignumber.js'
 import {dateFormat, showValue} from "./utils/common";
 import '../style/style.css'
+import Layout from "./layout";
 export class OrderList extends Component {
     constructor(props) {
         super(props);
@@ -285,138 +286,44 @@ export class OrderList extends Component {
         return (
 
 
-            <div className="flex-center">
+            <Layout>
+                <div className="flex-center">
 
-                <div className="header">
-                    <div className="from">
-                        <div className="flex">
-                            <div>From</div>
-                            <div>Balance:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>    
-                        </div>
+                    <div className="header">
+                        <div className="from">
+                            <div className="flex">
+                                <div>From</div>
+                                <div>Balance:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
+                            </div>
                             {this.state.flag?froms:tos}
-                    </div>
-                    <div style={{textAlign:"center",margin:"10px 0",height:"20px"}}>
-                        {/* <img onClick={()=>{}} src={require("../images/down.png")} width="20px"/> */}
-                        {
-                            this.state.price > 0 &&
-                            <span>当前预估价: 1{this.state.tokenIn} = {this.state.price}{this.state.tokenOut}</span>
-                        }
-                    </div>
-                    <div className="from">
-                        <div className="flex">
+                        </div>
+                        <div style={{textAlign:"center",margin:"10px 0",height:"20px"}}>
+                            {/* <img onClick={()=>{}} src={require("../images/down.png")} width="20px"/> */}
+                            {
+                                this.state.price > 0 &&
+                                <span>当前预估价: 1{this.state.tokenIn} = {this.state.price}{this.state.tokenOut}</span>
+                            }
+                        </div>
+                        <div className="from">
+                            <div className="flex">
                                 <div>To</div>
-                                <div>Balance:</div>    
+                                <div>Balance:</div>
                             </div>
                             {this.state.flag?tos:froms}
                         </div>
-                    <div style={{marginTop:"40px"}}>
-                        <input type="submit" className="inputs" value="Enter an amount"  onClick={() => {
-                            let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10,abi.getDecimalLocal(self.state.tokenIn)));
-                            let minTokensReceived  = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10,  abi.getDecimalLocal(self.state.tokenOut))).toString(10);
-                            self.exchange(self.state.tokenOut,self.state.tokenIn, amount, minTokensReceived)}}
+                        <div style={{marginTop:"40px"}}>
+                            <input type="submit" className="inputs" value="Enter an amount"  onClick={() => {
+                                let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10,abi.getDecimalLocal(self.state.tokenIn)));
+                                let minTokensReceived  = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10,  abi.getDecimalLocal(self.state.tokenOut))).toString(10);
+                                self.exchange(self.state.tokenOut,self.state.tokenIn, amount, minTokensReceived)}}
 
-                        />
-                    </div>
-                        
-                        
-                </div>
-
-
-
-
-
-
-
-
-
-                {/* <WhiteSpace size="lg"/>
-                <Card>
-                    <Card.Body>
-                        <div>
-                            <Flex style={{textAlign: 'center'}}>
-                                <Flex.Item>兑换</Flex.Item>
-                                <Flex.Item>数量</Flex.Item>
-                                <Flex.Item>余额:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</Flex.Item>
-                            </Flex>
-                            <WhiteSpace size="lg"/>
-                            <Flex>
-                                <Flex.Item style={{flex: 1}}>
-                                    <Select
-                                        options={options_1}
-                                        selectedOption={{value: this.state.tokenIn}}
-                                        onChange={(option) => {
-                                            let tokenOut = this.state.tokenToTokens.get(option.value)[0];
-                                            this.initPair(option.value, tokenOut, function (pair) {
-                                                self.setState({pair: pair, tokenIn: option.value, tokenOut: tokenOut});
-                                                self.showRate(self.state.tokenInAmount);
-                                            })
-                                        }}/>
-
-                                </Flex.Item>
-                                <Flex.Item style={{flex: 2}}>
-                                    <input type="text" defaultValue={this.state.tokenInAmount}
-                                           style={{width: '100%', height: '33px'}} onChange={(e) => {
-                                        this.showRate(e.target.value);
-                                    }}/>
-                                </Flex.Item>
-                            </Flex>
-                            <WhiteSpace size="lg"/>
-                            <Flex>
-                                <Flex.Item style={{flex: 1}}>
-                                    <div>获取币种</div>
-                                </Flex.Item>
-                            </Flex>
-
-                            <WhiteSpace size="lg"/>
-                            <Flex>
-                                <Flex.Item style={{flex: 1}}>
-                                    <Select
-                                        options={options_2}
-                                        onChange={(option) => {
-                                            this.initPair(this.state.tokenIn, option.value, function (pair) {
-                                                self.setState({pair: pair, tokenOut: option.value});
-                                                self.showRate(self.state.tokenInAmount);
-                                            })
-                                        }}/>
-                                </Flex.Item>
-                                <Flex.Item style={{flex: 2}}>
-                                    <input type="text" value={0} value={this.state.tokenOutAmount}
-                                           style={{width: '100%', height: '33px'}} onChange={(e) => {
-                                    }}/>
-                                </Flex.Item>
-                            </Flex>
-                            <WhiteSpace size="lg"/>
-                            <Flex>
-                                <Flex.Item>
-                                    {
-                                        this.state.price > 0 &&
-                                        <span>当前预估价: 1{this.state.tokenIn} = {this.state.price}{this.state.tokenOut}</span>
-                                    }
-                                </Flex.Item>
-                            </Flex>
-
-                            <WhiteSpace size="lg"/>
-                            <div>
-                                <Button type="primary" onClick={() => {
-                                    let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10,  abi.getDecimalLocal(self.state.tokenIn)));
-                                    let minTokensReceived  = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10,  abi.getDecimalLocal(self.state.tokenOut))).toString(10);
-                                    self.exchange(self.state.tokenIn, self.state.tokenOut, amount, minTokensReceived);
-                                }}>兑换</Button>
-                            </div>
+                            />
                         </div>
-                    </Card.Body>
-                </Card>
-                <WhiteSpace size="lg"/>
-                <Tabs tabs={[{title: "历史订单"}, {title: "我的订单"}]}
-                      initialPage={0}
-                      onChange={(tab, index) => {
-                          this.setState({orderType: index})
-                      }}>
-                    <List>
-                        {this.renderOrders()}
-                    </List>
-                </Tabs>  */}
-            </div>
+
+
+                    </div>
+                </div>
+            </Layout>
         )
     }
 }

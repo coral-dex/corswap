@@ -4,6 +4,7 @@ import abi from "./abi";
 import BigNumber from 'bignumber.js'
 import {Select} from "./select";
 import {showValue} from "./utils/common";
+import Layout from "./layout";
 
 const alert = Modal.alert;
 
@@ -224,19 +225,21 @@ export class PairList extends Component {
         // </div>)
         // })
         return (
-            <div className="pairlist">
-                <p className="flex" style={{color:"#00456b",fontSize:"12px"}} className="text-center"> 
-                    <img width="14px" src={require('../images/horn.png')}/>
-                    <span>通过为不同交易池提供流动性，获得CORAL</span>
-                </p>
-                <div>
-                    <input type="text" onChange={(e)=>this.searchcoral(e)} placeholder="搜索CoralSwap对和令牌" className="input search"/>
+            <Layout selectTab="3">
+                <div className="pairlist">
+                    <p className="flex" style={{color:"#00456b",fontSize:"12px"}} className="text-center">
+                        <img width="14px" src={require('../images/horn.png')}/>
+                        <span>通过为不同交易池提供流动性，获得CORAL</span>
+                    </p>
+                    <div>
+                        <input type="text" onChange={(e)=>this.searchcoral(e)} placeholder="搜索CoralSwap对和令牌" className="input search"/>
+                    </div>
+                    <div className="text-right ">
+                        <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" />只看我的质押</span>
+                    </div>
+                    {card}
                 </div>
-                <div className="text-right ">
-                    <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" />只看我的质押</span>
-                </div>
-                {card}
-            </div>
+            </Layout>
         )
     }
 }
