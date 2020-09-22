@@ -307,8 +307,8 @@ body{
     }
     .am-card{
         margin: 10px auto;
-        width: 97%;
-        margin-left: 1.5%;
+        /*width: 97%;*/
+        /*margin-left: 1.5%;*/
         padding:10px 10px 12px;
         background-color: #fff;
         box-shadow: #00456b 0px 0 8px;

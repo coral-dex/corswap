@@ -13,9 +13,10 @@ export class PairList extends Component {
         super(props);
 
         this.state = {
-            pk: props.pk,
+            pk: localStorage.getItem("accountPK"),
             account: {balances: new Map()},
             pairs: [],
+            pairsOrigin:[],
             pair: null,
             orderList: [],
             showType: props.showType,
@@ -35,7 +36,7 @@ export class PairList extends Component {
         }
 
         abi.pairList(account.mainPKr, search, function (pairs) {
-            self.setState({pairs: pairs});
+            self.setState({pairs: pairs,pairsOrigin:pairs});
         });
     }
 
@@ -45,9 +46,14 @@ export class PairList extends Component {
                 abi.accountDetails(self.state.pk, function (account) {
                     self.setState({account: account});
                     self.init(account);
-                    self.timer = setInterval(function () {
-                        self.init();
-                    }, 10000)
+                    // let iterId = sessionStorage.getItem("iterId")
+                    // if(iterId){
+                    //     clearInterval(iterId);
+                    // }
+                    // iterId = setInterval(function () {
+                    //     self.init();
+                    // }, 10000)
+                    // sessionStorage.setItem("iterId",iterId)
                 });
             });
     }
@@ -142,16 +148,72 @@ export class PairList extends Component {
             ])
     }
     searchcoral=(e)=>{
-        // console.log(e.target.value,"Eeeeee");
-        // let vals = e.target.value;
-        // let arr = [];
-        // let i =0;
-        // let {account} = this.state;
-      
+        const {pairs,pairsOrigin} = this.state;
+        console.log(e.target.value,"Eeeeee");
+        let vals = e.target.value;
+        if(!vals){
+            this.setState({
+                pairs:pairsOrigin
+            })
+        }else{
+            let arr = [];
+            vals = vals.toUpperCase();
+            for(let pair of pairsOrigin){
+                if(pair.tokenA.indexOf(vals)>-1 || pair.tokenB.indexOf(vals)>-1){
+                    arr.push(pair)
+                }
+            }
+            this.setState({
+                pairs:arr
+            })
+        }
+
+
     }
+
+    initExchange() {
+        let account = this.state.account;
+        let self = this;
+        let options = [];
+        let token;
+        let amount;
+        console.log("初始化资金池...");
+        account.balances.forEach((val, key) => {
+            if (!token) {
+                token = key;
+            }
+            if (val > 0) {
+                options.push({value: key, label: key})
+            }
+        });
+
+        alert("初始化资金池", <div>
+                <Flex>
+                    <Flex.Item style={{flex: 1}}><Select style={{marginTop: '22px'}} options={options} onChange={option => {
+                        token = option.value;
+                    }}/></Flex.Item>
+                    <Flex.Item style={{flex: 2}}><input style={{width: '95%', height: '25px'}}
+                                                        onChange={(e) => {
+                                                            amount = e.target.value;
+                                                        }}/></Flex.Item>
+                </Flex>
+            </div>,
+            [
+                {text: '取消', onPress: () => console.log('cancel'), style: 'default'},
+                {
+                    text: '确定', onPress: () => {
+                        abi.getDecimal(token, function (decimals) {
+                            let value = new BigNumber(amount).multipliedBy(Math.pow(10, decimals));
+                            abi.initializePair(account.pk, account.mainPKr, token, value);
+                        })
+                    }
+                },
+            ])
+    }
+
     render() {
         let imgs = []
-        let {account,pictures,pairs} = this.state;
+        let {account,pictures} = this.state;
         imgs.push(pictures);
         let pic = "pic"
         account.imgs = pictures;
@@ -160,8 +222,7 @@ export class PairList extends Component {
         // console.log(account,"acccount");
         // console.log(account.balances.pic,"value值");
 
-        console.log("pairs>>>",pairs);
-        pairs.map((pair, index) => {
+        const pairs = this.state.pairs.map((pair, index) => {
             return (
                 <Card key={index} style={{marginBottom: '10px'}}>
                     <Card.Header
@@ -169,19 +230,25 @@ export class PairList extends Component {
                     />
                     <Card.Body>
                         <div>
-                            {showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} - {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}
+                            比例: {showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}
                         </div>
+                        <WhiteSpace/>
+                        <div>
+                            总{pair.totalShares}份,销毁{pair.myShare}份
+                        </div>
+                        <WhiteSpace/>
                         {/*<div>*/}
                         {/*    {showValue(pair.totalVolume, 18)}-{showValue(pair.selfVolume, 18)}*/}
                         {/*</div>*/}
                     </Card.Body>
-                    <Card.Footer content={<span><a onClick={() => {
-                        this.invest(pair.tokenA, pair.tokenB);
-                    }
-                    }>提供流动性,(总{pair.totalShares}份)</a></span>} extra={<span><a onClick={() => {
-                        this.divest(pair.tokenA, pair.tokenB);
-                    }
-                    }>销毁流动性({pair.myShare}份)</a></span>}/>
+                    <Card.Footer content={
+                        <div style={{padding:'0 12px'}}><Button type="warning" size="small" onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁流动性</Button></div>
+                        }
+                                 extra={
+                                     <div style={{padding:'0 12px'}}><Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB);}}>提供流动性</Button></div>
+
+                        }
+                    />
                 </Card>
             )
         });
@@ -210,13 +277,26 @@ export class PairList extends Component {
 
         return (
             <Layout selectedTab="3">
+                <Flex className="flex">
+                    <Flex.Item style={{flex:1}}>
+                        <div>
+                            <img src={require("../images/logo.png")} alt="" width="70%"/>
+                        </div>
+                    </Flex.Item>
+                    <Flex.Item style={{flex:1}}>
+                        <div className="text-right">
+                            <div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>
+                        </div>
+                    </Flex.Item>
+                </Flex>
+
                 <div className="pairlist">
                     <p className="flex" style={{color:"#00456b",fontSize:"12px"}} className="text-center">
                         <img width="14px" src={require('../images/horn.png')}/>
                         <span>通过为不同交易池提供流动性，获得CORAL</span>
                     </p>
                     <div>
-                        <input type="text" onChange={(e)=>this.searchcoral(e)} placeholder="搜索CoralSwap对和令牌" className="input search"/>
+                        <input type="text" onChange={(e)=>this.searchcoral(e)} onBlur={(e)=>this.searchcoral(e)} placeholder="搜索CoralSwap对和令牌" className="input search"/>
                     </div>
                     <div className="text-right ">
                         <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" />只看我的质押</span>

@@ -70,3 +70,11 @@ export function showValue(val, decimals, decimalPlaces) {
         return num.toFixed(decimalPlaces, 1);
     }
 }
+
+export function bnToHex(value,decimal) {
+    if(value){
+        return "0x"+ new BigNumber(value).multipliedBy(10**decimal).toString(16)
+    }else{
+        return "0x0"
+    }
+}

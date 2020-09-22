@@ -121,31 +121,7 @@ class Layout extends React.Component{
         return (
             <div>
                 <WingBlank>
-                    <Flex className="flex">
-                        <Flex.Item style={{flex:1}}>
-                            <div>
-                                <img src={require("../images/logo.png")} alt="" width="70%"/>
-                            </div>
-                        </Flex.Item>
-                        <Flex.Item style={{flex:1}}>
-                            <div className="text-right">
-                                <div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>
-                            </div>
-                        </Flex.Item>
-                    </Flex>
-                    <div className="shares text-right">
-                        <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
-                        <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
-                        <img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>
-                        <img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>
-                        <img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>
-                        <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
-                    </div>
-                    <div className="text-center fishing_div">
-                        {/* <Tag className="fishing_tag">买币</Tag> */}
-                        <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
-                        {/* <Tag className="fishing_tag">买币</Tag> */}
-                    </div>
+
                     <Modal
                     visible={this.state.modal1}
                     transparent
