@@ -79,11 +79,13 @@ class Abi {
     }
 
     accountDetails(pk, callback) {
+        console.log(callback,"callback");
         if (!pk) {
             return;
         }
         let self = this;
         seropp.getAccountDetail(pk, function (item) {
+            console.log(item,"itemss");
             let balances = new Map();
             if (item.Balance) {
                 item.Balance.forEach((value, key) => {

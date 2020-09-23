@@ -80,6 +80,7 @@ export class Shares extends Component {
 
         return (
             <Layout selectedTab="4">
+
                 <WingBlank>
                     <WhiteSpace size="lg"/>
 
@@ -133,6 +134,7 @@ export class Shares extends Component {
                         this.sub()
                     }}>提交</Button>
                 </WingBlank>
+
             </Layout>
         )
     }

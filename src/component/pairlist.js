@@ -138,6 +138,7 @@ export class PairList extends Component {
     searchcoral=(e)=>{
         const {pairs,pairsOrigin} = this.state;
         console.log(e.target.value,"Eeeeee");
+        console.log(pairsOrigin,"pairoriginsss");
         let vals = e.target.value;
         if(!vals){
             this.setState({

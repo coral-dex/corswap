@@ -167,7 +167,7 @@ class Layout extends React.Component{
             <div>
                 <WingBlank>
 
-                    <Flex className="flex">
+                    <Flex className="flex showtais">
                         <Flex.Item style={{flex:1}}>
                             <div>
                                 <img src={require("../images/logo.png")} alt="" width="70%"/>
@@ -179,7 +179,7 @@ class Layout extends React.Component{
                             </div>
                         </Flex.Item>
                     </Flex>
-                    <div className="shares text-right">
+                    <div className="shares text-right padding">
                         <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
                         <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
                         <img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>

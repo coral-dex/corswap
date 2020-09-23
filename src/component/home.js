@@ -62,6 +62,7 @@ export class Home extends Component {
             put2: 0,  // to
             option1: '',
             option2: '',
+            inputStyle:null,
         }
     }
 
@@ -78,7 +79,7 @@ export class Home extends Component {
             amount.push(val)
             console.log(key, val, "values")
         });
-        if (tokens.length == 0) {
+        if (tokens.length === 0) {
             return;
         }
 
@@ -126,7 +127,7 @@ export class Home extends Component {
                     console.log("accounts", accounts);
                     if (pk) {
                         for (let act of accounts) {
-                            if (pk == act.pk) {
+                            if (pk === act.pk) {
                                 self.setState({account: act});
                                 break;
                             }
@@ -148,6 +149,9 @@ export class Home extends Component {
 
 
     showRate(amountIn) {
+        this.setState({
+            inputStyle:amountIn
+        })
         if (!amountIn || !this.state.pair || Number(amountIn) == 0) {
             this.setState({tokenInAmount: amountIn, tokenOutAmount: 0, price: 0});
             return;
@@ -288,7 +292,6 @@ export class Home extends Component {
         window.location.href = uri
         // window.open(uri)
     }
-
     render() {
         let self = this;
         let options_1 = [];
@@ -341,7 +344,7 @@ export class Home extends Component {
             </div>
             <div>
                 <List>
-                    <input value={this.state.tokenInAmount} placeholder="请输入" onChange={(e) => {
+                    <input style={{borderBottom:"1px solid #5a87a2"}} value={this.state.tokenInAmount} placeholder="请输入" onChange={(e) => {
                         this.showRate(e.target.value)
                     }} type="text" className="inputItem"/>
                 </List>
@@ -373,8 +376,8 @@ export class Home extends Component {
                 </List>
             </div>
         </div>
+    
         return (
-
             <Layout selectedTab="1" doUpdate={this.doUpdate}>
                 <div className="flex-center">
                     <div className="header">
@@ -389,7 +392,7 @@ export class Home extends Component {
                         <div style={{textAlign: "center", margin: "10px 0", height: "20px"}}>
                             {
                                 this.state.price > 0 &&
-                                <span>当前预估价: 1{this.state.tokenIn} = {this.state.price}{this.state.tokenOut}</span>
+                                <span>当前预估价:1{this.state.tokenIn} = {this.state.price}{this.state.tokenOut}</span>
                             }
                         </div>
                         <div className="from">
@@ -407,7 +410,7 @@ export class Home extends Component {
                             {/*}*/}
                         </div>
                         <div>
-                            <input style={{}} type="submit" className="inputs" value="发送" onClick={() => {
+                            <input style={{}} type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value="发     送" onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
                                 let minTokensReceived = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenOut))).toString(10);
                                 self.exchange(self.state.tokenIn, self.state.tokenOut, amount, minTokensReceived);

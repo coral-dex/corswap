@@ -62,6 +62,7 @@ export class Exchange extends Component {
             put2: 0,  // to
             option1: '',
             option2: '',
+            inputStyle:null
         }
     }
 
@@ -156,6 +157,9 @@ export class Exchange extends Component {
     }
 
     showRate(amountIn) {
+        this.setState({
+            inputStyle:amountIn
+        })
         if (!amountIn || !this.state.pair || Number(amountIn) == 0) {
             this.setState({tokenInAmount: amountIn, tokenOutAmount: 0, price: 0});
             return;
@@ -438,7 +442,7 @@ export class Exchange extends Component {
             </div>
             <div>
                 <List>
-                    <input placeholder="请输入数量" value={this.state.tokenInAmount}  onChange={(e) => {
+                    <input style={{borderBottom:"1px solid #5a87a2"}} value={this.state.tokenInAmount}  onChange={(e) => {
                         this.showRate(e.target.value)
                     }} type="text" className="inputItem"/>
                 </List>
@@ -477,7 +481,7 @@ export class Exchange extends Component {
                             {/*}*/}
                         </div>
                         <div>
-                            <input style={{}} type="submit" className="inputs" value="发送" onClick={() => {
+                            <input style={{}} type="submit" disabled={!this.state.inputStyle} className={this.state.inputStyle>0?'inputs':'nothing'} value="发     送" onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
                                 let minTokensReceived = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenOut))).toString(10);
                                 self.exchange(self.state.tokenOut, self.state.tokenIn, amount, minTokensReceived);
