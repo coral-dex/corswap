@@ -14,12 +14,16 @@ body{
 .fishing{
     margin: 10px 0 0 0;
     display: flex;
-    border:1px solid #355287;
+    border: 1px solid #355287;
     border-radius: 30px;
     height: 30px;
-    padding: 0 15px;
+    /* padding: 0 15px; */
     /* width: 100%; */
     align-items: center;
+    color: #2b5c79;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 2px 24px;
 }
 .am-flexbox-align-center{
     width: 100% !important;
@@ -349,4 +353,10 @@ body{
         height: 40px;
         color: #362e2b;
     }
+
+    .card-border{
+        border-radius: 15px;
+        background-color: #f2fcfc;
+    }
 /* pairlist.js */
+

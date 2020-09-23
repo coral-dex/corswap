@@ -150,6 +150,11 @@ export class PairList extends Component {
                 },
             ])
     }
+
+    withdrawCoral = (pair) => {
+        abi.withdrawShareReward(this.state.account.pk, this.state.account.mainPKr, pair.tokenA, pair.tokenB);
+    }
+
     searchcoral=(e)=>{
         const {pairs,pairsOrigin} = this.state;
         console.log(e.target.value,"Eeeeee");
@@ -221,66 +226,7 @@ export class PairList extends Component {
         let imgs = []
         let {account,pictures} = this.state;
         imgs.push(pictures);
-        let pic = "pic"
         account.imgs = pictures;
-        console.log(account,"对象添加");
-        // account.concat(this.state.pictures)
-        // console.log(account,"acccount");
-        // console.log(account.balances.pic,"value值");
-
-        const pairs = this.state.pairs.map((pair, index) => {
-            return (
-                <Card key={index} style={{marginBottom: '10px'}}>
-                    <Card.Header
-                        title={<span>{pair.tokenA}-{pair.tokenB}</span>}
-                    />
-                    <Card.Body>
-                        <div>
-                            比例: {showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}
-                        </div>
-                        <WhiteSpace/>
-                        <div>
-                            总{pair.totalShares}份,销毁{pair.myShare}份
-                        </div>
-                        <WhiteSpace/>
-                        {/*<div>*/}
-                        {/*    {showValue(pair.totalVolume, 18)}-{showValue(pair.selfVolume, 18)}*/}
-                        {/*</div>*/}
-                    </Card.Body>
-                    <Card.Footer content={
-                        <div style={{padding:'0 12px'}}><Button type="warning" size="small" onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁流动性</Button></div>
-                        }
-                                 extra={
-                                     <div style={{padding:'0 12px'}}><Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB);}}>提供流动性</Button></div>
-
-                        }
-                    />
-                </Card>
-            )
-        });
-        let card = [];
-        let images = [];
-        let that = this;
-        let num = 0;
-        account.balances.forEach((key,val)=>{
-            card.push( <div className="am-card">
-                <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
-                    <div>
-                        <img width="50%" src={pictures[num]}/> 
-                    </div>
-                    <div style={{color:"#f75552"}}>
-                        <div className="text-right"><img src={require("../images/user.png")} width="20%"/></div>
-                        <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>我持有的比例:%</div>
-                    </div>
-                </div>
-                <div className="text-center">
-                    <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>CORAL - {val}</div>
-                    <div style={{fontSize:"12px"}}>存入{val}赚CORAL</div>
-                </div>
-            </div>)
-        ++num;
-        })
-
         return (
             <Layout selectedTab="3" doUpdate={this.doUpdate}>
 
@@ -296,7 +242,49 @@ export class PairList extends Component {
                     <div className="text-right ">
                         <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" />只看我的质押</span>
                     </div>
-                    {pairs}
+                    {
+                        this.state.pairs.map((pair, index) => {
+                            return (
+                                <div className="am-card card-border">
+                                    <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
+                                        <div>
+                                            <img width="50%" src={pictures[0]}/>
+                                        </div>
+                                        <div style={{color:"#f75552"}}>
+                                            <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="20%"/>:""}</div>
+                                            <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>我持有{pair.myShare}份, 比例: {pair.myShare/pair.totalShares}%</div>
+                                        </div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB}</div>
+                                        <div>
+                                            {showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}
+                                         </div>
+                                         <WhiteSpace/>
+                                         <div>
+                                             总共{pair.totalShares}份
+                                         </div>
+                                        <WhiteSpace/>
+                                        <div>
+                                            可提现{showValue(pair.shareRreward,18,3)}CORAL
+                                        </div>
+                                         <WhiteSpace/>
+                                        <Flex>
+                                            <Flex.Item>
+                                                <WingBlank style={{padding:'0 12px'}}><Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁流动性</Button></WingBlank>
+                                            </Flex.Item>
+                                            <Flex.Item>
+                                                <WingBlank style={{padding:'0 12px'}}><Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB);}}>提供流动性</Button></WingBlank>
+                                            </Flex.Item>
+                                            <Flex.Item>
+                                                <WingBlank style={{padding:'0 12px'}}><Button type="primary" size="small" disabled={pair.shareRreward*1 == 0} onClick={() => {this.withdrawCoral(pair)}}>提现CORAL</Button></WingBlank>
+                                            </Flex.Item>
+                                        </Flex>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
                 </div>
             </Layout>
         )

@@ -151,6 +151,14 @@ class Layout extends React.Component{
             })
     }
 
+    getBalance = (k) =>{
+        const balance = this.state.account.balances.get(k);
+        if(balance){
+            return new BigNumber(balance).dividedBy(10**18).toFixed(3,1)
+        }else{
+            return "0.000";
+        }
+    }
 
     render() {
         return (
@@ -178,11 +186,14 @@ class Layout extends React.Component{
                         <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
                     </div>
                     <div className="fishing">
-                        <Flex>
-                            <Flex.Item style={{flex: 3}}>
-                                <div onClick={() => {
-                                    this.changeAccount();
-                                }}>{this.showAccount(this.state.account, 8)}</div>
+                        <Flex onClick={() => {
+                            this.changeAccount();
+                        }}>
+                            <Flex.Item>
+                                {this.showAccount(this.state.account, 8)}
+                            </Flex.Item>
+                            <Flex.Item style={{textAlign:"right"}}>
+                                {this.getBalance(this.props.selectedTab === '3'?"FHJG":"SERO")} {this.props.selectedTab === '3'?"CORAL":"SERO"}
                             </Flex.Item>
                         </Flex>
                     </div>
