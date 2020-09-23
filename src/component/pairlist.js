@@ -41,23 +41,26 @@ export class PairList extends Component {
     }
 
     componentDidMount() {
-        let self = this;
-        abi.init.then(() => {
-                abi.accountDetails(self.state.pk, function (account) {
-                    self.setState({account: account});
-                    self.init(account);
-                    // let iterId = sessionStorage.getItem("iterId")
-                    // if(iterId){
-                    //     clearInterval(iterId);
-                    // }
-                    // iterId = setInterval(function () {
-                    //     self.init();
-                    // }, 10000)
-                    // sessionStorage.setItem("iterId",iterId)
-                });
-            });
+        this.doUpdate()
     }
 
+    doUpdate = ()=>{
+        let self = this;
+        abi.init.then(() => {
+            abi.accountDetails(self.state.pk, function (account) {
+                self.setState({account: account});
+                self.init(account);
+                // let iterId = sessionStorage.getItem("iterId")
+                // if(iterId){
+                //     clearInterval(iterId);
+                // }
+                // iterId = setInterval(function () {
+                //     self.init();
+                // }, 10000)
+                // sessionStorage.setItem("iterId",iterId)
+            });
+        });
+    }
     componentWillReceiveProps(nextProps, nextContext) {
         let self = this;
         abi.accountDetails(nextProps.pk, function (account) {
@@ -211,6 +214,9 @@ export class PairList extends Component {
             ])
     }
 
+
+
+
     render() {
         let imgs = []
         let {account,pictures} = this.state;
@@ -276,19 +282,8 @@ export class PairList extends Component {
         })
 
         return (
-            <Layout selectedTab="3">
-                <Flex className="flex">
-                    <Flex.Item style={{flex:1}}>
-                        <div>
-                            <img src={require("../images/logo.png")} alt="" width="70%"/>
-                        </div>
-                    </Flex.Item>
-                    <Flex.Item style={{flex:1}}>
-                        <div className="text-right">
-                            <div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>
-                        </div>
-                    </Flex.Item>
-                </Flex>
+            <Layout selectedTab="3" doUpdate={this.doUpdate}>
+
 
                 <div className="pairlist">
                     <p className="flex" style={{color:"#00456b",fontSize:"12px"}} className="text-center">

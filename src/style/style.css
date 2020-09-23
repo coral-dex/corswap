@@ -338,7 +338,7 @@ body{
         position: relative;
         margin-top: 5px;
         /* border:1px solid #00456b; */
-        box-shadow: #cfdfe7 0px 0px 10px;
+        /*box-shadow: #cfdfe7 0px 0px 10px;*/
     }
     .nothing{
         border:none;

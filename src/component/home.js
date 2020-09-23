@@ -114,6 +114,10 @@ export class Home extends Component {
     }
 
     componentDidMount() {
+        this.doUpdate();
+    }
+
+    doUpdate = ()=>{
         let self = this;
         abi.init
             .then(() => {
@@ -142,14 +146,6 @@ export class Home extends Component {
             });
     }
 
-    compoonentWillReceiveProps(nextPorps, nextContxt) {
-        // let self = this;
-        // abi.accountDetails(nextPorps.pk,function(account){
-        //   self.setState({account:account},function(){
-        //     self.init(account)
-        //   })
-        // })
-    }
 
     showRate(amountIn) {
         if (!amountIn || !this.state.pair || Number(amountIn) == 0) {
@@ -162,27 +158,11 @@ export class Home extends Component {
         let amountOut;
         let pair = this.state.pair;
 
-        let reserveA = new BigNumber(pair.reserveA);
-        let reserveB = new BigNumber(pair.reserveB);
-        let invariant = reserveA.multipliedBy(reserveB);
+        abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
 
-        abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (feeRate) {
+            amountOut = new BigNumber(out).dividedBy(10**18)
 
-            console.log("feeRate", feeRate);
-
-            let rate = 10000 - feeRate;
-            if (self.state.tokenIn == pair.tokenA) {
-                reserveA = reserveA.plus(new BigNumber(amountIn).multipliedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenA))));
-                amountOut = reserveB.minus(invariant.dividedBy(reserveA));
-                amountOut = amountOut.multipliedBy(rate).div(10000);
-                amountOut = amountOut.dividedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenA)));
-            } else {
-                reserveB = reserveB.plus(new BigNumber(amountIn * rate / (10000)).multipliedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenB))));
-                amountOut = reserveA.minus(invariant.dividedBy(reserveB));
-                amountOut = amountOut.dividedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenA)));
-            }
-
-            let price = amountOut.dividedBy(amountIn).toFixed(3)
+            let price = amountOut.dividedBy(amountIn).toFixed(6)
             self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});
         });
 
@@ -274,28 +254,6 @@ export class Home extends Component {
         }
 
     }
-
-    changeAccount() {
-        let self = this;
-
-        abi.init
-            .then(() => {
-                abi.accountList(function (accounts) {
-                    let actions = [];
-                    accounts.forEach(function (account, index) {
-                        actions.push(
-                            {
-                                text: <span>{self.showAccount(account)}</span>, onPress: () => {
-                                    self.setState({account: account});
-                                }
-                            }
-                        );
-                    });
-                    operation(actions);
-                });
-            })
-    }
-
 
 
     numberMax(balance) {
@@ -417,43 +375,7 @@ export class Home extends Component {
         </div>
         return (
 
-            <Layout selectedTab="1">
-                <Flex className="flex">
-                    <Flex.Item style={{flex:1}}>
-                        <div>
-                            <img src={require("../images/logo.png")} alt="" width="70%"/>
-                        </div>
-                    </Flex.Item>
-                    <Flex.Item style={{flex:1}}>
-                        <div className="text-right">
-                            {/*<div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>*/}
-                        </div>
-                    </Flex.Item>
-                </Flex>
-                <div className="shares text-right">
-                    <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
-                    <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
-                    <img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>
-                    <img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>
-                    <img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>
-                    <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
-                </div>
-                <div className="text-center fishing_div">
-                    {/* <Tag className="fishing_tag">买币</Tag> */}
-                    <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
-                    {/* <Tag className="fishing_tag">买币</Tag> */}
-                </div>
-
-                <div className="fishing">
-                    <Flex>
-                        <Flex.Item style={{flex: 3}}>
-                            <div onClick={() => {
-                                this.changeAccount();
-                            }}>{this.showAccount(this.state.account, 8)}</div>
-                        </Flex.Item>
-                    </Flex>
-                </div>
-
+            <Layout selectedTab="1" doUpdate={this.doUpdate}>
                 <div className="flex-center">
                     <div className="header">
 

@@ -84,7 +84,7 @@ class Layout extends React.Component{
             }
         });
 
-        alert("初始化资金池", <div>
+        Modal.alert("初始化资金池", <div>
                 <Flex>
                     <Flex.Item style={{flex: 1}}><Select style={{marginTop: '22px'}} options={options} onChange={option => {
                         token = option.value;
@@ -117,10 +117,80 @@ class Layout extends React.Component{
           [key]: false,
         });
       }
+
+    showAccount(account, len) {
+        if (!account || !account.mainPKr) {
+            return "";
+        }
+        if (!len) {
+            len = 8;
+        }
+        return account.name + " " + account.mainPKr.slice(0, len) + "..." + account.mainPKr.slice(-len)
+    }
+
+    changeAccount() {
+        let self = this;
+
+        abi.init
+            .then(() => {
+                abi.accountList(function (accounts) {
+                    let actions = [];
+                    accounts.forEach(function (account, index) {
+                        actions.push(
+                            {
+                                text: <span>{self.showAccount(account)}</span>, onPress: () => {
+                                    window.localStorage.setItem("accountPK", account.pk)
+                                    self.props.doUpdate()
+                                    self.setState({account: account});
+                                }
+                            }
+                        );
+                    });
+                    Modal.operation(actions);
+                });
+            })
+    }
+
+
     render() {
         return (
             <div>
                 <WingBlank>
+
+                    <Flex className="flex">
+                        <Flex.Item style={{flex:1}}>
+                            <div>
+                                <img src={require("../images/logo.png")} alt="" width="70%"/>
+                            </div>
+                        </Flex.Item>
+                        <Flex.Item style={{flex:1}}>
+                            <div className="text-right">
+                                {this.props.selectedTab == "3"?<div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>:""}
+                            </div>
+                        </Flex.Item>
+                    </Flex>
+                    <div className="shares text-right">
+                        <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
+                        <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
+                        <img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>
+                        <img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>
+                        <img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>
+                        <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
+                    </div>
+                    <div className="fishing">
+                        <Flex>
+                            <Flex.Item style={{flex: 3}}>
+                                <div onClick={() => {
+                                    this.changeAccount();
+                                }}>{this.showAccount(this.state.account, 8)}</div>
+                            </Flex.Item>
+                        </Flex>
+                    </div>
+                    <div className="text-center fishing_div">
+                        {/* <Tag className="fishing_tag">买币</Tag> */}
+                        <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
+                        {/* <Tag className="fishing_tag">买币</Tag> */}
+                    </div>
 
                     <Modal
                     visible={this.state.modal1}
@@ -134,8 +204,10 @@ class Layout extends React.Component{
                         <img width="40%" src={require('../images/wx.jpg')}/>
                     </div>
                     </Modal>
-                    {this.props.children}
+
                 </WingBlank>
+
+                {this.props.children}
 
                 <div style={{ position: 'fixed',width: '100%', bottom:"0",left:"0" }}>
                     <TabBar

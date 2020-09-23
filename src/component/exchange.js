@@ -106,14 +106,7 @@ export class Exchange extends Component {
         });
     }
 
-    initPair(tokenA, tokenB, callback) {
-        let self = this;
-        abi.pairInfoWithOrders(this.state.account.mainPKr, tokenA, tokenB, function (pair) {
-            callback(pair);
-        })
-    }
-
-    componentDidMount() {
+    doUpdate = ()=>{
         let self = this;
         abi.init
             .then(() => {
@@ -142,6 +135,17 @@ export class Exchange extends Component {
             });
     }
 
+    initPair(tokenA, tokenB, callback) {
+        let self = this;
+        abi.pairInfoWithOrders(this.state.account.mainPKr, tokenA, tokenB, function (pair) {
+            callback(pair);
+        })
+    }
+
+    componentDidMount() {
+        this.doUpdate();
+    }
+
     compoonentWillReceiveProps(nextPorps, nextContxt) {
         // let self = this;
         // abi.accountDetails(nextPorps.pk,function(account){
@@ -162,28 +166,15 @@ export class Exchange extends Component {
         let amountOut;
         let pair = this.state.pair;
 
-        let reserveA = new BigNumber(pair.reserveA);
-        let reserveB = new BigNumber(pair.reserveB);
-        let invariant = reserveA.multipliedBy(reserveB);
+        // let reserveA = new BigNumber(pair.reserveA);
+        // let reserveB = new BigNumber(pair.reserveB);
+        // let invariant = reserveA.multipliedBy(reserveB);
 
-        abi.estimateSwap(this.state.account.mainPKr, pair.tokenB, pair.tokenA, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenB))), function (feeRate) {
+        abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenOut, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenB))), function (out) {
 
-            console.log("feeRate", feeRate,self.state.tokenIn,self.state.tokenIn);
+            amountOut = new BigNumber(out).dividedBy(10**18)
 
-            let rate = 10000 - feeRate;
-            if (self.state.tokenIn == pair.tokenB) {
-                reserveA = reserveA.plus(new BigNumber(amountIn).multipliedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenA))));
-                amountOut = reserveB.minus(invariant.dividedBy(reserveA));
-                amountOut = amountOut.multipliedBy(rate).div(10000);
-                amountOut = amountOut.dividedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenA)));
-            } else {
-                reserveB = reserveB.plus(new BigNumber(amountIn * rate / (10000)).multipliedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenB))));
-
-                amountOut = reserveA.minus(invariant.dividedBy(reserveB));
-                amountOut = amountOut.dividedBy(Math.pow(10, abi.getDecimalLocal(pair.tokenA)));
-            }
-
-            let price = amountOut.dividedBy(amountIn).toFixed(3)
+            let price = new BigNumber(amountOut).dividedBy(amountIn).toFixed(6)
             self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});
         });
 
@@ -455,43 +446,7 @@ export class Exchange extends Component {
         </div>
         return (
 
-            <Layout selectedTab="2">
-                <Flex className="flex">
-                    <Flex.Item style={{flex:1}}>
-                        <div>
-                            <img src={require("../images/logo.png")} alt="" width="70%"/>
-                        </div>
-                    </Flex.Item>
-                    <Flex.Item style={{flex:1}}>
-                        <div className="text-right">
-                            {/*<div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>*/}
-                        </div>
-                    </Flex.Item>
-                </Flex>
-                <div className="shares text-right">
-                    <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
-                    <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
-                    <img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>
-                    <img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>
-                    <img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>
-                    <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
-                </div>
-                <div className="text-center fishing_div">
-                    {/* <Tag className="fishing_tag">买币</Tag> */}
-                    <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
-                    {/* <Tag className="fishing_tag">买币</Tag> */}
-                </div>
-
-                <div className="fishing">
-                    <Flex>
-                        <Flex.Item style={{flex: 3}}>
-                            <div onClick={() => {
-                                this.changeAccount();
-                            }}>{this.showAccount(this.state.account, 8)}</div>
-                        </Flex.Item>
-                    </Flex>
-                </div>
-
+            <Layout selectedTab="2" doUpdate={this.doUpdate}>
                 <div className="flex-center">
                     <div className="header">
 
@@ -505,7 +460,7 @@ export class Exchange extends Component {
                         <div style={{textAlign: "center", margin: "10px 0", height: "20px"}}>
                             {
                                 this.state.price > 0 &&
-                                <span>当前预估价: 1{this.state.tokenIn} = {this.state.price}{this.state.tokenOut}</span>
+                                <span>当前预估价: 1{this.state.tokenOut} = {this.state.price}{this.state.tokenIn}</span>
                             }
                         </div>
                         <div className="from">
@@ -525,7 +480,7 @@ export class Exchange extends Component {
                             <input style={{}} type="submit" className="inputs" value="发送" onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
                                 let minTokensReceived = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenOut))).toString(10);
-                                self.exchange(self.state.tokenIn, self.state.tokenOut, amount, minTokensReceived);
+                                self.exchange(self.state.tokenOut, self.state.tokenIn, amount, minTokensReceived);
                             }}/>
                         </div>
                     </div>
