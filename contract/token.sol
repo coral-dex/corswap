@@ -1,7 +1,6 @@
 pragma solidity ^0.4.25;
 
 import "./strings.sol";
-import "./ownable.sol";
 import "./math.sol";
 
 contract SeroInterface {
@@ -72,39 +71,81 @@ contract SeroInterface {
     }
 }
 
+contract Ownable {
+    address public owner;
+    address public operator;
+
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+
+    /**
+     * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+     * account.
+     */
+    constructor() public {
+        owner = msg.sender;
+        operator = msg.sender;
+    }
+
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
+    }
+
+    modifier onlyOperator() {
+        require(msg.sender == operator);
+        _;
+    }
+
+
+    /**
+     * @dev Allows the current owner to transfer control of the contract to a newOwner.
+     * @param newOwner The address to transfer ownership to.
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(newOwner != address(0));
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+    }
+
+    function setOperator(address newOperator) public onlyOwner {
+        require(newOperator != address(0));
+        operator = newOperator;
+    }
+
+}
+
 contract CoralToken is SeroInterface, Ownable {
     using SafeMath for uint256;
-
-    uint256 public constant ONEDAY = 600;
 
     string private _name;
     uint8 private _decimals;
     uint256 private _totalSupply;
 
-    uint256 private systemStartDay;
-    uint256 private outputedDay;
     address private swapAddress;
 
-    string[] private tokens;
-    mapping(string => bool) private hasTokens;
+    bytes32[] private tokens;
+    mapping(bytes32 => bool) private hasTokens;
 
     address public blackhole;
 
-    constructor(address _blackhole) public {
-        // createToken(initialSupply, tokenName, decimals);
+    constructor(address _blackhole, uint256 initialSupply, string memory tokenName, uint8 decimals) public payable{
+        createToken(initialSupply, tokenName, decimals);
         blackhole = _blackhole;
     }
 
-    function createToken(uint256 initialSupply, string memory tokenName, uint8 decimals) public payable {
+    function createToken(uint256 initialSupply, string memory tokenName, uint8 decimals) internal {
         _totalSupply = initialSupply * 10 ** uint256(decimals);
         require(sero_issueToken(_totalSupply, tokenName));
         require(sero_send_token(owner, tokenName, _totalSupply));
 
         _name = tokenName;
         _decimals = decimals;
-
-        systemStartDay = now / ONEDAY;
-        outputedDay = systemStartDay;
     }
 
     function() external payable {}
@@ -125,17 +166,23 @@ contract CoralToken is SeroInterface, Ownable {
         return _totalSupply;
     }
 
-    function getBalance() public view returns (uint256) {
-        return sero_balanceOf(_name);
+    function getBalance() public view returns (bytes32[] tokenList, uint256[] balances) {
+        balances = new uint256[](tokens.length);
+        tokenList = new bytes32[](tokens.length);
+        for (uint256 i = 0; i < tokens.length; i++) {
+            tokenList[i] = tokens[i];
+            balances[i] = sero_balanceOf(strings.bytes32ToString(tokens[i]));
+        }
     }
 
-    function setSwapAddress(address _swapAddr) public onlyOwner {
+    function setSwapAddress(address _swapAddr) public onlyOperator {
         swapAddress = _swapAddr;
     }
 
-    function addToken(string memory token) public onlyOwner {
-        require(!hasTokens[token]);
-        tokens.push(token);
+    function addToken(string memory token) public onlyOperator {
+        bytes32 tokenBytes = strings._stringToBytes(token);
+        require(!hasTokens[tokenBytes]);
+        tokens.push(tokenBytes);
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
@@ -146,28 +193,53 @@ contract CoralToken is SeroInterface, Ownable {
         return sero_send(_to, _name, _value, '', '');
     }
 
-    function exchange() external payable returns (bool) {
+    function showExchange(uint256 amount) public view returns (bytes32[] memory tokenList, uint256[] memory amounts) {
+        if (_totalSupply == 0) {
+            return;
+        }
+        amounts = new uint256[](tokens.length);
+        tokenList = new bytes32[](tokens.length);
+        for (uint256 i = 0; i < tokens.length; i++) {
+            tokenList[i] = tokens[i];
+            uint256 balance = sero_balanceOf(strings.bytes32ToString(tokens[i]));
+            if (balance > 0) {
+                amounts[i] = balance.mul(amount).div(_totalSupply);
+            }
+        }
+        return (tokens, amounts);
+    }
+
+    function exchange(address _to) public payable returns (bool) {
+        require(_totalSupply > 0);
         require(tokens.length > 0);
         string memory _currency = sero_msg_currency();
         require(strings._stringEq(_currency, _name));
 
-        uint256 _burnedValue = msg.value;
-        require(sero_send_token(blackhole, _name, _burnedValue));
+        if (_to == address(0)) {
+            _to = msg.sender;
+        }
 
+        uint256 _burnedValue = msg.value;
+        burn(_burnedValue);
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            _send(tokens[i], _burnedValue);
+            _send(_to, strings.bytes32ToString(tokens[i]), _burnedValue);
         }
 
         _totalSupply = _totalSupply.sub(_burnedValue);
         return true;
     }
 
-    function _send(string memory token, uint256 burnedValue) private {
+    function _send(address _to, string memory token, uint256 burnedValue) private {
         uint256 balance = sero_balanceOf(token);
         if (balance > 0) {
-            require(sero_send_token(msg.sender, token, balance.mul(burnedValue).div(_totalSupply)));
+            require(sero_send_token(_to, token, balance.mul(burnedValue).div(_totalSupply)));
         }
+    }
+
+
+    function burn(uint256 _burnedValue) internal {
+        require(sero_send_token(blackhole, _name, _burnedValue));
     }
 }
 

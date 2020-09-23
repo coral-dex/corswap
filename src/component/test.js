@@ -13,6 +13,16 @@ function hashKey(token1, token2) {
     data2.fill(_token2, 0, token2.length);
     return "0x" + Buffer.from(keccak256(Buffer.concat([data1, data2]))).toString('hex')
 }
+
+function tokenToBytes(token) {
+    let bytes = Buffer.alloc(32);
+    bytes.fill(token, 0, token.length);
+    return "0x" + bytes.toString('hex');
+}
+
+
 console.log(hashKey("SERO", "SUSD"));
 
 console.log(hashKey("SERO","SCNY"));
+
+console.log(tokenToBytes("SERO"));
