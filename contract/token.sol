@@ -98,7 +98,7 @@ contract Ownable {
     }
 
     modifier onlyOperator() {
-        require(msg.sender == operator);
+        require(msg.sender == operator || msg.sender == owner);
         _;
     }
 
@@ -113,24 +113,24 @@ contract Ownable {
         owner = newOwner;
     }
 
-    function setOperator(address newOperator) public onlyOwner {
+    function setOperator(address newOperator) public onlyOperator {
         require(newOperator != address(0));
         operator = newOperator;
     }
 
 }
 
-contract CoralToken is SeroInterface, Ownable {
+contract CoralToken is SeroInterface, Ownable{
     using SafeMath for uint256;
 
     string private _name;
     uint8 private _decimals;
     uint256 private _totalSupply;
 
-    address private swapAddress;
+    address public swapAddress;
 
     bytes32[] private tokens;
-    mapping(bytes32 => bool) private hasTokens;
+    mapping(bytes32=>bool) private hasTokens;
 
     address public blackhole;
 
@@ -139,10 +139,10 @@ contract CoralToken is SeroInterface, Ownable {
         blackhole = _blackhole;
     }
 
-    function createToken(uint256 initialSupply, string memory tokenName, uint8 decimals) internal {
+    function createToken(uint256 initialSupply, string memory tokenName, uint8 decimals) internal{
         _totalSupply = initialSupply * 10 ** uint256(decimals);
         require(sero_issueToken(_totalSupply, tokenName));
-        require(sero_send_token(owner, tokenName, _totalSupply));
+        require(sero_send_token(owner,tokenName, _totalSupply));
 
         _name = tokenName;
         _decimals = decimals;
@@ -166,10 +166,10 @@ contract CoralToken is SeroInterface, Ownable {
         return _totalSupply;
     }
 
-    function getBalance() public view returns (bytes32[] tokenList, uint256[] balances) {
+    function getBalance() public view returns(bytes32[] tokenList, uint256[] balances) {
         balances = new uint256[](tokens.length);
         tokenList = new bytes32[](tokens.length);
-        for (uint256 i = 0; i < tokens.length; i++) {
+        for(uint256 i=0;i< tokens.length;i++) {
             tokenList[i] = tokens[i];
             balances[i] = sero_balanceOf(strings.bytes32ToString(tokens[i]));
         }
@@ -182,6 +182,7 @@ contract CoralToken is SeroInterface, Ownable {
     function addToken(string memory token) public onlyOperator {
         bytes32 tokenBytes = strings._stringToBytes(token);
         require(!hasTokens[tokenBytes]);
+        hasTokens[tokenBytes] = true;
         tokens.push(tokenBytes);
     }
 
@@ -193,36 +194,19 @@ contract CoralToken is SeroInterface, Ownable {
         return sero_send(_to, _name, _value, '', '');
     }
 
-    function showExchange(uint256 amount) public view returns (bytes32[] memory tokenList, uint256[] memory amounts) {
-        if (_totalSupply == 0) {
-            return;
-        }
-        amounts = new uint256[](tokens.length);
-        tokenList = new bytes32[](tokens.length);
-        for (uint256 i = 0; i < tokens.length; i++) {
-            tokenList[i] = tokens[i];
-            uint256 balance = sero_balanceOf(strings.bytes32ToString(tokens[i]));
-            if (balance > 0) {
-                amounts[i] = balance.mul(amount).div(_totalSupply);
-            }
-        }
-        return (tokens, amounts);
-    }
-
-    function exchange(address _to) public payable returns (bool) {
+    function exchange(address _to) public payable returns(bool) {
         require(_totalSupply > 0);
         require(tokens.length > 0);
         string memory _currency = sero_msg_currency();
         require(strings._stringEq(_currency, _name));
 
-        if (_to == address(0)) {
+        if(_to==address(0)) {
             _to = msg.sender;
         }
 
         uint256 _burnedValue = msg.value;
         burn(_burnedValue);
-
-        for (uint256 i = 0; i < tokens.length; i++) {
+        for(uint256 i=0;i< tokens.length;i++) {
             _send(_to, strings.bytes32ToString(tokens[i]), _burnedValue);
         }
 
@@ -232,14 +216,30 @@ contract CoralToken is SeroInterface, Ownable {
 
     function _send(address _to, string memory token, uint256 burnedValue) private {
         uint256 balance = sero_balanceOf(token);
-        if (balance > 0) {
+        if(balance > 0) {
             require(sero_send_token(_to, token, balance.mul(burnedValue).div(_totalSupply)));
         }
     }
 
+    function burn(uint256 _burnedValue) internal  {
+        require(sero_send_token(blackhole, _name ,_burnedValue));
+    }
 
-    function burn(uint256 _burnedValue) internal {
-        require(sero_send_token(blackhole, _name, _burnedValue));
+
+    function showExchange(uint256 amount) public view returns(bytes32[] memory tokenList, uint256[] memory amounts) {
+        if(_totalSupply == 0) {
+            return;
+        }
+        amounts = new uint256[](tokens.length);
+        tokenList = new bytes32[](tokens.length);
+        for(uint256 i=0;i< tokens.length;i++) {
+            tokenList[i] = tokens[i];
+            uint256 balance = sero_balanceOf(strings.bytes32ToString(tokens[i]));
+            if(balance > 0) {
+                amounts[i] = balance.mul(amount).div(_totalSupply);
+            }
+        }
+        return (tokens, amounts);
     }
 }
 

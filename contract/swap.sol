@@ -10,6 +10,7 @@ import "./pair.sol";
 import "./volume.sol";
 import "./liquidity.sol";
 import "./cyclelist.sol";
+import "./constants.sol";
 
 library InitValueList {
     using SafeMath for uint256;
@@ -49,8 +50,6 @@ contract SwapExchange is SeroInterface, Ownable {
     using LiquidityList for LiquidityList.List;
     using InitValueList for InitValueList.List;
 
-
-    uint256 constant private ONEDAY = 600;
     bytes32 private SEROBYTES = strings._stringToBytes32("SERO");
 
     struct Order {
@@ -98,7 +97,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function start() public onlyOwner {
-        startDay = now / ONEDAY;
+        startDay = now / Constants.ONEDAY;
     }
 
     function setOutputs(uint256 _start, uint256[] memory _outputs) public onlyOwner {
@@ -238,9 +237,13 @@ contract SwapExchange is SeroInterface, Ownable {
         return pair;
     }
 
+    function investAmount(bytes32 token) public view returns (uint256){
+        return initValues[msg.sender].valueMap[token];
+    }
+
     function withdrawShareReward(bytes32 key) external {
         uint256 value = _shareReward(key);
-        lastIndexsMap[msg.sender] = now / ONEDAY;
+        lastIndexsMap[msg.sender] = now / Constants.ONEDAY;
         require(tokenPool.transfer(msg.sender, value));
     }
 
@@ -407,7 +410,7 @@ contract SwapExchange is SeroInterface, Ownable {
         return keccak256(abi.encode(token0, token1));
     }
 
-    function hasPair(bytes32 key) internal view returns (bool) {
+    function hasPair(bytes32 key) public view returns (bool) {
         return pairs[key].reserveA != 0 && pairs[key].reserveB != 0;
     }
 
@@ -415,7 +418,7 @@ contract SwapExchange is SeroInterface, Ownable {
         if (_startDay < startDay) {
             _startDay = startDay;
         }
-        uint256 end = now / ONEDAY;
+        uint256 end = now / Constants.ONEDAY;
         uint256 count;
         for (uint256 i = _startDay; i < end; i++) {
             count += outputs[i];
@@ -423,9 +426,6 @@ contract SwapExchange is SeroInterface, Ownable {
         return count;
     }
 }
-
-
-
 
 
 
