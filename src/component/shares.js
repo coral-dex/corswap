@@ -13,94 +13,126 @@ export class Shares extends Component {
         super(props);
 
         this.state = {
-            pk: props.pk,
+            pk: localStorage.getItem("accountPK"),
             account: {balances: new Map()},
-            pairs: []
+            pairs: [],
+
+            totalSupply: 0,
+            myBalance: [[],[]],
+            poolBalance: [[],[]],
+            amount:0,
         }
+
     }
 
-    init(account, search) {
+    async init(account){
         let self = this;
         if (!account) {
             account = this.state.account;
         }
-        if (!search) {
-            search = this.state.search;
+
+        abi.balanceOf(account.mainPKr,function (tokens1,balances1) {
+            abi.totalSupply(account.mainPKr,function (rest) {
+                self.setState({
+                    totalSupply:rest,
+                    myBalance:[tokens1,balances1]
+                })
+            })
+        })
+    }
+
+
+    calPoolBalance(e){
+        const self = this;
+        if(e){
+            const {account} = this.state;
+            const amount = "0x"+new BigNumber(e).multipliedBy(10**18).toString(16);
+            abi.showExchange(account.mainPKr,amount,function (tokens,balances) {
+                self.setState({
+                    poolBalance:[tokens,balances],
+                    amount:amount
+                })
+            })
         }
-        abi.pairList(account.mainPKr, search, function (pairs) {
-            self.setState({pairs: pairs, search: search});
-        });
+
     }
 
     componentDidMount() {
         let self = this;
         abi.init
             .then(() => {
-                abi.accountDetails(self.props.pk, function (account) {
+                abi.accountDetails(self.state.pk, function (account) {
                     self.setState({account: account});
-                    self.init(account, self.state.search);
+                    self.init(account).catch();
                 });
             });
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        let self = this;
-        abi.accountDetails(nextProps.pk, function (account) {
-            self.setState({account: account});
-            self.init(account);
-        });
+    sub(){
+        const {account,amount} = this.state;
+        abi.exchange(account.pk,account.mainPKr,account.mainPKr,amount,function (rest) {
+            console.log("exchange>>>>>",rest);
+        })
     }
-    
+
     render() {
-        let pairs = this.state.pairs.map((pair, index) => {
-            return (
-                <List.Item key={index} style={{marginBottom: '10px'}}>
-                    <Flex>
-                        <Flex.Item style={{flex: 2}}><span>{pair.tokenA}-{pair.tokenB}</span></Flex.Item>
-                        <Flex.Item style={{flex: 1}}>{showValue(pair.shareRreward)} CORE</Flex.Item>
-                        <Flex.Item style={{flex: 1, textAlign: 'right'}}><span><a onClick={() => {
-                            if (pair.shareRreward > 0) {
-                                abi.withdrawShareReward(this.state.account.pk, this.state.account.mainPKr, pair.tokenA, pair.tokenB);
-                            }
-                        }}>提取</a></span></Flex.Item>
-                    </Flex>
-                </List.Item>
-            )
-        });
+        const {totalSupply,myBalance,poolBalance} = this.state;
 
         return (
             <Layout selectedTab="4">
-            <div>
-                <WhiteSpace size="lg"/>
-                <SearchBar maxLength={6}
-                           onSubmit={(value) => {
-                               this.setState({search: value}, function () {
-                                   this.init(this.state.account, value);
-                               });
-                           }}
+                <WingBlank>
+                    <WhiteSpace size="lg"/>
 
-                           onCancel={() => {
-                               this.setState({search: null}, function () {
-                                   this.init(this.state.account, null);
-                               });
-                           }}
-                />
-                <WhiteSpace size="lg"/>
-                <div>
+                    <InputItem placeholder="displayed clear while typing" clear onChange={(e)=>{this.calPoolBalance(e)}}>
+                        CORAL
+                    </InputItem>
 
-                    <List>
-                        <List.Item>
-                            <Flex>
-                                <Flex.Item style={{flex: 2}}>资金池</Flex.Item>
-                                <Flex.Item style={{flex: 1}}>分红</Flex.Item>
-                                <Flex.Item style={{flex: 1}}></Flex.Item>
-                            </Flex>
-                        </List.Item>
-                        {pairs}
-                    </List>
+                    <WhiteSpace size="lg"/>
+                    <div>
+                        <Flex>
+                            <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
+                            <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
+                            <Flex.Item style={{textAlign:"center"}}>数量</Flex.Item>
+                        </Flex>
+                        {
+                            myBalance[0].map((v,i)=>{
+                                return <>
+                                    <WhiteSpace size="lg"/>
+                                    <Flex>
+                                        <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
+                                        <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
+                                        <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
+                                    </Flex>
+                                </>
+                            })
+                        }
+                    </div>
+                    <WhiteSpace size="lg"/>
+                    <div>
+                        <Flex>
+                            <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
+                            <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
+                            <Flex.Item style={{textAlign:"center"}}>分红</Flex.Item>
+                        </Flex>
+                        {
+                            poolBalance[0].map((v,i)=>{
+                                return <>
+                                    <WhiteSpace size="lg"/>
+                                    <Flex>
+                                        <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
+                                        <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
+                                        <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
+                                    </Flex>
+                                </>
+                            })
+                        }
+                    </div>
 
-                </div>
-            </div>
+                    <WhiteSpace/>
+                    <Button type="primary" onClick={()=>{
+                        this.sub()
+                    }}>提交</Button>
+                </WingBlank>
             </Layout>
         )
     }

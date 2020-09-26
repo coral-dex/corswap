@@ -252,7 +252,7 @@ export class PairList extends Component {
                                         </div>
                                         <div style={{color:"#f75552"}}>
                                             <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="20%"/>:""}</div>
-                                            <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>我持有{pair.myShare}份, 比例: {pair.myShare/pair.totalShares}%</div>
+                                            <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>我持有{pair.myShare}份, 比例: {(pair.myShare/pair.totalShares*100).toFixed(2)}%</div>
                                         </div>
                                     </div>
                                     <div className="text-center">

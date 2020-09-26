@@ -140,7 +140,9 @@ class Layout extends React.Component{
                             {
                                 text: <span>{self.showAccount(account)}</span>, onPress: () => {
                                     window.localStorage.setItem("accountPK", account.pk)
-                                    self.props.doUpdate()
+                                    if(self.props.doUpdate){
+                                        self.props.doUpdate()
+                                    }
                                     self.setState({account: account});
                                 }
                             }
@@ -193,7 +195,7 @@ class Layout extends React.Component{
                                 {this.showAccount(this.state.account, 8)}
                             </Flex.Item>
                             <Flex.Item style={{textAlign:"right"}}>
-                                {this.getBalance(this.props.selectedTab === '3'?"FHJG":"SERO")} {this.props.selectedTab === '3'?"CORAL":"SERO"}
+                                {this.getBalance(["3","4"].indexOf(this.props.selectedTab)>-1?"CORAL1":"SERO")} {["3","4"].indexOf(this.props.selectedTab)>-1?"CORAL":"SERO"}
                             </Flex.Item>
                         </Flex>
                     </div>

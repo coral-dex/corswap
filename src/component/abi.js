@@ -62,6 +62,22 @@ class Abi {
         }
     }
 
+    async getDecimalAsync(token) {
+        return new Promise((resolve)=>{
+            let decimalLocal = this.getDecimalLocal(token);
+            if (decimalLocal) {
+                return resolve(parseInt(decimalLocal))
+            } else {
+                seropp.getInfo(function (info) {
+                    rpc.seroRpc(info.rpc, "sero_getDecimal", [token], function (rets) {
+                        localStorage.setItem("D_" + token, new BigNumber(rets.result, 16).toNumber());
+                        resolve(new BigNumber(rets.result, 16).toNumber());
+                    });
+                });
+            }
+        })
+    }
+
     accountDetails(pk, callback) {
         if (!pk) {
             return;
@@ -110,8 +126,10 @@ class Abi {
         };
 
         seropp.call(callParams, function (callData) {
+            console.log(_method,"res>>>>",callData);
             if (callData !== "0x") {
                 let res = contract.unPackDataEx(_method, callData);
+
                 if (callback) {
                     callback(res);
                 }
@@ -294,7 +312,8 @@ class Abi {
     }
 
     balanceOf(from, callback) {
-        this.callMethod(poolContract, 'balanceOf', from, [], function (ret) {
+        this.callMethod(poolContract, 'getBalance', from, [], function (ret) {
+            console.log("balanceOf>>>",ret);
             let tokens = [];
             ret[0].forEach(each => {
                 tokens.push(bytes32ToToken(each));
@@ -322,8 +341,9 @@ class Abi {
     }
 
     exchange(pk, mainPKr, to, amount, callback) {
-        this.executeMethod(contract, 'exchange', pk, mainPKr, [to], "FHJJ", amount, callback);
+        this.executeMethod(poolContract, 'exchange', pk, mainPKr, [to], "CORAL1", amount, callback);
     }
+
 }
 
 const abi = new Abi();
