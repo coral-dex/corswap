@@ -73,25 +73,25 @@ export class PairList extends Component {
         let self = this;
         let options = [{value: tokenA, label: tokenA}, {value: tokenB, label: tokenB}]
         let token = tokenA;
-        let value;
-        let minShare;
+        let valueA;
+        let valueB;
         console.log(options,token,"options----token");
         alert("", <div>
                 <Flex>
-                    <Flex.Item style={{flex: 1}}>最小份额:</Flex.Item>
-                    <Flex.Item style={{flex: 2}}><input style={{width: '95%', height: '25px'}} onChange={(e) => {
-                        minShare = e.target.value;
-                    }}/></Flex.Item>
+                    <Flex.Item style={{flex: 1}}>
+                        {tokenA}
+                    </Flex.Item>
+                    <Flex.Item style={{flex: 2}}>
+                        <input style={{width: '95%', height: '25px'}} onChange={(e) => { valueA = e.target.value; }}/>
+                    </Flex.Item>
                 </Flex>
-                <WhiteSpace size="lg"/>
                 <Flex>
-                    <Flex.Item style={{flex: 1}}><Select style={{marginTop: '22px'}} options={options} onChange={option => {
-                        token = option.value;
-                    }}/></Flex.Item>
-                    <Flex.Item style={{flex: 2}}><input style={{width: '95%', height: '25px'}}
-                                                        onChange={(e) => {
-                                                            value = e.target.value;
-                                                        }}/></Flex.Item>
+                    <Flex.Item style={{flex: 1}}>
+                        {tokenB}
+                    </Flex.Item>
+                    <Flex.Item style={{flex: 2}}>
+                        <input style={{width: '95%', height: '25px'}} onChange={(e) => { valueB = e.target.value; }}/>
+                    </Flex.Item>
                 </Flex>
             </div>,
             [
@@ -99,8 +99,8 @@ export class PairList extends Component {
                 {
                     text: '确定', onPress: () => {
                         abi.getDecimal(token, function (decimals) {
-                            let amount = new BigNumber(value).multipliedBy(Math.pow(10, decimals))
-                            abi.investLiquidity(self.state.account.pk, self.state.account.mainPKr, minShare, token, amount)
+                            let amount = new BigNumber(valueB).multipliedBy(Math.pow(10, decimals))
+                            abi.investLiquidity(self.state.account.pk, self.state.account.mainPKr, token, amount)
                         })
                     }
                 },
@@ -109,8 +109,6 @@ export class PairList extends Component {
 
     divest(tokenA, tokenB) {
         let self = this;
-        let minTokenA;
-        let minTokenB;
         let sharesBurned;
         alert("", <div>
                 <Flex>
@@ -120,31 +118,13 @@ export class PairList extends Component {
                     }}/></Flex.Item>
                 </Flex>
                 <WhiteSpace size="lg"/>
-                <Flex>
-                    <Flex.Item style={{flex: 1}}>{tokenA}:</Flex.Item>
-                    <Flex.Item style={{flex: 2}}><input style={{width: '95%', height: '25px'}} onChange={(e) => {
-                        minTokenA = e.target.value;
-                    }}/></Flex.Item>
-                </Flex>
-                <WhiteSpace size="lg"/>
-                <Flex>
-                    <Flex.Item style={{flex: 1}}>{tokenB}:</Flex.Item>
-                    <Flex.Item style={{flex: 2}}><input style={{width: '95%', height: '25px'}}
-                                                        onChange={(e) => {
-                                                            minTokenB = e.target.value;
-                                                        }}/></Flex.Item>
-                </Flex>
             </div>,
             [
                 {text: '取消', onPress: () => console.log('cancel'), style: 'default'},
                 {
                     text: '确定', onPress: () => {
-                        abi.getDecimal(tokenA, function (decimals) {
-                            minTokenA = new BigNumber(minTokenA).multipliedBy(Math.pow(10, decimals)).toString(10);
-                            abi.getDecimal(tokenB, function (decimals) {
-                                minTokenB = new BigNumber(minTokenB).multipliedBy(Math.pow(10, decimals)).toString(10);
-                                abi.divestLiquidity(self.state.account.pk, self.state.account.mainPKr, tokenA, tokenB, sharesBurned, minTokenA, minTokenB)
-                            })
+                        abi.divestLiquidity(self.state.account.pk, self.state.account.mainPKr, tokenA, tokenB, sharesBurned,function (rest) {
+                            console.log(rest);
                         })
                     }
                 },
@@ -271,13 +251,13 @@ export class PairList extends Component {
                                          <WhiteSpace/>
                                         <Flex>
                                             <Flex.Item>
-                                                <WingBlank style={{padding:'0 12px'}}><Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁流动性</Button></WingBlank>
+                                                <WingBlank style={{padding:'0 12px'}}><Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁</Button></WingBlank>
                                             </Flex.Item>
                                             <Flex.Item>
-                                                <WingBlank style={{padding:'0 12px'}}><Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB);}}>提供流动性</Button></WingBlank>
+                                                <WingBlank style={{padding:'0 12px'}}><Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB);}}>补充</Button></WingBlank>
                                             </Flex.Item>
                                             <Flex.Item>
-                                                <WingBlank style={{padding:'0 12px'}}><Button type="primary" size="small" disabled={pair.shareRreward*1 == 0} onClick={() => {this.withdrawCoral(pair)}}>提现CORAL</Button></WingBlank>
+                                                <WingBlank style={{padding:'0 12px'}}><Button type="primary" size="small" disabled={pair.shareRreward*1 == 0} onClick={() => {this.withdrawCoral(pair)}}>提现</Button></WingBlank>
                                             </Flex.Item>
                                         </Flex>
                                     </div>
