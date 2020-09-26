@@ -38,7 +38,7 @@ export function dateFormat(fmt, date) {
 }
 
 export function hashKey(token1, token2) {
-
+    console.log(token1,token2,"token1---token2");
     let _token1 = token1, _token2 = token2;
     if (token2 < token1) {
         _token1 = token2;

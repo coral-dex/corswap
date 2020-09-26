@@ -40,7 +40,7 @@ class Abi {
         )
     }
 
-    getDecimalLocal(token) {
+    getDecimalLocal(token) { //SERO PFIDKEY GAIL 
         if (token == "SERO") {
             return 18;
         } else {
@@ -79,13 +79,13 @@ class Abi {
     }
 
     accountDetails(pk, callback) {
-        console.log(callback,"callback");
+        // console.log(callback,"callback");
         if (!pk) {
             return;
         }
         let self = this;
         seropp.getAccountDetail(pk, function (item) {
-            console.log(item,"itemss");
+            // console.log(item,"itemss");
             let balances = new Map();
             if (item.Balance) {
                 item.Balance.forEach((value, key) => {
@@ -121,6 +121,7 @@ class Abi {
     callMethod(contract, _method, from, _args, callback) {
         let that = this;
         let packData = contract.packData(_method, _args, true);
+        // console.log(contract.packData,"contract.packData");
         let callParams = {
             from: from,
             to: contract.address,
@@ -128,7 +129,11 @@ class Abi {
         };
 
         seropp.call(callParams, function (callData) {
+<<<<<<< HEAD
             console.log(_method,"res>>>>",callData);
+=======
+            // console.log(callParams,callData,"calldata");
+>>>>>>> dev
             if (callData !== "0x") {
                 let res = contract.unPackDataEx(_method, callData);
 
@@ -182,31 +187,67 @@ class Abi {
     estimateSwap(from, tokenA, tokenB, tokenIn, amountIn, callback) {
         let key = hashKey(tokenA, tokenB);
         this.callMethod(contract, 'estimateSwap', from, [key, tokenToBytes(tokenIn), amountIn], function (ret) {
-            console.log("estimateSwap>>>",ret);
+            // console.log("estimateSwap>>>",ret);
             callback(ret[0]);
         });
     }
 
-    getGroupTokens(from, tokens, callback) {
-        let tokenBytes = [];
-        tokens.forEach(each => {
-            tokenBytes.push(tokenToBytes(each));
-        });
-        this.callMethod(contract, 'getGroupTokens', from, [tokenBytes],function (ret) {
-            let _tokens = [];
-            let _tokensList = new Map();
-            ret[0].forEach((each, index) => {
-                if (each.length > 0) {
-                    _tokens.push(tokens[index]);
-                    let list = [];
-                    each.forEach(item => {
-                        list.push(bytes32ToToken(item));
-                    })
-                    _tokensList.set(tokens[index], list);
+    // getGroupTokens(from, tokens, callback) {
+    //     let tokenBytes = [];
+    //     tokens.forEach(each => {
+    //         tokenBytes.push(tokenToBytes(each));
+    //     });
+    //     // console.log(tokenBytes,"tokenbytes,");
+    //     this.callMethod(contract, 'getGroupTokens', from, [tokenBytes],function (ret) {
+    //         let _tokens = [];
+    //         let _tokensList = new Map();
+    //         // console.log(ret,"ret------------");
+    //         ret[0].forEach((each, index) => {
+    //             // console.log(index,"index+each"); 
+    //             if (each.length > 0) {
+    //                 // console.log(each,"eacheacheach");
+    //                 _tokens.push(tokens[index]);
+    //                 let list = [];
+    //                 each.forEach(item => {
+    //                     list.push(bytes32ToToken(item));
+    //                 })
+    //                 _tokensList.set(tokens[index], list);
+    //                 // console.log(_tokensList,"tokenlist");
+    //             }
+    //         });
+    //         callback(_tokens, _tokensList);
+    //     });
+    // }
+
+    getGroupTokensEx(from, flag, callback) {
+
+        // flag false sero->[a,b,c]
+        // flag true  a ->[sero,susd], b->[sero], c->[susd]
+       
+        abi.pairList(from,"",function(pairArray){
+            let tokens = [];
+            let restMap = new Map();
+            for(let pair of pairArray){
+                let key = "";
+                let val;
+                if(!flag){
+                    key = pair.tokenB;
+                    val = pair.tokenA;
+                }else{
+                    key = pair.tokenA;
+                    val = pair.tokenB;
                 }
-            });
-            callback(_tokens, _tokensList);
-        });
+
+                if(restMap.has(key)){
+                    let value = restMap.get(key);
+                    value.push(val);
+                }else{
+                    tokens.push(key);
+                    restMap.set(key,[val]);
+                }
+            }
+            callback(tokens,restMap)
+        })
     }
 
     getTokens(from, token, callback) {
@@ -234,13 +275,15 @@ class Abi {
 
     orderList(from, tokenA, tokenB, callback) {
         let key = hashKey(tokenA, tokenB);
+        // console.log([key],">><<>><<");
         this.callMethod(contract, 'orderList', from, [key], function (ret) {
+            // console.log(contract,ret,"contract");
             callback(ret);
         });
     }
 
     pairList(from, token, callback) {
-        console.log("token>>> ",token);
+        // console.log("token>>> ",token);
         let self = this;
         if (token) {
             this.callMethod(contract, 'pairListByToken', from, [tokenToBytes(token), 0, 1000], function (ret) {
@@ -254,10 +297,11 @@ class Abi {
             this.callMethod(contract, 'pairList', from, [0, 1000], function (ret) {
 
                 let pairs = [];
-                console.log("pairList>>> ",ret);
+                
                 ret.rets.forEach((pair) => {
                     pairs.push(self.convertToPair(pair));
                 })
+                console.log("pairList>>> ",pairs);
                 callback(pairs);
             });
         }
@@ -266,10 +310,10 @@ class Abi {
     pairInfoWithOrders(from, tokenA, tokenB, callback) {
         let self = this;
         let key = hashKey(tokenA, tokenB);
-
         this.callMethod(contract, 'pairInfoWithOrders', from, [key], function (ret) {
+            // console.log([key],ret,"key");
             let pair = ret[0];
-
+            console.log(pair,"pairinfowithorders");
             self.orderList(from, tokenA, tokenB, function (ret) {
 
             })
@@ -314,8 +358,13 @@ class Abi {
     }
 
     balanceOf(from, callback) {
+<<<<<<< HEAD
         this.callMethod(poolContract, 'getBalance', from, [], function (ret) {
             console.log("balanceOf>>>",ret);
+=======
+        this.callMethod(poolContract, 'balanceOf', from, [], function (ret) {
+            // console.log(ret,"ret0 and ret1");
+>>>>>>> dev
             let tokens = [];
             ret[0].forEach(each => {
                 tokens.push(bytes32ToToken(each));
