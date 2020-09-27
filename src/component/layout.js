@@ -242,7 +242,7 @@ class Layout extends React.Component{
                             selectedIcon={<div style={{
                                 width: '22px',
                                 height: '22px',
-                                background: 'url(./images/buysel.png) center center /  21px 21px no-repeat' }}
+                                background: 'url(./images/buyselect.png) center center /  21px 21px no-repeat' }}
                             />
                             }
                             selected={this.props.selectedTab === '1'}
@@ -265,7 +265,7 @@ class Layout extends React.Component{
                                 <div style={{
                                     width: '22px',
                                     height: '22px',
-                                    background: 'url(./images/sellsel.png) center center /  21px 21px no-repeat' }}
+                                    background: 'url(./images/sellselect.png) center center /  21px 21px no-repeat' }}
                                 />
                             }
                             title="我要卖"
@@ -289,7 +289,7 @@ class Layout extends React.Component{
                                 <div style={{
                                     width: '22px',
                                     height: '22px',
-                                    background: 'url(./images/fundsel.png) center center /  21px 21px no-repeat' }}
+                                    background: 'url(./images/fundselect.png) center center /  21px 21px no-repeat' }}
                                 />
                             }
                             title="资金池"
@@ -303,7 +303,7 @@ class Layout extends React.Component{
                         </TabBar.Item>
                         <TabBar.Item
                             icon={{ uri: './images/dividend.png' }}
-                            selectedIcon={{ uri: './images/dividendsel.png' }}
+                            selectedIcon={{ uri: './images/dividendselect.png' }}
                             title="分红"
                             key="my"
                             selected={this.props.selectedTab === '4'}
