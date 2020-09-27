@@ -415,5 +415,12 @@ body{
 }
 
 .totalSupply{
-    font-size: 14px;
+    font-size: 16px;
+    text-align: center;
+    padding: 5px;
+    background: linear-gradient(to left,#e0c3fc,#8ec5fc) ;
+    border-radius: 5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    /*color:#f75552*/
 }

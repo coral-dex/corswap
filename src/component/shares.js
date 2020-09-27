@@ -93,7 +93,7 @@ export class Shares extends Component {
                         CORAL
                     </InputItem>
                     <WhiteSpace/>
-                    <div>
+                    <div className="totalSupply">
                         发行总量: <span>{showValue(totalSupply,18,6)} CORAL</span>
                     </div>
                     <WhiteSpace size="lg"/>
