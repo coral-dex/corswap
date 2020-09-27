@@ -53,6 +53,10 @@ export class Shares extends Component {
                     amount:amount
                 })
             })
+        }else{
+            this.setState({
+                amount:e
+            })
         }
 
     }
@@ -76,63 +80,79 @@ export class Shares extends Component {
     }
 
     render() {
-        const {totalSupply,myBalance,poolBalance} = this.state;
+        const {totalSupply,myBalance,poolBalance,amount} = this.state;
 
         return (
             <Layout selectedTab="4">
 
                 <WingBlank>
                     <WhiteSpace size="lg"/>
-
-                    <InputItem placeholder="displayed clear while typing" clear onChange={(e)=>{this.calPoolBalance(e)}}>
+                    <InputItem placeholder="请输入销毁的CORAL数量" type="number"  clear onChange={(e)=>{this.calPoolBalance(e)}} className="input inputshare">
                         CORAL
                     </InputItem>
-
                     <WhiteSpace size="lg"/>
-                    <div>
-                        <Flex>
-                            <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
-                            <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
-                            <Flex.Item style={{textAlign:"center"}}>数量</Flex.Item>
-                        </Flex>
-                        {
-                            myBalance[0].map((v,i)=>{
-                                return <>
-                                    <WhiteSpace size="lg"/>
+                    <Card>
+                        <Card.Header title="当前分红池"
+                                     thumb="./images/dividendselect.png"
+                                     />
+                        <Card.Body style={{maxHeight:document.documentElement.clientHeight * 0.3}}>
+                            <Flex>
+                                <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
+                                <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
+                                <Flex.Item style={{textAlign:"center"}}>数量</Flex.Item>
+                            </Flex>
+                            {
+                                poolBalance[0]&&poolBalance[0].length>0?poolBalance[0].map((v,i)=>{
+                                    return <>
+                                        <WhiteSpace size="lg"/>
+                                        <Flex>
+                                            <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
+                                            <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
+                                            <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
+                                        </Flex>
+                                    </>
+                                }):<div className="nodata">
+                                    暂无数据
+                                </div>
+                            }
+                        </Card.Body>
+                    </Card>
+                    {
+                        amount && amount>0? <div>
+                            <WhiteSpace size="lg"/>
+                            <Card>
+                                <Card.Header title="我的分红"
+                                             thumb="./images/dividendselect.png"
+                                />
+                                <Card.Body style={{maxHeight:document.documentElement.clientHeight * 0.3}}>
                                     <Flex>
-                                        <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
-                                        <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
-                                        <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
+                                        <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
+                                        <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
+                                        <Flex.Item style={{textAlign:"center"}}>数量</Flex.Item>
                                     </Flex>
-                                </>
-                            })
-                        }
-                    </div>
-                    <WhiteSpace size="lg"/>
-                    <div>
-                        <Flex>
-                            <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
-                            <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
-                            <Flex.Item style={{textAlign:"center"}}>分红</Flex.Item>
-                        </Flex>
-                        {
-                            poolBalance[0].map((v,i)=>{
-                                return <>
-                                    <WhiteSpace size="lg"/>
-                                    <Flex>
-                                        <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
-                                        <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
-                                        <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
-                                    </Flex>
-                                </>
-                            })
-                        }
-                    </div>
+                                    {
+                                        myBalance[0]&&myBalance[0].length>0?myBalance[0].map((v,i)=>{
+                                            return <>
+                                                <WhiteSpace size="lg"/>
+                                                <Flex>
+                                                    <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
+                                                    <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
+                                                    <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
+                                                </Flex>
+                                            </>
+                                        }):<div className="nodata">
+                                            暂无数据
+                                        </div>
+                                    }
+                                </Card.Body>
+                            </Card>
+                            <WhiteSpace/>
+                            <Button type="primary" disabled={!amount || !(myBalance[0]&&myBalance[0].length>0)} onClick={()=>{
+                                this.sub()
+                            }}>提交</Button>
+                        </div>:""
+                    }
 
-                    <WhiteSpace/>
-                    <Button type="primary" onClick={()=>{
-                        this.sub()
-                    }}>提交</Button>
                 </WingBlank>
 
             </Layout>

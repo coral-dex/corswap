@@ -36,7 +36,7 @@ export class Home extends Component {
             option1: '',
             option2: '',
             inputStyle:null,
-            flag:false
+            notpad:null,
         }
     }
 

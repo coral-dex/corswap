@@ -82,7 +82,7 @@ body{
     .bg-fff{
         background-color: #fff;
     }
-   
+
     .justify-center{
         display: flex;
         justify-content: center;
@@ -90,7 +90,7 @@ body{
     .space-around{
         display: flex;
         justify-content: space-around;
-        
+
     }
     .align-item{
         display: flex;
@@ -223,11 +223,18 @@ body{
         background-color: #eaf1f4;
         /* background-color: red; */
     }
-    .absolute{
-        position: absolute;
-        right: 16px;
-        top: 10px;
-    }
+.absolute{
+    position: absolute;
+    right: 16px;
+    top: 10px;
+}
+.absolute1{
+    position: absolute;
+    bottom: 23px;
+    left: 15px;
+}
+
+
     .header{
         /* margin:10px 0; */
         background-color:#fff;
@@ -257,7 +264,7 @@ body{
     }
     .fontSize{
         font-size: 12px;
-    }  
+    }
     .am-list-body{
         display: flex;
         flex-direction: row-reverse;
@@ -323,23 +330,23 @@ body{
 /* exchange.js */
 
 /* pairlist.js */
-    .search{
-       background-image: url("../images/search.png");
-       background-repeat: no-repeat;
-       background-size: 15px;
-       background-position: 10px center;
-       border-radius: 30px;
-       background-color: #bedde6;
-       text-indent: 30px;
-       height: 28px;
-    }
+.search{
+    background-image: url("../images/search.png");
+    background-repeat: no-repeat;
+    background-size: 15px;
+    background-position: 10px center;
+    border-radius: 30px;
+    background-color: #bedde6;
+    text-indent: 30px;
+    height: 28px;
+}
     .am-card{
         padding:10px 10px 12px;
         background-color: #fff;
         box-shadow: #00456b 0px 0 8px;
     }
     .am-wingblank.am-wingblank-lg{
-        margin: 0;
+        /*margin: 0;*/
     }
     .am-tabs-pane-wrap .am-tabs-pane-wrap-active{
         padding: 15px;
@@ -389,3 +396,20 @@ body{
     }
 /* pairlist.js */
 
+.btn-bg{
+    background: rgb(247, 85, 82);
+}
+
+.inputshare{
+    border-radius: 30px;
+    background-color: #bedde6 !important;
+    text-indent: 30px;
+    height: 28px !important;
+    padding: 15px 0 0;
+}
+
+.nodata{
+    text-align: center;
+    padding: 12px;
+    color: grey;
+}

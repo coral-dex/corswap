@@ -68,45 +68,7 @@ class Layout extends React.Component{
             callback(pair);
         })
     }
-    initExchange() {
-        let account = this.state.account;
-        let self = this;
-        let options = [];
-        let token;
-        let amount;
-        console.log("初始化资金池...");
-        account.balances.forEach((val, key) => {
-            if(!token) {
-                token = key;
-            }
-            if (val > 0) {
-                options.push({value: key, label: key})
-            }
-        });
 
-        Modal.alert("初始化资金池", <div>
-                <Flex>
-                    <Flex.Item style={{flex: 1}}><Select style={{marginTop: '22px'}} options={options} onChange={option => {
-                        token = option.value;
-                    }}/></Flex.Item>
-                    <Flex.Item style={{flex: 2}}><input style={{width: '95%', height: '25px'}}
-                                                        onChange={(e) => {
-                                                            amount = e.target.value;
-                                                        }}/></Flex.Item>
-                </Flex>
-            </div>,
-            [
-                {text: '取消', onPress: () => console.log('cancel'), style: 'default'},
-                {
-                    text: '确定', onPress: () => {
-                        abi.getDecimal(token, function (decimals) {
-                            let value = new BigNumber(amount).multipliedBy(Math.pow(10, decimals));
-                            abi.initializePair(account.pk, account.mainPKr, token, value);
-                        })
-                    }
-                },
-            ])
-    }
     showModal(){
         this.setState({
           modal1: true,
@@ -175,7 +137,7 @@ class Layout extends React.Component{
                         </Flex.Item>
                         <Flex.Item style={{flex:1}}>
                             <div className="text-right">
-                                {this.props.selectedTab == "3"?<div style={{color:"#f75552"}} onClick={()=>{this.initExchange()}}>初始化资金池</div>:""}
+                                {/*{this.props.selectedTab == "3"?<div style={{color:"#f75552"}} >初始化资金池</div>:""}*/}
                             </div>
                         </Flex.Item>
                     </Flex>

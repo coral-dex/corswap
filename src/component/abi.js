@@ -8,13 +8,13 @@ import {JsonRpc} from "./utils/jsonrpc";
 
 const config = {
     name: "CORSWAP",
-    contractAddress: "4XccoRTBJAjstCS2153yxH7sy4R5jAMDBYrwo9uMhpeoagcDgVRf2szEFG5RfsS6Evbgp54hfcGvwkd1iNSCdYh9",
+    contractAddress: "33cq94g28y3g9dtChFq2wfF3QWt5aqm86rRVuh6hqYYuMuEnZM7937FyKGCSaPEocEzBEvv8TuhE3dDZ4vDhi1oN",
     github: "https://github.com/coswap",
     author: "coswap",
     url: window.location.origin+window.location.pathname,
     logo: window.location.origin+window.location.pathname+ '/logo.png',
-    barColor:"#f5f5f9",
-    navColor:"#f5f5f9",
+    barColor:"#bedde6",
+    navColor:"#bedde6",
     barMode:"light",
     navMode:"light"
 };
@@ -65,6 +65,18 @@ class Abi {
                 });
             });
         }
+    }
+
+    async getTransactionReceipt(txHash){
+        return new Promise((resolve,reject)=>{
+            seropp.getInfo(function (info) {
+                rpc.seroRpc(info.rpc, "sero_getTransactionReceipt", [txHash], function (rest) {
+                    resolve(rest)
+                });
+            });
+        })
+
+
     }
 
     async getDecimalAsync(token) {
@@ -323,23 +335,54 @@ class Abi {
         });
     }
 
-    investAmount(from, callback) {
-        this.callMethod(contract, 'investAmount', from, [], function (ret) {
-            callback(bytes32ToToken(ret[0]), ret[1]);
-        });
+    async investAmount(from) {
+        return new Promise((resolve,reject)=>{
+            this.callMethod(contract, 'investAmount', from, [], function (ret) {
+                console.log("investAmount>>> ",ret,ret[0],ret[1]);
+                resolve([bytes32ToToken(ret[0]), ret[1]]);
+            });
+        })
+
     }
 
-    initializePair(pk, mainPKr, currency, value, callback) {
-        this.executeMethod(contract, 'initializePair', pk, mainPKr, [], currency, value, callback);
+    async initializePair(pk, mainPKr, currency, value) {
+        return new Promise((resolve,reject)=>{
+            this.executeMethod(contract, 'initializePair', pk, mainPKr, [], currency, value,function (rest,err) {
+
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(rest)
+                }
+            });
+        })
+
     }
 
-    investLiquidity(pk, mainPKr, currency, value, callback) {
-        this.executeMethod(contract, 'investLiquidity', pk, mainPKr, [0], currency, value, callback);
+    async investLiquidity(pk, mainPKr, currency, value) {
+        return new Promise((resolve,reject)=>{
+            this.executeMethod(contract, 'investLiquidity', pk, mainPKr, [0], currency, value, function (rest,err) {
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(rest)
+                }
+            });
+        })
+
     }
 
-    divestLiquidity(pk, mainPKr, tokenA, tokenB, sharesBurned, callback) {
-        let key = hashKey(tokenA, tokenB);
-        this.executeMethod(contract, 'divestLiquidity', pk, mainPKr, [key, sharesBurned, 0, 0], "", 0, callback);
+    async  divestLiquidity(pk, mainPKr, tokenA, tokenB, sharesBurned) {
+        return new Promise((resolve,reject)=>{
+            let key = hashKey(tokenA, tokenB);
+            this.executeMethod(contract, 'divestLiquidity', pk, mainPKr, [key, sharesBurned, 0, 0], "", 0, function (rest,err) {
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(rest)
+                }
+            });
+        })
     }
 
     swap(pk, mainPKr, tokenA, tokenB, amount, callback) {
@@ -348,9 +391,17 @@ class Abi {
         this.executeMethod(contract, 'swap', pk, mainPKr, [key, 0, timeOut, mainPKr], tokenA, amount, callback);
     }
 
-    withdrawShareReward(pk, mainPKr, tokenA, tokenB, callback) {
-        let key = hashKey(tokenA, tokenB);
-        this.executeMethod(contract, 'withdrawShareReward', pk, mainPKr, [key], "", 0, callback);
+    async withdrawShareReward(pk, mainPKr, tokenA, tokenB) {
+        return new Promise((resovle,reject)=>{
+            let key = hashKey(tokenA, tokenB);
+            this.executeMethod(contract, 'withdrawShareReward', pk, mainPKr, [key], "", 0, function (rest,err) {
+                if(err){
+                    reject(err)
+                }else{
+                    resovle(rest)
+                }
+            });
+        })
     }
 
     totalSupply(from, callback) {
@@ -390,7 +441,7 @@ class Abi {
     }
 
     exchange(pk, mainPKr, to, amount, callback) {
-        this.executeMethod(poolContract, 'exchange', pk, mainPKr, [to], "CORAL1", amount, callback);
+        this.executeMethod(poolContract, 'exchange', pk, mainPKr, [to], "CORAL3", amount, callback);
     }
 
 }
