@@ -160,11 +160,13 @@ class Layout extends React.Component{
                             </Flex.Item>
                         </Flex>
                     </div>
-                    <div className="text-center fishing_div">
-                        {/* <Tag className="fishing_tag">买币</Tag> */}
-                        <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
-                        {/* <Tag className="fishing_tag">买币</Tag> */}
-                    </div>
+                    {
+                        ["3","4"].indexOf(this.props.selectedTab) == -1?<div className="text-center fishing_div">
+                                {/* <Tag className="fishing_tag">买币</Tag> */}
+                                <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
+                                {/* <Tag className="fishing_tag">买币</Tag> */}
+                            </div>:""
+                    }
 
                     <Modal
                     visible={this.state.modal1}

@@ -13,8 +13,8 @@ const config = {
     author: "coswap",
     url: window.location.origin+window.location.pathname,
     logo: window.location.origin+window.location.pathname+ '/logo.png',
-    barColor:"#bedde6",
-    navColor:"#bedde6",
+    barColor:"#00456e",
+    navColor:"#00456e",
     barMode:"dark",
     navMode:"light"
 };

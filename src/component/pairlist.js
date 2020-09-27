@@ -81,11 +81,7 @@ export class PairList extends Component {
         });
     }
     componentWillReceiveProps(nextProps, nextContext) {
-        let self = this;
-        abi.accountDetails(nextProps.pk, function (account) {
-            self.setState({account: account});
-            self.init(account);
-        });
+        this.doUpdate()
     }
 
     async invest(tokenA, tokenB) {
@@ -113,10 +109,10 @@ export class PairList extends Component {
                             <Step key={0} title="交易1" description={
                                 <div>
                                     <Flex>
-                                        <Flex.Item style={{flex: 3}}>
+                                        <Flex.Item style={{flex: 1}}>
                                             {tokenB}
                                         </Flex.Item>
-                                        <Flex.Item style={{flex: 7}}>
+                                        <Flex.Item style={{flex: 1}}>
                                             {
                                                 rest[0]?showValue(rest[1],decimal,3): <input style={{width: '95%', height: '25px'}} onChange={(e) => {value = e.target.value;}}/>
                                             }
@@ -166,7 +162,7 @@ export class PairList extends Component {
     divest(tokenA, tokenB) {
         let self = this;
         let sharesBurned;
-        alert("销毁", <WingBlank>
+        alert("撤销流动性", <WingBlank>
                 <Flex>
                     <Flex.Item style={{flex: 1}}>份数</Flex.Item>
                     <Flex.Item style={{flex: 2}}><input style={{width: '100%', height: '25px'}} onChange={(e) => {
@@ -280,12 +276,12 @@ export class PairList extends Component {
                 <Flex>
                     <Flex.Item>
                         1. 初始化资金需要分两次交易完成<br/>
-                        2. 请等待第一笔交易完成后再发送第二笔交易
+                        2. 请等待第一笔交易完成后再发送
                         <Steps current={rest[0]?1:0}>
                             <Step key={0} title="交易1" description={
                                 <div>
                                     <Flex>
-                                        <Flex.Item style={{flex: 3}}>
+                                        <Flex.Item style={{flex: 4}}>
                                             {
                                                 rest[0]?rest[0]:<div>
                                                     <Select style={{marginTop: '22px'}} options={option2} onChange={option => {
@@ -295,9 +291,9 @@ export class PairList extends Component {
                                                 </div>
                                             }
                                         </Flex.Item>
-                                        <Flex.Item style={{flex: 7}}>
+                                        <Flex.Item style={{flex: 5}}>
                                             {
-                                                rest[0]?showValue(rest[1],decimal,3): <input style={{width: '95%', height: '25px'}} onChange={(e) => {amount = e.target.value;}}/>
+                                                rest[0]?showValue(rest[1],decimal,3): <input style={{width: '95%', height: '25px'}} type="number" onChange={(e) => {amount = e.target.value;}}/>
                                             }
                                         </Flex.Item>
                                     </Flex>
@@ -306,15 +302,15 @@ export class PairList extends Component {
                             <Step key={1} title="交易2" description={
                                 <div>
                                     <Flex>
-                                        <Flex.Item style={{flex: 3}}>
+                                        <Flex.Item style={{flex: 4}}>
                                             <Select style={{marginTop: '22px'}} options={options} onChange={option => {
                                                 if(rest[0]){
                                                     token = option.value;
                                                 }}}/>
                                             <img width="13px" className="absolute1" src={require('../images/bottom.png')}/>
                                         </Flex.Item>
-                                        <Flex.Item style={{flex: 7}}>
-                                            <input style={{width: '95%', height: '25px'}} disabled={!rest[0]} onChange={(e) => { amount = e.target.value; }}/>
+                                        <Flex.Item style={{flex: 5}}>
+                                            <input style={{width: '95%', height: '25px'}} type="number" disabled={!rest[0]} onChange={(e) => { amount = e.target.value; }}/>
                                         </Flex.Item>
                                     </Flex>
                                 </div>
@@ -407,7 +403,7 @@ export class PairList extends Component {
                                             <WhiteSpace/>
                                             <Flex>
                                                 <Flex.Item>
-                                                    <Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁</Button>
+                                                    <Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>撤销流动性</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
                                                     <Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB).catch();}}>提供流动性</Button>

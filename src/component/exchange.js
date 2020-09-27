@@ -361,7 +361,7 @@ export class Exchange extends Component {
                     <div className="color2">From</div>
                     <div>
                         <List>
-                        <input  value={this.state.tokenInAmount} placeholder="0" onChange={(e) => {
+                        <input  value={this.state.tokenInAmount} placeholder="请输入数量" onChange={(e) => {
                             this.showRate(e.target.value)
                         }} type="text" className="inputItem"/>
                         </List>

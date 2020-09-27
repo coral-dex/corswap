@@ -89,12 +89,41 @@ export class Shares extends Component {
 
                 <WingBlank>
                     <WhiteSpace size="lg"/>
-                    <InputItem placeholder="请输入销毁的CORAL数量" type="number"  clear onChange={(e)=>{this.calPoolBalance(e)}} className="input inputshare">
+                    <InputItem placeholder="请输入CORAL的数量" type="number"  clear onChange={(e)=>{this.calPoolBalance(e)}} className="input inputshare">
                         CORAL
                     </InputItem>
                     <WhiteSpace/>
                     <div className="totalSupply">
                         发行总量: <span>{showValue(totalSupply,18,6)} CORAL</span>
+                    </div>
+                    <WhiteSpace size="lg"/>
+                    <div>
+                        <Card>
+                            <Card.Header title="我的分红"
+                                         thumb="./images/dividendselect.png"
+                            />
+                            <Card.Body style={{maxHeight:document.documentElement.clientHeight * 0.3}}>
+                                <Flex>
+                                    <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
+                                    <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
+                                    <Flex.Item style={{textAlign:"center"}}>数量</Flex.Item>
+                                </Flex>
+                                {
+                                    myBalance[0]&&myBalance[0].length>0?myBalance[0].map((v,i)=>{
+                                        return <>
+                                            <WhiteSpace size="lg"/>
+                                            <Flex>
+                                                <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
+                                                <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
+                                                <Flex.Item style={{textAlign:"center"}}>{showValue(myBalance[1][i],18,6)}</Flex.Item>
+                                            </Flex>
+                                        </>
+                                    }):<div className="nodata">
+                                        暂无数据
+                                    </div>
+                                }
+                            </Card.Body>
+                        </Card>
                     </div>
                     <WhiteSpace size="lg"/>
                     <Card>
@@ -123,41 +152,10 @@ export class Shares extends Component {
                             }
                         </Card.Body>
                     </Card>
-                    {
-                        amount && amount>0? <div>
-                            <WhiteSpace size="lg"/>
-                            <Card>
-                                <Card.Header title="我的分红"
-                                             thumb="./images/dividendselect.png"
-                                />
-                                <Card.Body style={{maxHeight:document.documentElement.clientHeight * 0.3}}>
-                                    <Flex>
-                                        <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
-                                        <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
-                                        <Flex.Item style={{textAlign:"center"}}>数量</Flex.Item>
-                                    </Flex>
-                                    {
-                                        myBalance[0]&&myBalance[0].length>0?myBalance[0].map((v,i)=>{
-                                            return <>
-                                                <WhiteSpace size="lg"/>
-                                                <Flex>
-                                                    <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
-                                                    <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
-                                                    <Flex.Item style={{textAlign:"center"}}>{showValue(myBalance[1][i],18,6)}</Flex.Item>
-                                                </Flex>
-                                            </>
-                                        }):<div className="nodata">
-                                            暂无数据
-                                        </div>
-                                    }
-                                </Card.Body>
-                            </Card>
-                            <WhiteSpace/>
-                            <Button type="primary" disabled={!amount || !(myBalance[0]&&myBalance[0].length>0)} onClick={()=>{
-                                this.sub()
-                            }}>提交</Button>
-                        </div>:""
-                    }
+                    <WhiteSpace/>
+                    <Button type="primary" disabled={!amount || !(myBalance[0]&&myBalance[0].length>0)} onClick={()=>{
+                        this.sub()
+                    }}>提交</Button>
 
                 </WingBlank>
 

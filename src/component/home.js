@@ -36,7 +36,6 @@ export class Home extends Component {
             option1: '',
             option2: '',
             inputStyle:null,
-            flag:false,
             notpad:null,
         }
     }
@@ -97,6 +96,7 @@ export class Home extends Component {
                         }
                     } else {
                         pk = accounts[0].pk;
+                        localStorage.setItem("accountPK",pk);
                         self.setState({account: accounts[0]});
                     }
                     abi.accountDetails(pk, function (account) {
@@ -269,7 +269,7 @@ export class Home extends Component {
                     <div className="color2">From</div>
                     <div>
                         <List>
-                        <input  value={this.state.tokenInAmount} placeholder="0" onChange={(e) => {
+                        <input  value={this.state.tokenInAmount} placeholder="请输入数量" onChange={(e) => {
                             this.showRate(e.target.value)
                         }} type="text" className="inputItem"/>
                         </List>
