@@ -188,11 +188,11 @@ class Layout extends React.Component{
                         <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
                     </div>
                     <div className="fishing">
-                        <Flex onClick={() => {
+                        <Flex style={{width:"100%"}} onClick={() => {
                             this.changeAccount();
                         }}>
                             <Flex.Item>
-                                {this.showAccount(this.state.account, 8)}
+                                {this.showAccount(this.state.account, 6)}
                             </Flex.Item>
                             <Flex.Item style={{textAlign:"right"}}>
                                 {this.getBalance(["3","4"].indexOf(this.props.selectedTab)>-1?"CORAL1":"SERO")} {["3","4"].indexOf(this.props.selectedTab)>-1?"CORAL":"SERO"}

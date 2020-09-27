@@ -1,28 +1,13 @@
 import React, {Component} from 'react';
 import {
-    Button,
-    Card,
     Flex,
-    InputItem,
     List,
-    Tag,
     Modal,
-    Tabs,
-    TabBar,
-    Toast,
-    WhiteSpace,
-    WingBlank,
-    Popover,
-    NavBar,
-    Icon
 } from "antd-mobile";
 import abi from "./abi";
 import {dateFormat, showValue} from './utils/common'
 // import {Exchange} from "./exchange";
-import {PairList} from "./pairlist";
-import {Shares} from "./shares";
 import {Select} from "./select";
-import {OrderList} from "./orderlist"
 import BigNumber from "bignumber.js";
 import '../style/style.css'
 import Layout from "./layout";
@@ -30,13 +15,6 @@ import {bnToHex} from './utils/common'
 
 const operation = Modal.operation;
 const alert = Modal.alert;
-const Item = Popover.Item;
-const tabs = [
-    {title: '我要买', type: '1'},
-    {title: '资金池', type: '2'},
-    {title: '分红', type: '3'},
-    {title: '我要卖', type: '4'},
-];
 
 export class Exchange extends Component {
     constructor(props) {
@@ -53,13 +31,11 @@ export class Exchange extends Component {
             tokens: [],
             amount: [],
             tokenToTokens: new Map(),
-            tokenInAmount: 0,
+            tokenInAmount: null,
             tokenOutAmount: 0,
             orderType: 0,
             modal: false,
             flag: false,
-            put1: 0, // from
-            put2: 0,  // to
             option1: '',
             option2: '',
             inputStyle:null
@@ -68,19 +44,12 @@ export class Exchange extends Component {
 
     init(account) {
         let self = this;
-        // let tokens = [];
         let amount = [];
         account.balances.forEach((val, key) => {
             abi.getDecimal(key,function (d) {
             })
-            // tokens.push(key);
             amount.push(val)
         });
-        // if (tokens.length === 0) {
-        //     return;
-        // }
-
-        // let tokenToTokens = new Map();
         abi.getGroupTokensEx(account.mainPKr,true, function (tokens, tokenToTokens) {
            
             if (tokens.length > 0) {
@@ -89,9 +58,7 @@ export class Exchange extends Component {
                 })
                 abi.getDecimal(tokenToTokens.get(tokens[0])[0],function (d) {
                 })
-                // console.log(tokenToTokens,amount,"tokentotokens");
                 self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {
-                    console.log(pair,"pairrrr");
                     self.setState({
                         tokenIn: tokens[0],
                         tokenIn2: tokens[1],
@@ -101,7 +68,6 @@ export class Exchange extends Component {
                         tokenToTokens: tokenToTokens,
                         pair: pair
                     })
-                    // console.log(self.state.tokens,"this is state tokens");
                 });
             }
         });
@@ -268,12 +234,9 @@ export class Exchange extends Component {
                 [key]: true
             })
         }
-
     }
-
     changeAccount() {
         let self = this;
-
         abi.init
             .then(() => {
                 abi.accountList(function (accounts) {
@@ -291,7 +254,6 @@ export class Exchange extends Component {
                 });
             })
     }
-
     initExchange() {
         let account = this.state.account;
         let self = this;
@@ -331,7 +293,6 @@ export class Exchange extends Component {
                 },
             ])
     }
-
     numberMax(balance) {
         let num = showValue(balance, abi.getDecimalLocal(this.state.tokenIn))
         console.log(showValue(balance, abi.getDecimalLocal(this.state.tokenIn)), "111")
@@ -359,12 +320,9 @@ export class Exchange extends Component {
             </div>
         );
     }
-
     goPage = (uri) => {
         window.location.href = uri
-        // window.open(uri)
     }
-
     render() {
         let self = this;
         let options_1 = [];
@@ -398,68 +356,12 @@ export class Exchange extends Component {
             usable = this.state.account.balances.get(this.state.tokenOut);
            
         }
-        // let froms = <div className="flex max_sero">
-
-        //     <div className="flex">
-        //         {/* <Tag small className="tag" selected="true" onClick={()=>this.numberMax(balance2)}>MAX</Tag> */}
-        //         <div className="flex modal" onClick={() => this.showModal('')}>
-        //             {/* <img width="20%" src={require("../images/sero (1).png")}/>
-        //                                 <span>{this.state.topOption}</span>
-        //                                 <Icon type="down"/> */}
-        //             <Select
-        //                 options={options_1}
-        //                 className="select"
-        //                 selectedOption={{value: this.state.tokenIn}}
-        //                 onChange={(option) => {
-        //                     this.setState({option1: option})
-        //                     let tokenOut = this.state.tokenToTokens.get(option.value)[0];
-        //                     this.initPair(option.value, tokenOut, function (pair) {
-        //                         self.setState({pair: pair, tokenIn: option.value, tokenOut: tokenOut});
-        //                         self.showRate(self.state.tokenInAmount);
-        //                     })
-        //                 }}/>
-        //         </div>
-        //     </div>
-        //     <div>
-        //         <List>
-        //             <input value={this.state.tokenOutAmount} disabled={true} type="text" className="inputItem"/>
-        //         </List>
-        //     </div>
-        // </div>
-        // let tos = <div className="space-between max_sero">
-
-        //     <div className="end">
-        //         <div className="flex modal" onClick={() => this.showModal("")}>
-        //             {/* <span>{this.state.bottomOption}</span>
-        //             <Icon type="down"/> */}
-        //             <Select
-        //                 className="select"
-        //                 style={{height: "20px"}}
-        //                 options={options_2}
-        //                 onChange={(option) => {
-        //                     this.setState({option2: option})
-        //                     this.initPair(this.state.tokenIn, option.value, function (pair) {
-        //                         self.setState({pair: pair, tokenOut: option.value});
-        //                         self.showRate(self.state.tokenInAmount);
-        //                     })
-        //                 }}/>
-        //         </div>
-        //     </div>
-        //     <div>
-        //         <List>
-        //             <input style={{borderBottom:"1px solid #5a87a2"}} value={this.state.tokenInAmount}  onChange={(e) => {
-        //                 this.showRate(e.target.value)
-        //             }} type="text" className="inputItem"/>
-        //         </List>
-        //     </div>
-        // </div>
-        
         let froms = <div className="flex max_sero">
                 <div className="align-item inputmany  paddingleft">
                     <div className="color2">From</div>
                     <div>
                         <List>
-                        <input  value={this.state.tokenInAmount} placeholder="请输入" onChange={(e) => {
+                        <input  value={this.state.tokenInAmount} placeholder="0" onChange={(e) => {
                             this.showRate(e.target.value)
                         }} type="text" className="inputItem"/>
                         </List>
@@ -488,8 +390,8 @@ export class Exchange extends Component {
                        To
                    </div>
                     <List>
-                        <input style={{marginLeft:"27px",width:"100%",backgroundColor:"#b1b1b1"}} disabled value={this.state.tokenOutAmount} onChange={(e) => {
-                        }} type="text" className="inputItem"/>
+                        <input style={{marginLeft:"27px",width:"100%"}} disabled value={this.state.tokenOutAmount} onChange={(e) => {
+                        }} type="text" className="inputItem disable"/>
                     </List>
                 </div>
                 <div className="flex modal paddingright" onClick={() => this.showModal("")}>
@@ -512,7 +414,7 @@ export class Exchange extends Component {
             <Layout selectedTab="2" doUpdate={this.doUpdate}>
                 <div className="flex-center" style={{padding:"10px"}}>
                     <div className="header">
-                        <div className="cash color text-center">兑 换</div>
+                        <div className="cash color text-center">&lt;卖&gt;</div>
 
                         <div className="from" style={{marginTop:"20px"}}>
                             <div className="fontSize text-right color2">可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
@@ -520,7 +422,7 @@ export class Exchange extends Component {
                            {froms }
                         </div>
                         <div style={{margin:"20px 0 0 10px"}} className="text-center">
-                            <img width="24px" src={require("../images/sells.png")}/>
+                            <img src={require("../images/sellselect.png")}/>
                         </div>
                         
                         
@@ -538,9 +440,6 @@ export class Exchange extends Component {
                                     this.state.price > 0 &&
                                     <span>1{this.state.tokenIn} : {this.state.price}{this.state.tokenOut}</span>
                                 }
-                            </div>
-                            <div>
-                                {/* 10SUSD per 1 PFID <img width="12px" src={require('../images/flush.png')}/> */}
                             </div>
                         </div>
                         <div className="text-center">

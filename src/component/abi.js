@@ -107,7 +107,6 @@ class Abi {
                         balances.set(key, value);
                     })
                 }
-
                 accounts.push({
                     pk: item.PK,
                     mainPKr: item.MainPKr,
@@ -283,6 +282,7 @@ class Abi {
     pairList(from, token, callback) {
         // console.log("token>>> ",token);
         let self = this;
+        // console.log(token,"---",[tokenToBytes(token), 0, 1000],"tokentobytes");
         if (token) {
             this.callMethod(contract, 'pairListByToken', from, [tokenToBytes(token), 0, 1000], function (ret) {
                 let pairs = [];
@@ -299,7 +299,7 @@ class Abi {
                 ret.rets.forEach((pair) => {
                     pairs.push(self.convertToPair(pair));
                 })
-                console.log("pairList>>> ",pairs);
+                // console.log("pairList>>> ",pairs);
                 callback(pairs);
             });
         }
@@ -311,7 +311,7 @@ class Abi {
         this.callMethod(contract, 'pairInfoWithOrders', from, [key], function (ret) {
             // console.log([key],ret,"key");
             let pair = ret[0];
-            console.log(pair,"pairinfowithorders");
+            // console.log(pair,"pairinfowithorders");
             self.orderList(from, tokenA, tokenB, function (ret) {
 
             })
@@ -367,6 +367,7 @@ class Abi {
                 balances.push(each);
             })
             callback(tokens, balances);
+            
         });
     }
 
