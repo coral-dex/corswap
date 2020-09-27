@@ -341,7 +341,7 @@ body{
     height: 28px;
 }
     .am-card{
-        padding:10px 10px 12px;
+        padding:10px 0px 12px 10px;
         background-color: #fff;
         box-shadow: #00456b 0px 0 8px;
     }
@@ -399,7 +399,9 @@ body{
 .btn-bg{
     background: rgb(247, 85, 82);
 }
-
+.am-wingblank.am-wingblank-lg{
+    margin: 0;
+}
 .inputshare{
     border-radius: 30px;
     background-color: #bedde6 !important;
@@ -423,4 +425,17 @@ body{
     font-weight: 600;
     letter-spacing: 0.1em;
     /*color:#f75552*/
+}
+.am-flexbox .am-flexbox-item{
+    /* margin: none; */
+    flex:none;
+}
+.Flexs{
+    display: flex;
+    justify-content: space-between;
+
+}
+.am-flexbox.am-flexbox-align-center{
+    display: flex;
+    justify-content: space-between;
 }

@@ -36,6 +36,7 @@ export class Home extends Component {
             option1: '',
             option2: '',
             inputStyle:null,
+            flag:false,
             notpad:null,
         }
     }
@@ -179,6 +180,7 @@ export class Home extends Component {
 
         let orderList = orders.map((order, index) => {
             let tokenIn = this.state.pair.tokenA;
+            // console.log(this.state.pair.tokenA,"this.state.pair.tokenA");
             let tokenOut = this.state.pair.tokenB;
             if (order.orderType == 1) {
                 tokenIn = this.state.pair.tokenB;
@@ -228,7 +230,7 @@ export class Home extends Component {
     renderContent(pageText) {
         return (
             <div style={{backgroundColor: '#e9f4f8', height: '100%', textAlign: 'center'}}>
-                
+
             </div>
         );
     }
@@ -317,7 +319,7 @@ export class Home extends Component {
             <Layout selectedTab="1" doUpdate={this.doUpdate}>
                 <div style={{padding:"10px"}} className="flex-center">
                     <div className="header">
-                        <div className="cash color text-center">&lt;买&gt;</div>
+                        <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要买</div>
 
                         <div className="from" style={{marginTop:"20px"}}>
                             <div className="fontSize text-right color2">可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>

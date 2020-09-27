@@ -394,7 +394,7 @@ export class Exchange extends Component {
                         }} type="text" className="inputItem disable"/>
                     </List>
                 </div>
-                <div className="flex modal paddingright" onClick={() => this.showModal("")}>
+                <div className="flex modal paddingright">
                     <img width="13px" className="absolute" src={require('../images/bottom.png')}/>  
                     <Select
                         className="select"
@@ -414,7 +414,7 @@ export class Exchange extends Component {
             <Layout selectedTab="2" doUpdate={this.doUpdate}>
                 <div className="flex-center" style={{padding:"10px"}}>
                     <div className="header">
-                        <div className="cash color text-center">&lt;卖&gt;</div>
+                        <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要卖</div>
 
                         <div className="from" style={{marginTop:"20px"}}>
                             <div className="fontSize text-right color2">可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
@@ -429,7 +429,6 @@ export class Exchange extends Component {
                         <div className="from">
                             <div>
                             <div className="fontSize text-right color2">已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
-                                
                                 {tos}
                             </div>
                         </div>

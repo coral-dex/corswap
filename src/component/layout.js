@@ -153,8 +153,8 @@ class Layout extends React.Component{
                         <Flex style={{width:"100%"}} onClick={() => {
                             this.changeAccount();
                         }}>
-                            <Flex.Item>
-                                {this.showAccount(this.state.account, 6)}
+                            <Flex.Item style={{overflow:"hidden"}}>
+                                {this.showAccount(this.state.account, 5)}
                             </Flex.Item>
                             <Flex.Item style={{textAlign:"right"}}>
                                 {this.getBalance(["3","4"].indexOf(this.props.selectedTab)>-1?"CORALA":"SERO")} {["3","4"].indexOf(this.props.selectedTab)>-1?"CORAL":"SERO"}
