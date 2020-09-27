@@ -240,6 +240,7 @@ class Abi {
 
                 if(restMap.has(key)){
                     let value = restMap.get(key);
+                    // console.log(value,"restMap");
                     value.push(val);
                 }else{
                     tokens.push(key);
@@ -247,6 +248,7 @@ class Abi {
                 }
             }
             callback(tokens,restMap)
+            console.log(tokens,restMap,"tokens---restMap");
         })
     }
 

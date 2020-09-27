@@ -92,7 +92,7 @@ export class Home extends Component {
                 })
                 // console.log(tokenToTokens,amount,"tokentotokens");
                 self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {
-                    console.log(pair,"pairrrr");
+                    // console.log(pair,"pairrrr");
                     self.setState({
                         tokenIn: tokens[0],
                         tokenIn2: tokens[1],
@@ -114,7 +114,7 @@ export class Home extends Component {
         // })
         let self = this;
         abi.pairInfoWithOrders(this.state.account.mainPKr, tokenA, tokenB, function (pair) {
-            console.log(tokenA,tokenB,"A B ");
+            // console.log(tokenA,tokenB,"A B ");
             callback(pair);
             console.log(pair,"_______________");
         })
@@ -176,8 +176,8 @@ export class Home extends Component {
 
     }
 
-    exchange(tokenA, tokenB, amount, minTokensReceived) {
-        abi.swap(this.state.account.pk, this.state.account.mainPKr, tokenA, tokenB, amount, minTokensReceived);
+    exchange(tokenA, tokenB, amount) {
+        abi.swap(this.state.account.pk, this.state.account.mainPKr, tokenA, tokenB, amount);
     }
 
     showAccount(account, len) {
@@ -250,21 +250,6 @@ export class Home extends Component {
         return orderList;
 
     }
-
-    showModal = (key) => {
-        if (this.state.modal) {
-            this.setState({
-                [key]: false
-            })
-        } else {
-            this.setState({
-                [key]: true
-            })
-        }
-
-    }
-
-
     numberMax(balance) {
         let num = showValue(balance, abi.getDecimalLocal(this.state.tokenIn))
         // console.log(showValue(balance, abi.getDecimalLocal(this.state.tokenIn)), "111")
@@ -301,40 +286,42 @@ export class Home extends Component {
         console.log("聚焦了")
     }
     render() {
-        console.log(this.state.pair,"this-state-pair");
+        // console.log(this.state.pair,"this-state-pair");
         let self = this;
         let options_1 = []; //可用
         let options_2 = []; //要买
         let {pair,tokenA,tokenB} = this.state;
-        console.log(tokenA,tokenB,pair,this.state.tokens,"let const");
-        // console.log(this.state.tokens,"seropp");
+        // console.log(tokenA,tokenB,pair,this.state.tokens,"let const");
+        console.log(this.state.tokens,"seropp");
         this.state.tokens.forEach(each => {
             options_1.push({value: each, label: each})
         });
-        console.log(options_1,"tops");
-        for(let i of options_1){
-            console.log(i,"ii");
-        }
-
+        // console.log(options_1,"tops");
         let tokens = this.state.tokenToTokens.get(this.state.tokenIn);
-        console.log(this.state.tokenToTokens,"111");
+        // console.log(this.state.tokenToTokens,"111");
 
         if (tokens) {
             tokens.forEach(each => {
                 options_2.push({value: each, label: each});
             });
         }
-        console.log(options_2,"option2");
+        // console.log(options_2,"option2");
 
         let balance = 0;
         let usable = 0;
-        console.log(this.state.account.balances,this.state.tokenIn,this.state.tokenOut,"币种");
+        
+        // console.log(this.state.account.balances,this.state.tokenIn,this.state.tokenOut,"币种");
         if (this.state.account.balances.has(this.state.tokenIn)) {
             balance = this.state.account.balances.get(this.state.tokenIn);
         } 
         if(this.state.account.balances.has(this.state.tokenOut)){
             usable = this.state.account.balances.get(this.state.tokenOut)
         }
+        console.log(options_1,options_2,this.state.tokenIn,"from to ！！");
+        let money =[];
+        this.state.tokens.forEach(item=>{
+            money.push(<div>{item}</div>)
+        })
         let froms = <div className="flex max_sero">
                 <div className="align-item inputmany  paddingleft">
                     <div className="color2">From</div>
@@ -421,15 +408,16 @@ export class Home extends Component {
                                 {/* 10SUSD per 1 PFID <img width="12px" src={require('../images/flush.png')}/> */}
                             </div>
                         </div>
-                        
+                        <div>
+                            {money}
+                        </div>
                         {/* <div style={{textAlign: "center", margin: "10px 0", height: "20px"}}>
                             
                         </div> */}
                         <div className="text-center">
                             <input style={{}} type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value="确 认 买 入" onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
-                                let minTokensReceived = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenOut))).toString(10);
-                                self.exchange(self.state.tokenIn, self.state.tokenOut, amount, minTokensReceived);
+                                self.exchange(self.state.tokenIn, self.state.tokenOut, amount);
                             }}/>
                         </div>
                     </div>

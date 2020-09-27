@@ -174,7 +174,7 @@ export class Exchange extends Component {
         // let reserveB = new BigNumber(pair.reserveB);
         // let invariant = reserveA.multipliedBy(reserveB);
 
-        abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenOut, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenB))), function (out) {
+        abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
 
             amountOut = new BigNumber(out).dividedBy(10**18)
 
@@ -184,8 +184,8 @@ export class Exchange extends Component {
 
     }
 
-    exchange(tokenA, tokenB, amount, minTokensReceived) {
-        abi.swap(this.state.account.pk, this.state.account.mainPKr, tokenA, tokenB, amount, minTokensReceived);
+    exchange(tokenA, tokenB, amount) {
+        abi.swap(this.state.account.pk, this.state.account.mainPKr, tokenA, tokenB, amount,);
     }
 
     showAccount(account, len) {
@@ -547,8 +547,7 @@ export class Exchange extends Component {
                             <input style={{}} type="submit" disabled={!this.state.inputStyle} className={this.state.inputStyle>0?'inputs':'nothing'} value="确 认 卖 出" 
                                 onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
-                                let minTokensReceived = new BigNumber(self.state.tokenOutAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenOut))).toString(10);
-                                self.exchange(self.state.tokenIn,self.state.tokenOut, amount, minTokensReceived);
+                                self.exchange(self.state.tokenIn,self.state.tokenOut, amount);
                             
                             }}/>
                         </div>
