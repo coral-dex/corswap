@@ -89,8 +89,8 @@ contract SwapExchange is SeroInterface, Ownable {
     mapping(bytes32 => uint256) public feeRateMap;
     mapping(bytes32 => uint256) public drawRateMap;
 
-    uint256 private startDay;
-    uint256[7000] outputs;
+    uint256 public startDay;
+    uint256[7000] public outputs;
 
     constructor(address _tokenPool) public payable {
         tokenPool = TokenPool(_tokenPool);
@@ -101,8 +101,8 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function setOutputs(uint256 _start, uint256[] memory _outputs) public onlyOwner {
-        for (uint256 i = _start; i < _start + _outputs.length; i++) {
-            outputs[i] = _outputs[i - _start];
+        for (uint256 i = 0; i < _outputs.length; i++) {
+            outputs[_start + i] = _outputs[i];
         }
     }
 
@@ -237,8 +237,13 @@ contract SwapExchange is SeroInterface, Ownable {
         return pair;
     }
 
-    function investAmount(bytes32 token) public view returns (uint256){
-        return initValues[msg.sender].valueMap[token];
+    function investAmount() public view returns (bytes32 token, uint256 value){
+        InitValueList.List storage list = initValues[msg.sender];
+        if (list.tokens.length == 0) {
+            return (bytes32(0), 0);
+        }
+        token = list.tokens[0];
+        value = list.valueMap[token];
     }
 
     function withdrawShareReward(bytes32 key) external {
@@ -415,13 +420,17 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function output(uint256 _startDay) public view returns (uint256) {
+        if (startDay == 0) {
+            return 0;
+        }
+
         if (_startDay < startDay) {
             _startDay = startDay;
         }
         uint256 end = now / Constants.ONEDAY;
         uint256 count;
         for (uint256 i = _startDay; i < end; i++) {
-            count += outputs[i];
+            count += outputs[i - startDay];
         }
         return count;
     }
