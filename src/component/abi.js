@@ -129,11 +129,6 @@ class Abi {
         };
 
         seropp.call(callParams, function (callData) {
-<<<<<<< HEAD
-            console.log(_method,"res>>>>",callData);
-=======
-            // console.log(callParams,callData,"calldata");
->>>>>>> dev
             if (callData !== "0x") {
                 let res = contract.unPackDataEx(_method, callData);
 
@@ -360,13 +355,8 @@ class Abi {
     }
 
     balanceOf(from, callback) {
-<<<<<<< HEAD
         this.callMethod(poolContract, 'getBalance', from, [], function (ret) {
             console.log("balanceOf>>>",ret);
-=======
-        this.callMethod(poolContract, 'balanceOf', from, [], function (ret) {
-            // console.log(ret,"ret0 and ret1");
->>>>>>> dev
             let tokens = [];
             ret[0].forEach(each => {
                 tokens.push(bytes32ToToken(each));
