@@ -15,7 +15,7 @@ const config = {
     logo: window.location.origin+window.location.pathname+ '/logo.png',
     barColor:"#bedde6",
     navColor:"#bedde6",
-    barMode:"light",
+    barMode:"dark",
     navMode:"light"
 };
 

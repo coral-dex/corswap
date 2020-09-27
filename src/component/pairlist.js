@@ -407,13 +407,13 @@ export class PairList extends Component {
                                             <WhiteSpace/>
                                             <Flex>
                                                 <Flex.Item>
-                                                    <WingBlank style={{padding:'0 4px'}}><Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁</Button></WingBlank>
+                                                    <Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.divest(pair.tokenA, pair.tokenB);}}>销毁</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
-                                                    <WingBlank style={{padding:'0 4px'}}><Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB).catch();}}>提供流动性</Button></WingBlank>
+                                                    <Button type="primary" size="small" onClick={() => {this.invest(pair.tokenA, pair.tokenB).catch();}}>提供流动性</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
-                                                    <WingBlank style={{padding:'0 4px'}}><Button type="primary" size="small" disabled={pair.shareRreward*1 == 0} onClick={() => {this.withdrawCoral(pair)}}>提现</Button></WingBlank>
+                                                    <Button type="primary" size="small" disabled={pair.shareRreward*1 == 0} onClick={() => {this.withdrawCoral(pair)}}>提现</Button>
                                                 </Flex.Item>
                                             </Flex>
                                         </div>

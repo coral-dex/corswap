@@ -341,7 +341,7 @@ body{
     height: 28px;
 }
     .am-card{
-        padding:10px 0px 12px 10px;
+        padding:10px 10px 12px 10px;
         background-color: #fff;
         box-shadow: #00456b 0px 0 8px;
     }
@@ -400,7 +400,7 @@ body{
     background: rgb(247, 85, 82);
 }
 .am-wingblank.am-wingblank-lg{
-    margin: 0;
+    /*margin: 0;*/
 }
 .inputshare{
     border-radius: 30px;
@@ -428,7 +428,7 @@ body{
 }
 .am-flexbox .am-flexbox-item{
     /* margin: none; */
-    flex:none;
+    /*flex:none;*/
 }
 .Flexs{
     display: flex;
@@ -436,6 +436,6 @@ body{
 
 }
 .am-flexbox.am-flexbox-align-center{
-    display: flex;
-    justify-content: space-between;
+    /*display: flex;*/
+    /*justify-content: space-between;*/
 }

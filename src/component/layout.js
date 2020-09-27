@@ -127,20 +127,19 @@ class Layout extends React.Component{
     render() {
         return (
             <div>
+                <Flex className="flex showtais">
+                    <Flex.Item style={{flex:1}}>
+                        <div>
+                            <img src={require("../images/logo.png")} alt="" width="70%"/>
+                        </div>
+                    </Flex.Item>
+                    <Flex.Item style={{flex:1}}>
+                        <div className="text-right">
+                            {/*{this.props.selectedTab == "3"?<div style={{color:"#f75552"}} >初始化资金池</div>:""}*/}
+                        </div>
+                    </Flex.Item>
+                </Flex>
                 <WingBlank>
-
-                    <Flex className="flex showtais">
-                        <Flex.Item style={{flex:1}}>
-                            <div>
-                                <img src={require("../images/logo.png")} alt="" width="70%"/>
-                            </div>
-                        </Flex.Item>
-                        <Flex.Item style={{flex:1}}>
-                            <div className="text-right">
-                                {/*{this.props.selectedTab == "3"?<div style={{color:"#f75552"}} >初始化资金池</div>:""}*/}
-                            </div>
-                        </Flex.Item>
-                    </Flex>
                     <div className="shares text-right padding">
                         <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
                         <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
