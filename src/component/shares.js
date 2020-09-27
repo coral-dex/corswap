@@ -35,7 +35,7 @@ export class Shares extends Component {
             abi.totalSupply(account.mainPKr,function (rest) {
                 self.setState({
                     totalSupply:rest,
-                    myBalance:[tokens1,balances1]
+                    poolBalance:[tokens1,balances1]
                 })
             })
         })
@@ -46,11 +46,11 @@ export class Shares extends Component {
         const self = this;
         if(e){
             const {account} = this.state;
-            const amount = "0x"+new BigNumber(e).multipliedBy(10**18).toString(16);
-            abi.showExchange(account.mainPKr,amount,function (tokens,balances) {
+            const amount = new BigNumber(e).multipliedBy(10**18);
+            abi.showExchange(account.mainPKr,"0x"+amount.toString(16),function (tokens,balances) {
                 self.setState({
-                    poolBalance:[tokens,balances],
-                    amount:amount
+                    myBalance:[tokens,balances],
+                    amount:e
                 })
             })
         }else{
@@ -74,13 +74,15 @@ export class Shares extends Component {
 
     sub(){
         const {account,amount} = this.state;
-        abi.exchange(account.pk,account.mainPKr,account.mainPKr,amount,function (rest) {
+        abi.exchange(account.pk,account.mainPKr,account.mainPKr, new BigNumber(amount).multipliedBy(10**18),function (rest) {
             console.log("exchange>>>>>",rest);
         })
     }
 
     render() {
         const {totalSupply,myBalance,poolBalance,amount} = this.state;
+
+        console.log("render>>>>> ",totalSupply,myBalance,poolBalance,amount);
 
         return (
             <Layout selectedTab="4">
@@ -90,6 +92,10 @@ export class Shares extends Component {
                     <InputItem placeholder="请输入销毁的CORAL数量" type="number"  clear onChange={(e)=>{this.calPoolBalance(e)}} className="input inputshare">
                         CORAL
                     </InputItem>
+                    <WhiteSpace/>
+                    <div>
+                        发行总量: <span>{showValue(totalSupply,18,6)} CORAL</span>
+                    </div>
                     <WhiteSpace size="lg"/>
                     <Card>
                         <Card.Header title="当前分红池"
@@ -108,7 +114,7 @@ export class Shares extends Component {
                                         <Flex>
                                             <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
                                             <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
-                                            <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
+                                            <Flex.Item style={{textAlign:"center"}}>{showValue(poolBalance[1][i],18,6)}</Flex.Item>
                                         </Flex>
                                     </>
                                 }):<div className="nodata">
@@ -137,7 +143,7 @@ export class Shares extends Component {
                                                 <Flex>
                                                     <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
                                                     <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
-                                                    <Flex.Item style={{textAlign:"center"}}>{myBalance[1][i]}</Flex.Item>
+                                                    <Flex.Item style={{textAlign:"center"}}>{showValue(myBalance[1][i],18,6)}</Flex.Item>
                                                 </Flex>
                                             </>
                                         }):<div className="nodata">

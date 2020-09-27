@@ -441,7 +441,7 @@ class Abi {
     }
 
     exchange(pk, mainPKr, to, amount, callback) {
-        this.executeMethod(poolContract, 'exchange', pk, mainPKr, [to], "CORAL3", amount, callback);
+        this.executeMethod(poolContract, 'exchange', pk, mainPKr, [to], "CORALA", amount, callback);
     }
 
 }

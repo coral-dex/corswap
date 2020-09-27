@@ -413,3 +413,7 @@ body{
     padding: 12px;
     color: grey;
 }
+
+.totalSupply{
+    font-size: 14px;
+}
