@@ -125,7 +125,6 @@ export class Home extends Component {
 
         let amountOut;
         let pair = this.state.pair;
-
         abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
 
             amountOut = new BigNumber(out).dividedBy(10**18)
@@ -133,6 +132,13 @@ export class Home extends Component {
             let price = amountOut.dividedBy(amountIn).toFixed(6)
             self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});
         });
+        // abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
+
+        //     amountOut = new BigNumber(out).dividedBy(10**18)
+
+        //     let price = amountOut.dividedBy(amountIn).toFixed(6)
+        //     self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});
+        // });
 
     }
 
@@ -273,12 +279,14 @@ export class Home extends Component {
                     <Select
                         className="select"
                         style={{height: "20px"}}
+                        selectedOption={{value: this.state.tokenIn}}
                         options={options_2}
                         onChange={(option) => {
                             this.setState({option2: option,flag:false})
+                            let tokenIn = this.state.tokenToTokens.get(option.value)[0];
                             this.initPair(this.state.tokenIn, option.value, function (pair) {
-                                self.setState({pair: pair, tokenOut: option.value});
-                                self.showRate(self.state.tokenInAmount);
+                                self.setState({pair: pair, tokenOut: option.value,tokenIn:tokenIn});
+                                self.showRate(self.state.tokenOutAmount);
                             })
                         }}/>
                 </div>
@@ -295,7 +303,7 @@ export class Home extends Component {
                 <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
                 <Select
                     options={options_1}
-                    selectedOption={{value: this.state.tokenIn}}
+                    // selectedOption={{value: this.state.tokenIn}}
                     onChange={(option) => {
                         this.setState({option1: option})
                         let tokenOut = this.state.tokenToTokens.get(option.value)[0];
@@ -336,7 +344,7 @@ export class Home extends Component {
                                 当前兑换比例:
                                 {
                                     this.state.price > 0 &&
-                                    <span>1{this.state.tokenIn} : {this.state.price}{this.state.tokenOut}</span>
+                                    <span>1{this.state.tokenOut} : {this.state.price}{this.state.tokenIn}</span>
                                 }
                             </div>
                         </div>   
