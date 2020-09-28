@@ -30,8 +30,9 @@ library InitValueList {
     }
 
     function clear(List storage self) internal {
-        delete self.valueMap[self.tokens[0]];
-        delete self.valueMap[self.tokens[1]];
+        for (uint256 i = 0; i < self.tokens.length; i++) {
+            delete self.valueMap[self.tokens[i]];
+        }
         delete self.tokens;
     }
 }
@@ -246,6 +247,16 @@ contract SwapExchange is SeroInterface, Ownable {
         value = list.valueMap[token];
     }
 
+    function cancelInvest() public returns (bool) {
+        InitValueList.List storage list = initValues[msg.sender];
+        require(list.tokens.length == 1);
+        bytes32 token = list.tokens[0];
+        uint256 value = list.valueMap[token];
+
+        require(sero_send_token(msg.sender, strings._bytes32ToStr(token), value));
+        list.clear();
+    }
+
     function withdrawShareReward(bytes32 key) external {
         uint256 value = _shareReward(key);
         lastIndexsMap[msg.sender] = now / Constants.ONEDAY;
@@ -348,6 +359,36 @@ contract SwapExchange is SeroInterface, Ownable {
         (value,) = pairs[key].caleSwap(tokenIn, amountIn, feeRateMap[key]);
     }
 
+    function estimateSwapBuy(bytes32 key, bytes32 tokenOut, uint256 amountOut) public view returns (uint256 amountIn){
+        if (pairs[key].reserveA == 0 || pairs[key].reserveB == 0) {
+            return 0;
+        }
+
+
+        uint256 feeRate = feeRateMap[key];
+        if (feeRate == 0) {
+            feeRate = 30;
+        }
+
+        ExchangePair.Pair storage pair = pairs[key];
+
+        uint256 invariant = pair.reserveA.mul(pair.reserveB);
+
+        if (tokenOut == pair.tokenB) {
+            amountOut = amountOut.mul(10000).div(10000 - feeRate);
+            if (amountOut >= pair.reserveB) {
+                return 0;
+            }
+            amountIn = invariant.div(pair.reserveB.sub(amountOut)).sub(pair.reserveA);
+        } else {
+            if (amountOut >= pair.reserveA) {
+                return 0;
+            }
+            amountIn = invariant.div(pair.reserveA.sub(amountOut)).sub(pair.reserveB);
+            amountIn = amountIn.mul(10000).div(10000 - feeRate);
+        }
+    }
+
     function swap(bytes32 key, uint256 _minTokensReceived, uint256 _timeout, address _recipient) public payable {
         require(startDay > 0);
         require(pairs[key].reserveA != 0 && pairs[key].reserveB != 0, "exchange not initialized");
@@ -365,7 +406,6 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function _excuteSwap(address sender, bytes32 key, bytes32 _token, uint256 value, uint256 _minTokensReceived, address _recipient) internal {
         (uint256 tokenOutValue, uint256 fee) = _swap(sender, key, _token, value, feeRateMap[key]);
-
         require(_minTokensReceived <= tokenOutValue);
         if (_token == pairs[key].tokenA) {
             require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenB), tokenOutValue));
@@ -386,7 +426,7 @@ contract SwapExchange is SeroInterface, Ownable {
             return (tokenOutValue, fee);
         } else {
             bytes32 _key = _hash(pairs[key].tokenB, SEROBYTES);
-            (uint256 fee1, uint256 fee2) = _swap(sender, _key, pairs[key].tokenB, fee, 1);
+            (uint256 fee1, uint256 fee2) = _swap(sender, _key, pairs[key].tokenB, fee, 0);
             return (tokenOutValue, fee1 + fee2);
         }
     }
