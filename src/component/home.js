@@ -253,10 +253,6 @@ export class Home extends Component {
         if(this.state.account.balances.has(this.state.tokenOut)){
             usable = this.state.account.balances.get(this.state.tokenOut)
         }
-        if(this.state.flag){
-            options_2.push({value:"请选择",label:"请选择"})
-            usable=0
-        } 
         this.state.tokens.forEach(each => {
             options_1.push({value: each, label: each})
         });
@@ -269,41 +265,8 @@ export class Home extends Component {
        
         console.log(options_1,options_2,this.state.tokenIn,this.state.tokenOut,tokens,"from to ！！");
         
-        let froms = <div className="flex max_sero">
-                <div className="align-item inputmany  paddingleft">
-                    <div className="color2">From</div>
-                    <div>
-                        <List>
-                        <input  value={this.state.tokenInAmount} placeholder="请输入数量" onChange={(e) => {
-                            this.showRate(e.target.value)
-                        }} type="text" className="inputItem"/>
-                        </List>
-                    </div>
-                </div>
-
-                <div className="flex modal paddingright" onClick={() => this.showModal('')}>
-                    <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
-                    <Select
-                        options={options_1}
-                        selectedOption={{value: this.state.tokenIn}}
-                        onChange={(option) => {
-                            this.setState({option1: option})
-                            let tokenOut = this.state.tokenToTokens.get(option.value)[0];
-                            this.initPair(option.value, tokenOut, function (pair) {
-                                self.setState({pair: pair, tokenIn: option.value, tokenOut: tokenOut});
-                                self.showRate(self.state.tokenInAmount);
-                            })
-                        }}/>
-                </div>      
-        </div>
-        let tos = <div className="space-between max_sero">
-               <div className="align-item inputmany paddingleft">
-                   <div className="color2">To</div>
-                    <List>
-                        <input style={{marginLeft:"27px",width:"100%"}} disabled value={this.state.tokenOutAmount} onChange={(e) => {
-                        }} type="text" className="inputItem disable"/>
-                    </List>
-                </div>
+        let froms = <div className="space-between max_sero">
+               
                 <div className="flex modal" onClick={() => this.showModal("")}>
                     <img width="13px" className="absolute" src={ require('../images/bottom.png')} alt=''/>
                     {/* <div className="place">{this.state.place}</div> */}
@@ -318,9 +281,38 @@ export class Home extends Component {
                                 self.showRate(self.state.tokenInAmount);
                             })
                         }}/>
+                </div>
+                <div className="align-item inputmany">
+                    <List>
+                        <input style={{marginLeft:"27px",width:"100%"}} value={this.state.tokenInAmount} onChange={(e) => {
+                            this.showRate(e.target.value)
+                        }} type="text" className="inputItem"/>
+                    </List>
                 </div>     
         </div>
-    
+        let tos = <div className="flex max_sero">
+            <div className="flex modal " onClick={() => this.showModal('')}>
+                <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
+                <Select
+                    options={options_1}
+                    selectedOption={{value: this.state.tokenIn}}
+                    onChange={(option) => {
+                        this.setState({option1: option})
+                        let tokenOut = this.state.tokenToTokens.get(option.value)[0];
+                        this.initPair(option.value, tokenOut, function (pair) {
+                            self.setState({pair: pair, tokenIn: option.value, tokenOut: tokenOut});
+                            self.showRate(self.state.tokenInAmount);
+                        })
+                    }}/>
+            </div>
+            <div className="align-item inputmany ">
+                <div>
+                    <List>
+                    <input  value={this.state.tokenOutAmount} disabled onChange={(e) => {}} type="text" className="inputItem disable"/>
+                    </List>
+                </div>
+            </div>      
+        </div>
         return (
             <Layout selectedTab="1" doUpdate={this.doUpdate}>
                 <div style={{padding:"10px"}} className="flex-center">
@@ -328,17 +320,13 @@ export class Home extends Component {
                         <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要买</div>
 
                         <div className="from" style={{marginTop:"20px"}}>
-                            <div className={this.state.flag?'none':'fontSize text-right color2'}>可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
+                            <div className='fontSize text-right color2'>可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
                            {froms }
                         </div>
 
-                        <div style={{margin:"20px 0 0 10px"}} className="text-center">
-                            <img src={require("../images/buyselect.png")} alt="加载失败"/>
-                        </div>
-                        
                         <div className="from">
                             <div>
-                                <div className={this.state.flag?'none':'fontSize text-right color2'}>已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
+                                <div className='fontSize text-right color2'>已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
                                 {tos}
                             </div>
                         </div>

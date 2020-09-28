@@ -230,6 +230,7 @@ body {
     margin-top: 5px;
     border-radius: 10px;
     overflow: hidden;
+    margin-bottom: 5px;
 }
 
 .paddingleft {
@@ -269,7 +270,7 @@ body {
 .absolute {
     position: absolute;
     right: 16px;
-    top: 10px;
+    top: 12px;
     z-index: 1000;
 }
 
@@ -296,10 +297,6 @@ body {
 .am-list-item {
     padding-left: 0 !important;
 }
-
-.max_sero {
-}
-
 .modal {
     width: 26%;
     background-color: #eaf1f4;
@@ -327,9 +324,9 @@ body {
 }
 
 .inputItem {
-    height: 40px;
+    height: 100%;
     display: flex;
-    margin-left: 10px;
+    /* margin-left: 10px; */
     align-items: center;
     /*background-color:#b1b1b1;*/
     width: 100%;
@@ -530,11 +527,9 @@ body {
 .shares {
     margin: 17px 0;
 }
-
 .shares > img {
     margin: 0 0 0 10px;
 }
-
 .fishing_tag {
     width: 30%;
     display: inline-block;
@@ -550,9 +545,9 @@ body {
 .inputs, .nothing {
     border: none;
     outline: none;
-    width: 50%;
+    width: 70%;
     border-radius: 15px;
-    height: 26px;
+    height: 33px;
 }
 
 .inputs {
