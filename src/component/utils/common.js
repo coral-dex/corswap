@@ -57,18 +57,19 @@ export function showValue(val, decimals, decimalPlaces) {
         decimals = 18;
     }
     if (!decimalPlaces) {
-        decimalPlaces = 2;
+        decimalPlaces = 3;
     }
     let num = new BigNumber(val).dividedBy(new BigNumber(10).pow(decimals));
-    if (num.comparedTo(1000000) >= 0) {
-        let text = num.dividedBy(1000000).toFixed(decimalPlaces, 1);
-        return text + "M";
-    } else if (num.comparedTo(1000) >= 0) {
-        let text = num.dividedBy(1000).toFixed(decimalPlaces, 1);
-        return text + "K";
-    } else {
-        return num.toFixed(decimalPlaces, 1);
-    }
+    // if (num.comparedTo(1000000) >= 0) {
+    //     let text = num.dividedBy(1000000).toFixed(decimalPlaces, 1);
+    //     return text + "M";
+    // } else if (num.comparedTo(1000) >= 0) {
+    //     let text = num.dividedBy(1000).toFixed(decimalPlaces, 1);
+    //     return text + "K";
+    // } else {
+    //
+    // }
+    return num.toFixed(decimalPlaces, 1);
 }
 
 export function bnToHex(value,decimal) {
@@ -77,4 +78,12 @@ export function bnToHex(value,decimal) {
     }else{
         return "0x0"
     }
+}
+
+export function fromValue(value,decimal) {
+    return new BigNumber(value).dividedBy(10 ** decimal)
+}
+
+export function toValue(value,decimal) {
+    return new BigNumber(value).multipliedBy(10**decimal)
 }

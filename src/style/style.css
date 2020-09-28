@@ -62,7 +62,7 @@ body {
 }
 
 .am-modal-content {
-    background-color: #bedde6;
+    /*background-color: #bedde6;*/
     border-radius: 5px;
 }
 
@@ -314,10 +314,10 @@ body {
 }
 
 .am-list-body {
-    display: flex;
-    flex-direction: row-reverse;
+    /*display: flex;*/
+    /*flex-direction: row-reverse;*/
+    background-color: #bedde6;
 }
-
 .disable {
     color: #b8b8b8 !important;
     background-color: #f5f5f5;
