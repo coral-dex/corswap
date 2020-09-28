@@ -36,10 +36,7 @@ export class Home extends Component {
             option1: '',
             option2: '',
             inputStyle:null,
-<<<<<<< HEAD
-=======
             flag:true,
->>>>>>> update
             notpad:null,
             place:"请选择你要买的币"
         }

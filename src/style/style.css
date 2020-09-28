@@ -499,7 +499,6 @@ body {
         border:none;
         border:1px solid #f75552;
     }
->>>>>>> update
 /* exchange.js */
 
 /* pairlist.js */
@@ -513,18 +512,12 @@ body {
     text-indent: 30px;
     height: 28px;
 }
-<<<<<<< HEAD
 
 .am-card {
     padding: 10px 10px 12px 10px;
     background-color: #fff;
     box-shadow: #00456b 0px 0 8px;
 }
-
-.am-wingblank.am-wingblank-lg {
-    /*margin: 0;*/
-}
-
 .am-tabs-pane-wrap .am-tabs-pane-wrap-active {
     padding: 15px;
 }
@@ -581,59 +574,6 @@ body {
     padding: 0;
 }
 
-=======
-    .am-card{
-        padding:10px 0px 12px 10px;
-        background-color: #fff;
-        box-shadow: #00456b 0px 0 8px;
-    }
-    .am-tabs-pane-wrap .am-tabs-pane-wrap-active{
-        padding: 15px;
-    }
-    .pairlist{
-        color: #00456b;
-        padding: 0 10px;
-    }
-    .shares{
-        margin: 17px 0;
-    }
-    .shares>img{
-        margin:0 0 0 10px;
-    }
-    .fishing_tag{
-        width: 30%;
-        display: inline-block;
-        height: 30px;
-        line-height: 30px;
-    }
-    .fishing_div{
-        position: relative;
-        margin-top: 5px;
-    }
-    .inputs,.nothing{
-        border:none;
-        outline: none;
-        width: 70%;
-        border-radius: 15px;
-        height: 33px;
-    }
-    .inputs{
-        background-color: #00456e;
-        color: #fff;
-    }
-    .nothing{
-        background-color: #ccc;
-        color: #362e2b;
-    }
-
-    .card-border{
-        border-radius: 15px;
-        background-color: #f2fcfc;
-    }
-    .am-button-small{
-        padding: 0;
-    }
->>>>>>> update
 /* pairlist.js */
 
 .btn-bg {
