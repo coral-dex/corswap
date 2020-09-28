@@ -98,11 +98,16 @@ export class Shares extends Component {
                     </div>
                     <WhiteSpace size="lg"/>
                     <div>
-                        <Card>
-                            <Card.Header title="我的分红"
-                                         thumb="./images/dividendselect.png"
-                            />
-                            <Card.Body style={{maxHeight:document.documentElement.clientHeight * 0.3}}>
+                        <div className="am-card card-border">
+                            <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
+                                <div>
+                                    <img width="50%" src="./images/dividendselect.png"/>
+                                </div>
+                                <div style={{color:"#f75552"}}>
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <WhiteSpace/>
                                 <Flex>
                                     <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
                                     <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
@@ -122,15 +127,20 @@ export class Shares extends Component {
                                         暂无数据
                                     </div>
                                 }
-                            </Card.Body>
-                        </Card>
+                            </div>
+                        </div>
                     </div>
                     <WhiteSpace size="lg"/>
-                    <Card>
-                        <Card.Header title="当前分红池"
-                                     thumb="./images/dividendselect.png"
-                                     />
-                        <Card.Body style={{maxHeight:document.documentElement.clientHeight * 0.3}}>
+                    <div className="am-card card-border">
+                        <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
+                            <div>
+                                <img width="50%" src="./images/dividendselect.png"/>
+                            </div>
+                            <div style={{color:"#f75552"}}>
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <WhiteSpace/>
                             <Flex>
                                 <Flex.Item style={{textAlign:"center"}}>序号</Flex.Item>
                                 <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
@@ -150,8 +160,8 @@ export class Shares extends Component {
                                     暂无数据
                                 </div>
                             }
-                        </Card.Body>
-                    </Card>
+                        </div>
+                    </div>
                     <WhiteSpace/>
                     <Button type="primary" disabled={!amount || !(myBalance[0]&&myBalance[0].length>0)} onClick={()=>{
                         this.sub()

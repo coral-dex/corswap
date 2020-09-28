@@ -141,12 +141,12 @@ class Layout extends React.Component{
                 </Flex>
                 <WingBlank>
                     <div className="shares text-right padding">
-                        <img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>
-                        <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>
-                        <img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>
-                        <img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>
-                        <img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>
-                        <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
+                        {/*<img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>*/}
+                        {/*<img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>*/}
+                        {/*<img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>*/}
+                        {/*<img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>*/}
+                        {/*<img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>*/}
+                        {/*<img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>*/}
                     </div>
                     <div className="fishing">
                         <Flex style={{width:"100%"}} onClick={() => {
