@@ -36,7 +36,12 @@ export class Home extends Component {
             option1: '',
             option2: '',
             inputStyle:null,
+<<<<<<< HEAD
+=======
+            flag:true,
+>>>>>>> update
             notpad:null,
+            place:"请选择你要买的币"
         }
     }
 
@@ -242,18 +247,7 @@ export class Home extends Component {
         let self = this;
         let options_1 = []; //可用
         let options_2 = []; //要买
-        console.log(this.state.account,"account");
-        console.log(this.state.tokenToTokens,"tokentokentokens");     
-        this.state.tokens.forEach(each => {
-            options_1.push({value: each, label: each})
-        });
-        let tokens = this.state.tokenToTokens.get(this.state.tokenIn);
-        console.log(this.state.tokenToTokens,tokens,"111");
-        if (tokens) {
-            tokens.forEach(each => {
-                options_2.push({value: each, label: each});
-            });
-        }
+       
         let balance = 0;
         let usable = 0;
         if (this.state.account.balances.has(this.state.tokenIn)) {
@@ -262,6 +256,20 @@ export class Home extends Component {
         if(this.state.account.balances.has(this.state.tokenOut)){
             usable = this.state.account.balances.get(this.state.tokenOut)
         }
+        if(this.state.flag){
+            options_2.push({value:"请选择",label:"请选择"})
+            usable=0
+        } 
+        this.state.tokens.forEach(each => {
+            options_1.push({value: each, label: each})
+        });
+        let tokens = this.state.tokenToTokens.get(this.state.tokenIn);
+        if (tokens) {
+            tokens.forEach(each => {
+                options_2.push({value: each, label: each});
+            });
+        }
+       
         console.log(options_1,options_2,this.state.tokenIn,this.state.tokenOut,tokens,"from to ！！");
         
         let froms = <div className="flex max_sero">
@@ -277,7 +285,7 @@ export class Home extends Component {
                 </div>
 
                 <div className="flex modal paddingright" onClick={() => this.showModal('')}>
-                    <img width="13px" className="absolute" src={require('../images/bottom.png')}/>
+                    <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
                     <Select
                         options={options_1}
                         selectedOption={{value: this.state.tokenIn}}
@@ -300,13 +308,14 @@ export class Home extends Component {
                     </List>
                 </div>
                 <div className="flex modal" onClick={() => this.showModal("")}>
-                    <img width="13px" className="absolute" src={ require('../images/bottom.png')}/>
+                    <img width="13px" className="absolute" src={ require('../images/bottom.png')} alt=''/>
+                    {/* <div className="place">{this.state.place}</div> */}
                     <Select
                         className="select"
                         style={{height: "20px"}}
                         options={options_2}
                         onChange={(option) => {
-                            this.setState({option2: option})
+                            this.setState({option2: option,flag:false})
                             this.initPair(this.state.tokenIn, option.value, function (pair) {
                                 self.setState({pair: pair, tokenOut: option.value});
                                 self.showRate(self.state.tokenInAmount);
@@ -322,22 +331,22 @@ export class Home extends Component {
                         <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要买</div>
 
                         <div className="from" style={{marginTop:"20px"}}>
-                            <div className="fontSize text-right color2">可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
+                            <div className={this.state.flag?'none':'fontSize text-right color2'}>可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
                            {froms }
                         </div>
 
                         <div style={{margin:"20px 0 0 10px"}} className="text-center">
-                            <img src={require("../images/buyselect.png")}/>
+                            <img src={require("../images/buyselect.png")} alt="加载失败"/>
                         </div>
                         
                         <div className="from">
                             <div>
-                                <div className="fontSize text-right color2">已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
+                                <div className={this.state.flag?'none':'fontSize text-right color2'}>已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
                                 {tos}
                             </div>
                         </div>
 
-                        <div className="fontSize color scale" style={{margin:"10px 0",padding:"0 5px",transform:""}}>
+                        <div className="fontSize color scale" style={{margin:"10px 0",padding:"0 5px"}}>
                             <div style={{textAlign: "left"}}>
                                 当前兑换比例:
                                 {
@@ -347,7 +356,7 @@ export class Home extends Component {
                             </div>
                         </div>   
                         <div className="text-center">
-                            <input style={{}} type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value="确 认 买 入" onClick={() => {
+                            <input type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value="确 认 买 入" onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
                                 self.exchange(self.state.tokenIn, self.state.tokenOut, amount);
                             }}/>

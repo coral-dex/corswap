@@ -270,6 +270,7 @@ body {
     position: absolute;
     right: 16px;
     top: 10px;
+    z-index: 1000;
 }
 
 .absolute1 {
@@ -277,7 +278,6 @@ body {
     bottom: 23px;
     left: 15px;
 }
-
 
 .header {
     /* margin:10px 0; */
@@ -396,6 +396,110 @@ body {
     border: 1px solid #f75552;
 }
 
+    .header{
+        /* margin:10px 0; */
+        background-color:#fff;
+        padding: 10px;
+        box-shadow: #00456e 0px 0px 5px;
+        border-radius: 10px;
+    }
+    .from{
+        border-radius: 10px;
+        /* padding: 10px; */
+        background-color: #fff;
+    }
+    .am-list-item{
+        padding-left: 0 !important;
+    }
+    .max_sero{
+    }
+    .modal{
+        width:26%;
+        background-color: #eaf1f4;
+        position: relative;
+        padding:0 6px 0 16px;
+    }
+    .place{
+        height: 100%;
+        margin-right: 10px;
+        background-color: #eaf1f4;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .modal2{
+        background-color: #00456b !important;
+        color: #fff;
+    }
+    .fontSize{
+        font-size: 12px;
+    }
+    .am-list-body{
+        display: flex;
+        flex-direction: row-reverse;
+    }
+    .disable{
+        color:#b8b8b8 !important;
+        background-color: #f5f5f5;
+    }
+    .inputItem{
+        height: 30px;
+        display: flex;
+        margin-left: 10px;
+        align-items: center;
+        background-color:"#b1b1b1";
+        width: 90%;
+        color: #00456e;
+        border:none;
+        outline: none;
+    }
+    .none{
+        display: none;
+    }
+    .am-list-body,.am-list{
+        height: 100%;
+        overflow: hidden;
+        /* width: 100px; */
+        background:none !important;
+    }
+    .am-list-line{
+        height: 30px;
+        border:none !important;
+        background:none !important;
+    }
+    .am-list-item .am-input-item .am-list-item-middle .inputItem .am-input-focus .am-input-android{
+        height: 30px;
+        border:none !important;
+    }
+    .icon{
+        position: absolute;
+        right: 0px;
+        top: 0px;
+    }
+    .am-list-body{
+        border:none !important;
+    }
+    .am-modal-body{
+        padding:10px
+    }
+    .popup-list{
+        /* padding: 10px; */
+        height: 100%;
+    }
+    .am-modal .am-modal-popup .am-modal-popup-slide-up{
+        height: 100%;
+    }
+    .modals{
+        height: 300px;
+    }
+    .am-wingblank .am-wingblank-lg{
+        padding: 0 !important;
+    }
+    .am-tabs-default-bar-underline{
+        border:none;
+        border:1px solid #f75552;
+    }
+>>>>>>> update
 /* exchange.js */
 
 /* pairlist.js */
@@ -409,6 +513,7 @@ body {
     text-indent: 30px;
     height: 28px;
 }
+<<<<<<< HEAD
 
 .am-card {
     padding: 10px 10px 12px 10px;
@@ -476,6 +581,59 @@ body {
     padding: 0;
 }
 
+=======
+    .am-card{
+        padding:10px 0px 12px 10px;
+        background-color: #fff;
+        box-shadow: #00456b 0px 0 8px;
+    }
+    .am-tabs-pane-wrap .am-tabs-pane-wrap-active{
+        padding: 15px;
+    }
+    .pairlist{
+        color: #00456b;
+        padding: 0 10px;
+    }
+    .shares{
+        margin: 17px 0;
+    }
+    .shares>img{
+        margin:0 0 0 10px;
+    }
+    .fishing_tag{
+        width: 30%;
+        display: inline-block;
+        height: 30px;
+        line-height: 30px;
+    }
+    .fishing_div{
+        position: relative;
+        margin-top: 5px;
+    }
+    .inputs,.nothing{
+        border:none;
+        outline: none;
+        width: 70%;
+        border-radius: 15px;
+        height: 33px;
+    }
+    .inputs{
+        background-color: #00456e;
+        color: #fff;
+    }
+    .nothing{
+        background-color: #ccc;
+        color: #362e2b;
+    }
+
+    .card-border{
+        border-radius: 15px;
+        background-color: #f2fcfc;
+    }
+    .am-button-small{
+        padding: 0;
+    }
+>>>>>>> update
 /* pairlist.js */
 
 .btn-bg {

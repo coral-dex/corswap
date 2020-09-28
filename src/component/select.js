@@ -11,7 +11,9 @@ export class Select extends Component {
         let optionList;
         if (options) {
             optionList = options.map((option, index) => {
-                return (<option className="options" key={index} value={option.value}>{option.label}</option>)
+                return (
+                    <option className="options" key={index} value={option.value}>{option.label}</option>
+                )
             });
         }
 
