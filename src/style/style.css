@@ -411,14 +411,12 @@ body {
     .fontSize{
         font-size: 12px;
     }
-    .am-list-body{
-        display: flex;
-        flex-direction: row-reverse;
-    }
+
     .disable{
         color:#b8b8b8 !important;
         background-color: #f5f5f5;
     }
+
     .inputItem{
         height: 30px;
         display: flex;
@@ -430,6 +428,7 @@ body {
         border:none;
         outline: none;
     }
+
     .none{
         display: none;
     }
