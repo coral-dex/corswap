@@ -63,7 +63,7 @@ body {
 
 .am-modal-content {
     /*background-color: #bedde6;*/
-    border-radius: 5px;
+    /*border-radius: 5px;*/
 }
 
 .init {
@@ -276,7 +276,7 @@ body {
 
 .absolute1 {
     position: absolute;
-    bottom: 23px;
+    bottom: 20px;
     left: 15px;
 }
 

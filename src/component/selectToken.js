@@ -4,14 +4,16 @@ import {showValue} from './utils/common'
 import abi from './abi'
 class SelectToken extends React.Component{
     render() {
-        const {visible,onOk,tokens,balance} = this.props;
+        const {visible,onOk,tokens,balance,onClose} = this.props;
         return (
             <div>
                 <Modal visible={visible}
                        popup
                        animationType="slide-up"
+                       closable={true}
+                       onClose={()=>onClose(false)}
                 >
-                    <List renderHeader={() => <div>委托买入</div>} className="popup-list">
+                    <List renderHeader={() => <div>选择币种</div>} className="popup-list">
                         {tokens.map((token, index) => (
                             <List.Item key={index} extra={balance&&showValue(balance.get(token),abi.getDecimalLocal(token),3)} onClick={()=>{
                                 onOk(token)

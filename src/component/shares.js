@@ -61,29 +61,41 @@ export class Shares extends Component {
 
     }
 
-    componentDidMount() {
+    doUpdate = ()=>{
         let self = this;
+        let pk = localStorage.getItem("accountPK")
+        if(pk){
+            self.setState({pk:pk})
+        }else{
+            pk = self.state.pk;
+        }
         abi.init
             .then(() => {
-                abi.accountDetails(self.state.pk, function (account) {
+                abi.accountDetails(pk, function (account) {
                     self.setState({account: account});
                     self.init(account).catch();
                 });
             });
     }
 
+    componentDidMount() {
+        this.doUpdate();
+    }
+
     sub(){
         const {account,amount} = this.state;
-        abi.exchange(account.pk,account.mainPKr,account.mainPKr, new BigNumber(amount).multipliedBy(10**18),function (rest) {
+        const value = new BigNumber(amount).multipliedBy(10**18);
+        if(value.comparedTo(account.balances.get(abi.coral))){
+
+        }
+        abi.exchange(account.pk,account.mainPKr,account.mainPKr, value ,function (rest) {
             console.log("exchange>>>>>",rest);
         })
     }
 
     render() {
         const {totalSupply,myBalance,poolBalance,amount} = this.state;
-
         console.log("render>>>>> ",totalSupply,myBalance,poolBalance,amount);
-
         return (
             <Layout selectedTab="4">
 
@@ -104,6 +116,7 @@ export class Shares extends Component {
                                     <img width="50%" src="./images/dividendselect.png"/>
                                 </div>
                                 <div style={{color:"#f75552"}}>
+                                    我的分红
                                 </div>
                             </div>
                             <div className="text-center">
@@ -120,7 +133,7 @@ export class Shares extends Component {
                                             <Flex>
                                                 <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
                                                 <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
-                                                <Flex.Item style={{textAlign:"center"}}>{showValue(myBalance[1][i],18,6)}</Flex.Item>
+                                                <Flex.Item style={{textAlign:"center"}}>{showValue(myBalance[1][i],18,4)}</Flex.Item>
                                             </Flex>
                                         </>
                                     }):<div className="nodata">
@@ -137,6 +150,7 @@ export class Shares extends Component {
                                 <img width="50%" src="./images/dividendselect.png"/>
                             </div>
                             <div style={{color:"#f75552"}}>
+                                当前分红池
                             </div>
                         </div>
                         <div className="text-center">
@@ -153,7 +167,7 @@ export class Shares extends Component {
                                         <Flex>
                                             <Flex.Item style={{textAlign:"center"}}>{i+1}</Flex.Item>
                                             <Flex.Item style={{textAlign:"center"}}>{v}</Flex.Item>
-                                            <Flex.Item style={{textAlign:"center"}}>{showValue(poolBalance[1][i],18,6)}</Flex.Item>
+                                            <Flex.Item style={{textAlign:"center"}}>{showValue(poolBalance[1][i],18,4)}</Flex.Item>
                                         </Flex>
                                     </>
                                 }):<div className="nodata">
@@ -163,9 +177,9 @@ export class Shares extends Component {
                         </div>
                     </div>
                     <WhiteSpace/>
-                    <Button type="primary" disabled={!amount || !(myBalance[0]&&myBalance[0].length>0)} onClick={()=>{
+                    <Button type="warning" disabled={!amount || !(myBalance[0]&&myBalance[0].length>0)} onClick={()=>{
                         this.sub()
-                    }}>提交</Button>
+                    }}>分红</Button>
 
                 </WingBlank>
 

@@ -15,58 +15,29 @@ class Layout extends React.Component{
         let self = this;
         abi.init
             .then(() => {
+                let pk = localStorage.getItem("accountPK");
                 abi.accountList(function (accounts) {
-                    self.setState({account: accounts[0]});
+                    if(!pk){
+                        pk = accounts[0].pk;
+                        self.setState({account: accounts[0]});
+
+                    }else{
+                        for(let account of accounts){
+                            if(pk == account.pk){
+                                self.setState({account: account});
+                                break
+                            }
+                        }
+                    }
+
+
                 });
-                abi.accountDetails(self.state.pk,function(account){
-                  self.setState({account:account},function(){
-                    self.init(account)
-                  })
-                })
         });
     }
     goPage=(uri)=>{
         console.log(uri);
         window.location.href=uri
         // window.open(uri)
-    }
-    init(account) {
-        console.log(account,"Account");
-        let self = this;
-        let tokens = [];
-        let amount = [];
-        account.balances.forEach((val, key) => {
-            tokens.push(key);
-            amount.push(val)
-            console.log(key,val,"values")
-        });
-        if (tokens.length == 0) {
-            return;
-        }
-
-        let tokenToTokens = new Map();
-        abi.getGroupTokens(account.mainPKr, tokens, function (tokens, tokenToTokens) {
-            if (tokens.length > 0) {
-                self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {
-                    self.setState({
-                        tokenIn: tokens[0],
-                        tokenIn2:tokens[1],
-                        tokenOut: tokenToTokens.get(tokens[0])[0],
-                        tokens: tokens,
-                        amount:amount,
-                        tokenToTokens: tokenToTokens,
-                        pair: pair
-                    })
-                  
-                });
-            }
-          });
-    }
-    initPair(tokenA, tokenB, callback) {
-        let self = this;
-        abi.pairInfoWithOrders(this.state.account.mainPKr, tokenA, tokenB, function (pair) {
-            callback(pair);
-        })
     }
 
     showModal(){
@@ -76,9 +47,9 @@ class Layout extends React.Component{
     }
     onClose = key => () => {
         this.setState({
-          [key]: false,
+            [key]: false,
         });
-      }
+    }
 
     showAccount(account, len) {
         if (!account || !account.mainPKr) {
@@ -156,7 +127,7 @@ class Layout extends React.Component{
                                 {this.showAccount(this.state.account, 5)}
                             </Flex.Item>
                             <Flex.Item style={{textAlign:"right"}}>
-                                {this.getBalance(["3","4"].indexOf(this.props.selectedTab)>-1?"CORALA":"SERO")} {["3","4"].indexOf(this.props.selectedTab)>-1?"CORAL":"SERO"}
+                                {this.getBalance(["3","4"].indexOf(this.props.selectedTab)>-1?abi.coral:"SERO")} {["3","4"].indexOf(this.props.selectedTab)>-1?abi.coral:"SERO"}
                             </Flex.Item>
                         </Flex>
                     </div>

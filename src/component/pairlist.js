@@ -36,7 +36,9 @@ export class PairList extends Component {
             // tokensA:[],
             // tokensB:[],
             selectTokenA:"",
-            selectTokenB:""
+            selectTokenB:"",
+
+            selectPair:{},
 
         }
     }
@@ -87,7 +89,7 @@ export class PairList extends Component {
         abi.getTransactionReceipt(hash).then(res=>{
             console.log("getTxReceipt>>>> ",res);
             if(res && res.result){
-                Toast.success("Success")
+                Toast.success("SUCCESSFUL")
                 this.init()
                 if(cb){
                     cb();
@@ -106,18 +108,16 @@ export class PairList extends Component {
 
     doUpdate = ()=>{
         let self = this;
+        let pk = localStorage.getItem("accountPK")
+        if(pk){
+            self.setState({pk:pk})
+        }else{
+            pk = self.state.pk;
+        }
         abi.init.then(() => {
-            abi.accountDetails(self.state.pk, function (account) {
+            abi.accountDetails(pk, function (account) {
                 self.setState({account: account});
                 self.init(account);
-                // let iterId = sessionStorage.getItem("iterId")
-                // if(iterId){
-                //     clearInterval(iterId);
-                // }
-                // iterId = setInterval(function () {
-                //     self.init();
-                // }, 10000)
-                // sessionStorage.setItem("iterId",iterId)
             });
         });
     }
@@ -125,142 +125,57 @@ export class PairList extends Component {
         this.doUpdate()
     }
 
-    async invest(pair) {
-        const {tokenA,tokenB,reserveA,reserveB} = pair;
-        const price = new BigNumber(reserveB).dividedBy(reserveA)
+    async invest() {
 
-        const {account,inputValue} = this.state;
-        let self = this;
-        let token = tokenA;
-        let value;
-        let decimal = 18;
-        const rest = await abi.investAmount(account.mainPKr)
-        let valueB = ""
-        if(rest[0]){
-            decimal = await abi.getDecimalAsync(rest[0])
-            valueB = new BigNumber(rest[1]).dividedBy(10**18).dividedBy(price).toFixed(3,1)
-        }else{
-            token = tokenB;
-            if(inputValue){
-                valueB = new BigNumber(inputValue).dividedBy(price).toFixed(3,1)
-            }
+        const {account,inputValue,selectPair} = this.state;
+        const investAmount = await abi.investAmount(account.mainPKr);
+        if(!inputValue){
+            Toast.fail("请输入金额",1.5)
+            return
         }
+        let self = this;
 
-        alert("提供流动性", <div>
-
-                <Flex>
-                    <Flex.Item>
-                        1. 需要分两次交易完成<br/>
-                        2. 请等待第一笔交易完成后再发送第二笔交易<br/>
-                        3. 提供流动性，你将获得CORAL。
-                        <Steps current={rest[0]?1:0}>
-                            <Step key={0} title="交易1" description={
-                                <div>
-                                    <Flex>
-                                        <Flex.Item style={{flex: 4}}>
-                                            {tokenB}
-                                        </Flex.Item>
-                                        <Flex.Item style={{flex: 5}}>
-                                            {
-                                                rest[0]?showValue(rest[1],decimal,3): <input style={{width: '95%', height: '25px'}} onChange={(e) => {self.setState({inputValue:e.target.value});value=e.target.value}}/>
-                                            }
-                                        </Flex.Item>
-                                    </Flex>
-                                </div>
-                            } />
-                            <Step key={1} title="交易2" description={
-                                <div>
-                                    <Flex>
-                                        <Flex.Item style={{flex: 4}}>
-                                            {tokenA}
-                                        </Flex.Item>
-                                        <Flex.Item style={{flex: 5}}>
-                                            <input style={{width: '95%', height: '25px'}} disabled={!rest[0]} onChange={(e) => {value=e.target.value}} value={valueB}/>
-                                        </Flex.Item>
-                                    </Flex>
-                                </div>
-                            } />
-                        </Steps>
-
-                    </Flex.Item>
-                </Flex>
-            </div>,
-            [
-                {text: '取消', onPress: () => {
-                        self.setState({
-                            inputValue:""
-                        })
-                    }, style: 'default'},
-                {
-                    text: '确定', onPress: () => {
-                        self.setState({
-                            inputValue:""
-                        })
-                        abi.getDecimal(token, function (decimals) {
-                            let amount = new BigNumber(value).multipliedBy(Math.pow(10, decimals))
-                            abi.investLiquidity(self.state.account.pk, self.state.account.mainPKr, token, amount).then(rest=>{
-                                Toast.loading("Pending...",60);
-                                self.startGetTxReceipt(rest,function () {
-                                    if(!rest[0]){
-                                        self.invest(tokenA,tokenB).catch()
-                                    }
-                                });
-                            }).catch(e=>{
-                                Toast.fail(e)
-                            })
-                        })
-                    }
-                },
-            ])
+        const token = investAmount[0]?selectPair.tokenA:selectPair.tokenB;
+        abi.getDecimal(token, function (decimals) {
+            let amount = new BigNumber(inputValue).multipliedBy(Math.pow(10, decimals))
+            abi.investLiquidity(account.pk, self.state.account.mainPKr, token, amount).then(rest=>{
+                Toast.loading("Pending...",60);
+                self.setShowInvestModal(false,selectPair).catch()
+                self.setInputValue("")
+                self.startGetTxReceipt(rest,function () {
+                    abi.investAmount(account.mainPKr).then(data=>{
+                        if(data[0]){
+                            self.setShowInvestModal(true,selectPair).catch()
+                        }else {
+                            Toast.success("SUCCESSFUL")
+                        }
+                    })
+                });
+            }).catch(e=>{
+                Toast.fail(e)
+            })
+        })
     }
 
-    divest(pair) {
+    divest() {
         let self = this;
-        const {tokenA, tokenB,inputValue,reserveA,reserveB,totalShares} = pair;
-
-        console.log(tokenA, tokenB,inputValue,reserveA,reserveB,totalShares);
-
-        const valueA = new BigNumber(reserveA).dividedBy(new BigNumber(totalShares)).multipliedBy(new BigNumber(inputValue?inputValue:0)).toFixed(3,1)
-        const valueB = new BigNumber(reserveB).dividedBy(new BigNumber(totalShares)).multipliedBy(new BigNumber(inputValue?inputValue:0)).toFixed(3,1)
-
-        let sharesBurned;
-        alert("回收流动性", <WingBlank>
-                <Flex>
-                    <Flex.Item style={{flex: 1}}>份数</Flex.Item>
-                    <Flex.Item style={{flex: 2}}><input style={{width: '100%', height: '25px'}} onChange={(e) => {
-                        sharesBurned = e.target.value;
-                        self.setState({inputValue:e.target.value})
-                    }}/></Flex.Item>
-                </Flex>
-                <Flex>
-                    <Flex.Item style={{flex: 1}}>{tokenA}</Flex.Item>
-                    <Flex.Item style={{flex: 2}}>{valueA}</Flex.Item>
-                </Flex>
-                <Flex>
-                    <Flex.Item style={{flex: 1}}>{tokenB}</Flex.Item>
-                    <Flex.Item style={{flex: 2}}>{valueB}</Flex.Item>
-                </Flex>
-            </WingBlank>,
-            [
-                {text: '取消', onPress: () => {
-                        self.setState({
-                        inputValue:""
-                    })
-                    }, style: 'default'},
-                {
-                    text: '确定', onPress: () => {
-                        self.setState({
-                            inputValue:""
-                        })
-                        abi.divestLiquidity(self.state.account.pk, self.state.account.mainPKr, tokenA, tokenB, sharesBurned).then(rest=>{
-                            Toast.loading("Pending...",60);
-                            self.startGetTxReceipt(rest);
-                        }).catch(e=>{
-                            Toast.fail(e)
-                        })
-                    }
-                },
-            ])
+        const {selectPair,account,inputValue} = this.state;
+        if(!inputValue){
+            Toast.info("请输入份数",1.5)
+            return
+        }
+        abi.divestLiquidity(account.pk, account.mainPKr, selectPair.tokenA, selectPair.tokenB, inputValue).then(rest=>{
+            Toast.loading("Pending...",60);
+            self.startGetTxReceipt(rest,()=>{
+                self.setState({
+                    // selectPair:{},
+                    inputValue:"",
+                    showDivestModal:false
+                })
+            });
+        }).catch(e=>{
+            Toast.fail(e)
+        })
     }
 
     withdrawCoral = (pair) => {
@@ -329,7 +244,7 @@ export class PairList extends Component {
         })
     }
 
-    async setShowDivestModal(f){
+    async setShowDivestModal(f,pair){
         let account = this.state.account;
         let rest = ["",0];
         if(f){
@@ -337,11 +252,12 @@ export class PairList extends Component {
         }
         this.setState({
             investAmount:rest,
-            showDivestModal:f
+            showDivestModal:f,
+            selectPair:pair
         })
     }
 
-    async setShowInvestModal(f){
+    async setShowInvestModal(f,pair){
         let account = this.state.account;
         let rest = ["",0];
         if(f){
@@ -349,7 +265,8 @@ export class PairList extends Component {
         }
         this.setState({
             investAmount:rest,
-            showInvestModal:f
+            showInvestModal:f,
+            selectPair:pair
         })
     }
 
@@ -361,9 +278,15 @@ export class PairList extends Component {
             let value = new BigNumber(inputValue).multipliedBy(Math.pow(10, decimals));
             abi.initializePair(account.pk, account.mainPKr, token, value).then(rest=>{
                 Toast.loading("Pending...",60);
-                that.startGetTxReceipt(rest,function () {
-                    if(!rest[0]){
-                        that.setShowInitModal(false).catch()
+                that.setShowInitModal(false).catch()
+                that.setInputValue("")
+                that.startGetTxReceipt(rest,()=>{
+                    if(rest[0]){
+                        abi.investAmount(account.mainPKr).then(data=>{
+                           if(data[0]){
+                               that.setShowInitModal(true).catch()
+                           }
+                        })
                     }
                 });
             }).catch(e=>{
@@ -378,10 +301,34 @@ export class PairList extends Component {
         })
     }
 
+    // existed = (token)=>{
+    //     const {pairs} = this.state;
+    //
+    //     pairs.find(function(o){
+    //         if(o==1){
+    //             return true;
+    //         }
+    //     })
+    //
+    // }
+
+    revert = ()=>{
+        const that = this;
+        const {account} = this.state;
+        abi.cancelInvest(account.pk,account.mainPKr,function (rest) {
+            Toast.loading("Pending...",60);
+            that.setShowInitModal(false).catch()
+            that.setShowInvestModal(false).catch()
+            that.startGetTxReceipt(rest,()=>{
+                Toast.success("SUCCESSFUL")
+            });
+        })
+    }
+
     render() {
 
         let imgs = []
-        let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,showSelectTokenB,selectTokenA,selectTokenB,inputValue} = this.state;
+        let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
         imgs.push(pictures);
         account.imgs = pictures;
 
@@ -407,7 +354,24 @@ export class PairList extends Component {
             selectTokenB = tokensB.length>0 ? tokensB[0]:""
         }
 
-        console.log("render>>>> ",investAmount,selectTokenA,selectTokenB);
+        // console.log("render>>>> ",investAmount,selectTokenA,selectTokenB);
+
+        let investTokenValue = 0;
+        let investShares = 0;
+        if(!investAmount[0]){
+            investTokenValue = selectPair && inputValue?new BigNumber(inputValue).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
+            investShares = selectPair && inputValue ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).toFixed(0,1):0
+        }else{
+            investTokenValue = selectPair && investAmount[0]?new BigNumber(investAmount[1]).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(10**abi.getDecimalLocal(investAmount[0])).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
+            investShares = selectPair && investAmount[0] ? new BigNumber(investAmount[1]).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(0,1):0
+            if(inputValue){
+                const tmpShares = selectPair && inputValue ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveA).dividedBy(10**abi.getDecimalLocal(selectPair.tokenA))).toFixed(0,1):0
+                if(investShares>tmpShares){
+                    investShares = tmpShares
+                }
+            }
+        }
+
 
         return (
             <Layout selectedTab="3" doUpdate={this.doUpdate}>
@@ -418,7 +382,7 @@ export class PairList extends Component {
                     </p>
                     <WhiteSpace/>
                     <WingBlank>
-                        <Button type="primary" size="small" onClick={()=>{this.setShowInitModal(true).catch()}} className="btn-bg">+ 初始化资金池</Button>
+                        <Button type="warning" size="small" onClick={()=>{this.setShowInitModal(true).catch()}} >+ 初始化资金池</Button>
                     </WingBlank>
                     <WhiteSpace/>
                     <div>
@@ -432,7 +396,7 @@ export class PairList extends Component {
                     </div>
                     <WhiteSpace/>
                     {
-                        this.state.pairs.map((pair, index) => {
+                        pairs.map((pair, index) => {
                             return (
                                 <div>
                                     <div className="am-card card-border">
@@ -461,10 +425,10 @@ export class PairList extends Component {
                                             <WhiteSpace/>
                                             <Flex>
                                                 <Flex.Item>
-                                                    <Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true).catch()}}>回收流动性</Button>
+                                                    <Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true,pair).catch()}}>回收流动性</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
-                                                    <Button type="primary" size="small" onClick={() => {this.setShowInitModal(true).catch();}}>提供流动性</Button>
+                                                    <Button type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>提供流动性</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
                                                     <Button type="primary" size="small" disabled={pair.shareRreward*1 == 0} onClick={() => {this.withdrawCoral(pair)}}>提现</Button>
@@ -510,24 +474,29 @@ export class PairList extends Component {
                                                     <Flex.Item style={{flex: 1}}>
                                                         交易一
                                                     </Flex.Item>
-                                                    <Flex.Item style={{flex: 2}}>
-                                                        {/*余额: {account && showValue(account.balances.get(selectTokenA),abi.getDecimalLocal(selectTokenA),3)} {selectTokenA}*/}
+                                                    <Flex.Item style={{flex: 1}}>
+                                                        {investAmount[0]?<Button size="small" type="ghost" onClick={()=>this.revert()}>撤销</Button>:""}
                                                     </Flex.Item>
                                                 </Flex>
                                             </div>
                                         } description={
                                             <div>
-                                                {
-                                                    <InputItem className="inputItem" readOnly={!!investAmount[0]} value={investAmount[0]?showValue(investAmount[1],abi.getDecimalLocal(investAmount[0]),3):inputValue} onChange={(e)=>this.setInputValue(e)} >
-                                                        <div onClick={()=>this.setShowSelectTokenA(true)}>
-                                                            <span>{investAmount[0]?investAmount[0]:selectTokenA}</span>
-                                                            <img width="13px" className="absolute1" src={require('../images/bottom.png')}/>
-                                                        </div>
-                                                    </InputItem>
-                                                }
+                                                <Flex>
+                                                    <Flex.Item style={{flex: 1}} onClick={()=>this.setShowSelectTokenA(true)}>
+                                                        <span>{investAmount[0]?investAmount[0]:selectTokenA}</span>
+                                                        <img width="13px" className="absolute1" src={require('../images/bottom.png')}/>
+                                                    </Flex.Item>
+                                                    <Flex.Item style={{flex: 2}}>
+                                                        {
+                                                            investAmount[0]?showValue(investAmount[1],abi.getDecimalLocal(investAmount[0]),3):
+                                                                <input style={{width: '95%', height: '25px'}} type="number" placeholder="请输入" onChange={(e) => { this.setInputValue(e.target.value) }}/>
+                                                        }
 
+                                                    </Flex.Item>
+                                                </Flex>
 
                                             </div>
+
                                         } />
                                         <Step key={1} title={
                                             <div>
@@ -548,7 +517,7 @@ export class PairList extends Component {
                                                         <img width="13px" className="absolute1" src={require('../images/bottom.png')}/>
                                                     </Flex.Item>
                                                     <Flex.Item style={{flex: 2}}>
-                                                        <input style={{width: '95%', height: '25px'}} type="number" disabled={!investAmount[0]} onChange={(e) => { this.setInputValue(e.target.value) }}/>
+                                                        <input style={{width: '95%', height: '25px'}} type="number" disabled={!investAmount[0]} placeholder={0} onChange={(e) => { this.setInputValue(e.target.value) }}/>
                                                     </Flex.Item>
                                                 </Flex>
                                             </div>
@@ -561,68 +530,131 @@ export class PairList extends Component {
                         </div>
                     </Modal>
 
-                    {/*<Modal visible={showInvestModal}>*/}
-                    {/*    <Flex>*/}
-                    {/*        <Flex.Item>*/}
-                    {/*            1. 需要分两次交易完成<br/>*/}
-                    {/*            2. 请等待第一笔交易完成后再发送第二笔交易<br/>*/}
-                    {/*            3. 提供流动性，你将获得CORAL。*/}
-                    {/*            <Steps current={investAmount[0]?1:0}>*/}
-                    {/*                <Step key={0} title="交易1" description={*/}
-                    {/*                    <div>*/}
-                    {/*                        <Flex>*/}
-                    {/*                            <Flex.Item style={{flex: 4}}>*/}
-                    {/*                                {tokenB}*/}
-                    {/*                            </Flex.Item>*/}
-                    {/*                            <Flex.Item style={{flex: 5}}>*/}
-                    {/*                                {*/}
-                    {/*                                    investAmount[0]?showValue(investAmount[1],decimal,3): <input style={{width: '95%', height: '25px'}} onChange={(e) => {self.setState({inputValue:e.target.value});value=e.target.value}}/>*/}
-                    {/*                                }*/}
-                    {/*                            </Flex.Item>*/}
-                    {/*                        </Flex>*/}
-                    {/*                    </div>*/}
-                    {/*                } />*/}
-                    {/*                <Step key={1} title="交易2" description={*/}
-                    {/*                    <div>*/}
-                    {/*                        <Flex>*/}
-                    {/*                            <Flex.Item style={{flex: 4}}>*/}
-                    {/*                                {tokenA}*/}
-                    {/*                            </Flex.Item>*/}
-                    {/*                            <Flex.Item style={{flex: 5}}>*/}
-                    {/*                                <input style={{width: '95%', height: '25px'}} disabled={!investAmount[0]} onChange={(e) => {value=e.target.value}} value={valueB}/>*/}
-                    {/*                            </Flex.Item>*/}
-                    {/*                        </Flex>*/}
-                    {/*                    </div>*/}
-                    {/*                } />*/}
-                    {/*            </Steps>*/}
+                    <Modal visible={showInvestModal}
+                           transparent
+                           title="提供流动性"
+                           footer={[
+                               {
+                                   text:"取消",
+                                   onPress:()=>{
+                                       this.setShowInvestModal(false).catch()
+                                       this.setInputValue("")
+                                   }
+                               },
+                               {
+                                   text:"确定",
+                                   onPress:()=>{
+                                       if(investShares && parseInt(investShares)>0){
+                                           this.invest().catch()
+                                       }else{
+                                           Toast.info("最少提供1份",2)
+                                       }
+                                   }
+                               }
+                           ]}>
+                        <Flex>
+                            <Flex.Item>
+                                1. 需要分两次交易完成<br/>
+                                2. 请等待第一笔交易完成后再发送<br/>
+                                3. 提供流动性，你将获得CORAL。
+                                <Steps current={investAmount[0]?1:0}>
+                                    <Step key={0} title={
+                                        <div>
+                                            <Flex>
+                                                <Flex.Item style={{flex: 1}}>
+                                                    交易一
+                                                </Flex.Item>
+                                                <Flex.Item style={{flex: 1}}>
+                                                    {investAmount[0]?<Button size="small" type="ghost" onClick={()=>this.revert()}>撤销</Button>:""}
+                                                </Flex.Item>
+                                            </Flex>
+                                        </div>
+                                    } description={
+                                        <div>
+                                            <Flex>
+                                                <Flex.Item style={{flex: 1}}>
+                                                    {selectPair&&selectPair.tokenB}
+                                                </Flex.Item>
+                                                <Flex.Item style={{flex: 2}}>
+                                                    {
+                                                        investAmount[0]?showValue(investAmount[1],abi.getDecimalLocal(investAmount[0]),3): <input style={{width: '95%', height: '25px'}} onChange={(e) => {
+                                                            this.setInputValue(e.target.value)
+                                                        }}/>
+                                                    }
+                                                </Flex.Item>
+                                            </Flex>
+                                        </div>
+                                    } />
+                                    <Step key={1} title="交易二" description={
+                                        <div>
+                                            <Flex>
+                                                <Flex.Item style={{flex: 1}}>
+                                                    {selectPair&&selectPair.tokenA}
+                                                </Flex.Item>
+                                                <Flex.Item style={{flex: 2}}>
+                                                    <input style={{width: '95%', height: '25px'}} disabled={!investAmount[0]} onChange={(e) => {
+                                                        this.setInputValue(e.target.value)
+                                                    }} placeholder={investTokenValue}/>
+                                                </Flex.Item>
+                                            </Flex>
+                                        </div>
+                                    } />
+                                </Steps>
 
-                    {/*        </Flex.Item>*/}
-                    {/*    </Flex>*/}
-                    {/*</Modal>*/}
+                                <div>
+                                    预计提供 {investShares} 份
+                                </div>
+                            </Flex.Item>
+                        </Flex>
+                    </Modal>
 
-                    {/*<Modal visible={showDivestModal}>*/}
-                    {/*    <WingBlank>*/}
-                    {/*        <Flex>*/}
-                    {/*            <Flex.Item style={{flex: 1}}>份数</Flex.Item>*/}
-                    {/*            <Flex.Item style={{flex: 2}}><input style={{width: '100%', height: '25px'}} onChange={(e) => {*/}
-                    {/*                sharesBurned = e.target.value;*/}
-                    {/*                self.setState({inputValue:e.target.value})*/}
-                    {/*            }}/></Flex.Item>*/}
-                    {/*        </Flex>*/}
-                    {/*        <Flex>*/}
-                    {/*            <Flex.Item style={{flex: 1}}>{tokenA}</Flex.Item>*/}
-                    {/*            <Flex.Item style={{flex: 2}}>{valueA}</Flex.Item>*/}
-                    {/*        </Flex>*/}
-                    {/*        <Flex>*/}
-                    {/*            <Flex.Item style={{flex: 1}}>{tokenB}</Flex.Item>*/}
-                    {/*            <Flex.Item style={{flex: 2}}>{valueB}</Flex.Item>*/}
-                    {/*        </Flex>*/}
-                    {/*    </WingBlank>*/}
-                    {/*</Modal>*/}
+                    <Modal visible={showDivestModal}
+                           transparent
+                           title="销毁流动性"
+                           footer={[
+                               {
+                                   text:"取消",
+                                   onPress:()=>{
+                                       this.setShowDivestModal(false).catch()
+                                       this.setInputValue("")
+                                   }
+                               },
+                               {
+                                   text:"确定",
+                                   onPress:()=>{
+                                       if(selectPair.myShare*1<inputValue*1){
+                                           Toast.info("您最多可回收"+selectPair.myShare+"份")
+                                           return
+                                       }
+                                       this.divest()
+                                   }
+                               }
+                           ]}
+                        >
+                        <WingBlank>
+                            <Flex>
+                                <Flex.Item style={{flex: 1}}><span>份数</span></Flex.Item>
+                                <Flex.Item style={{flex: 2}}>
+                                    <input style={{width: '100%', height: '25px'}} placeholder={selectPair && selectPair.myShare} onChange={(e) => {
+                                    this.setInputValue(e.target.value)
+                                }}/></Flex.Item>
+                            </Flex>
+                            <WhiteSpace/>
+                            <Flex>
+                                <Flex.Item style={{flex: 1}}>{selectPair && selectPair.tokenA}</Flex.Item>
+                                <Flex.Item style={{flex: 2}}>{showDivestModal && selectPair&&inputValue? new BigNumber(selectPair.reserveA).dividedBy(10**abi.getDecimalLocal(selectPair.tokenA)).multipliedBy(new BigNumber(inputValue)).dividedBy(selectPair.totalShares*1).toFixed(3,1):0}</Flex.Item>
+                            </Flex>
+                            <WhiteSpace/>
+                            <Flex>
+                                <Flex.Item style={{flex: 1}}>{selectPair && selectPair.tokenB}</Flex.Item>
+                                <Flex.Item style={{flex: 2}}>{showDivestModal&& selectPair&&inputValue? new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB)).multipliedBy(new BigNumber(inputValue)).dividedBy(selectPair.totalShares*1).toFixed(3,1):0}</Flex.Item>
+                            </Flex>
+                        </WingBlank>
+                    </Modal>
 
-                    <SelectToken visible={showSelectTokenA} onOk={this.setSelectTokenA} tokens={tokensA} balance={account&&account.balances}/>
+                    <SelectToken visible={showSelectTokenA} onOk={this.setSelectTokenA} onClose={this.setShowSelectTokenA} tokens={tokensA} balance={account&&account.balances}/>
 
-                    <SelectToken visible={showSelectTokenB} onOk={this.setSelectTokenB} tokens={tokensB} balance={account&&account.balances}/>
+                    <SelectToken visible={showSelectTokenB} onOk={this.setSelectTokenB} onClose={this.setShowSelectTokenB}  tokens={tokensB} balance={account&&account.balances}/>
                 </div>
             </Layout>
         )
