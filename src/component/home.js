@@ -36,9 +36,7 @@ export class Home extends Component {
             option1: '',
             option2: '',
             inputStyle:null,
-            flag:true,
-            notpad:null,
-            place:"请选择你要买的币"
+            out:null
         }
     }
 
@@ -53,13 +51,14 @@ export class Home extends Component {
             // tokens.push(key);
             amount.push(val)
         });
-        abi.getGroupTokensEx(account.mainPKr,false, function (tokens, tokenToTokens) {
+        abi.getGroupTokensEx(account.mainPKr,false,function(tokens, tokenToTokens) {
             if (tokens.length > 0) {
                 abi.getDecimal(tokens[0],function (d) {
                     console.log(tokens[0],d);
                 })
-                abi.getDecimal(tokenToTokens.get(tokens[0])[0],function (d) {
+                abi.getDecimal(tokenToTokens.get(tokens[0])[0],function (d) { 
                 })
+
                 self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {   
                     self.setState({
                         tokenIn: tokens[0],
@@ -123,19 +122,21 @@ export class Home extends Component {
             this.setState({tokenInAmount: amountIn, tokenOutAmount: 0, price: 0});
             return;
         }
-
         let self = this;
-
+        console.log(this.state.tokenToTokens,">>>>>");
+        console.log(amountIn,",,,,,,,");
         let amountOut;
         let pair = this.state.pair;
-        abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenOut, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
-
-            amountOut = new BigNumber(out).dividedBy(10**18);
-
-            let price = amountOut.dividedBy(amountIn).toFixed(6);
-            self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});
-        });
-
+        abi.getDecimal(pair.tokenA,function(decimal){
+           abi.estimateSwapBuy(self.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenOut, bnToHex(amountIn, decimal),function (out) {
+                console.log(out,'OUT');
+                
+                amountOut = new BigNumber(out).dividedBy(10**18);
+                let price = amountOut.dividedBy(amountIn).toFixed(6);
+                self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(),out:out, price: price});
+            });
+        })
+        
         // abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
 
         //     amountOut = new BigNumber(out).dividedBy(10**18)
@@ -143,7 +144,6 @@ export class Home extends Component {
         //     let price = amountOut.dividedBy(amountIn).toFixed(6)
         //     self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});
         // });
-
     }
 
     exchange(tokenA, tokenB, amount) {
@@ -284,10 +284,10 @@ export class Home extends Component {
                         selectedOption={{value: this.state.tokenIn}}
                         options={options_2}
                         onChange={(option) => {
-                            this.setState({option2: option,flag:false})
-                            // let tokenIn = this.state.tokenToTokens.get(option.value)[0];
-                            this.initPair(this.state.tokenIn, option.value, function (pair) {
-                                self.setState({pair: pair, tokenOut: option.value,});
+                            this.setState({option2: option})
+                            let tokenOut = this.state.tokenToTokens.get(option.value)[0];
+                            this.initPair(option.value, this.state.tokenOut, function (pair) {
+                                self.setState({pair: pair, tokenIn: option.value,tokenOut:tokenOut});
                                 self.showRate(self.state.tokenInAmount);
                             })
                         }}/>
@@ -305,12 +305,10 @@ export class Home extends Component {
                 <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
                 <Select
                     options={options_1}
-                    // selectedOption={{value: this.state.tokenIn}}
                     onChange={(option) => {
                         this.setState({option1: option})
-                        let tokenOut = this.state.tokenToTokens.get(option.value)[0];
-                        this.initPair(option.value, tokenOut, function (pair) {
-                            self.setState({pair: pair, tokenIn: option.value, tokenOut: tokenOut});
+                        this.initPair(this.state.tokenIn,option.value, function (pair) {
+                            self.setState({pair: pair, tokenOut: option.value});
                             self.showRate(self.state.tokenOutAmount);
                         })
                     }}/>
@@ -353,7 +351,7 @@ export class Home extends Component {
                         <div className="text-center">
                             <input type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value="确 认 买 入" onClick={() => {
                                 let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
-                                self.exchange(self.state.tokenOut, self.state.tokenIn, amount);
+                                self.exchange(self.state.tokenIn,self.state.tokenOut , new BigNumber(self.state.out));
                             }}/>
                         </div>
                     </div>

@@ -202,6 +202,7 @@ class Abi {
     estimateSwap(from, tokenA, tokenB, tokenIn, amountIn, callback) {
         let key = hashKey(tokenA, tokenB);
         this.callMethod(contract, 'estimateSwap', from, [key, tokenToBytes(tokenIn), amountIn], function (ret) {
+            console.log(ret,"---------ret");
             callback(ret[0]);
         });
     }
