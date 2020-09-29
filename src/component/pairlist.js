@@ -125,13 +125,18 @@ export class PairList extends Component {
         this.doUpdate()
     }
 
-    async invest() {
+    async invest(investTokenValue) {
 
-        const {account,inputValue,selectPair} = this.state;
+        let {account,inputValue,selectPair} = this.state;
         const investAmount = await abi.investAmount(account.mainPKr);
-        if(!inputValue){
-            Toast.fail("请输入金额",1.5)
-            return
+        if(!inputValue ){
+            if(investTokenValue){
+                inputValue = investTokenValue;
+            }
+            if(!inputValue){
+                Toast.fail("请输入金额",1.5)
+                return
+            }
         }
         let self = this;
 
@@ -360,12 +365,12 @@ export class PairList extends Component {
         let investShares = 0;
         if(!investAmount[0]){
             investTokenValue = selectPair && inputValue?new BigNumber(inputValue).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
-            investShares = selectPair && inputValue ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).toFixed(0,1):0
+            investShares = selectPair && inputValue ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
         }else{
             investTokenValue = selectPair && investAmount[0]?new BigNumber(investAmount[1]).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(10**abi.getDecimalLocal(investAmount[0])).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
-            investShares = selectPair && investAmount[0] ? new BigNumber(investAmount[1]).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(0,1):0
+            investShares = selectPair && investAmount[0] ? new BigNumber(investAmount[1]).dividedBy(new BigNumber(selectPair.reserveB)).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
             if(inputValue){
-                const tmpShares = selectPair && inputValue ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveA).dividedBy(10**abi.getDecimalLocal(selectPair.tokenA))).toFixed(0,1):0
+                const tmpShares = selectPair && inputValue ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveA).dividedBy(10**abi.getDecimalLocal(selectPair.tokenA))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
                 if(investShares>tmpShares){
                     investShares = tmpShares
                 }
@@ -382,7 +387,7 @@ export class PairList extends Component {
                     </p>
                     <WhiteSpace/>
                     <WingBlank>
-                        <Button type="warning" size="small" onClick={()=>{this.setShowInitModal(true).catch()}} >+ 初始化资金池</Button>
+                        <Button type="warning" size="small" onClick={()=>{this.setShowInitModal(true).catch()}} >+ 创建流动池</Button>
                     </WingBlank>
                     <WhiteSpace/>
                     <div className="searchdiv">
@@ -545,7 +550,7 @@ export class PairList extends Component {
                                    text:"确定",
                                    onPress:()=>{
                                        if(investShares && parseInt(investShares)>0){
-                                           this.invest().catch()
+                                           this.invest(investTokenValue).catch()
                                        }else{
                                            Toast.info("最少提供1份",2)
                                        }
