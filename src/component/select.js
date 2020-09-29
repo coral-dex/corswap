@@ -6,8 +6,9 @@ export class Select extends Component {
         let value;
         if (selectedOption) {
             value = selectedOption.value;
+            console.log(selectedOption.value,"selectedOptionValue");
         }
-
+        console.log(options , "options onchange");
         let optionList;
         if (options) {
             optionList = options.map((option, index) => {

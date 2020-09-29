@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js'
 import {Toast} from "antd-mobile";
 import {bytes32ToToken, hashKey, tokenToBytes} from "./utils/common"
 import {JsonRpc} from "./utils/jsonrpc";
+import i18n from "../i18n";
 
 const config = {
     name: "CORSWAP",
@@ -45,6 +46,7 @@ class Abi {
                         return reject(rest)
                     }
                 })
+                this.getPopupInfo();
             }
         )
     }
@@ -63,6 +65,7 @@ class Abi {
             return callback(decimalLocal)
         } else {
             seropp.getInfo(function (info) {
+                console.log(info.langua,"getinfo");
                 rpc.seroRpc(info.rpc, "sero_getDecimal", [token], function (rets) {
                     localStorage.setItem("D_" + token, new BigNumber(rets.result, 16).toNumber());
                     callback(new BigNumber(rets.result, 16).toNumber());
@@ -70,10 +73,18 @@ class Abi {
             });
         }
     }
+    
+    getPopupInfo(){
+        seropp.getInfo(function (info) {
+            localStorage.setItem("language",info.language)
+            i18n.changeLanguage(info.language).catch()
+        });
+    }
 
     async getTransactionReceipt(txHash){
         return new Promise((resolve,reject)=>{
             seropp.getInfo(function (info) {
+                console.log(info,"getinfo");
                 rpc.seroRpc(info.rpc, "sero_getTransactionReceipt", [txHash], function (rest) {
                     resolve(rest)
                 });
@@ -90,6 +101,7 @@ class Abi {
                 return resolve(parseInt(decimalLocal))
             } else {
                 seropp.getInfo(function (info) {
+                    console.log(info,"getinfo");
                     rpc.seroRpc(info.rpc, "sero_getDecimal", [token], function (rets) {
                         localStorage.setItem("D_" + token, new BigNumber(rets.result, 16).toNumber());
                         resolve(new BigNumber(rets.result, 16).toNumber());
@@ -214,6 +226,7 @@ class Abi {
         });
     }
 
+    
     // getGroupTokens(from, tokens, callback) {
     //     let tokenBytes = [];
     //     tokens.forEach(each => {

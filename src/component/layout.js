@@ -3,6 +3,7 @@ import {Flex, Modal,Tag, TabBar, WingBlank} from "antd-mobile";
 import {Select} from "./select";
 import abi from './abi'
 import BigNumber from "bignumber.js";
+import i18n from '../i18n'
 class Layout extends React.Component{
     constructor(props){
         super(props)
@@ -101,7 +102,7 @@ class Layout extends React.Component{
                 <Flex className="flex showtais">
                     <Flex.Item style={{flex:1}}>
                         <div>
-                            <img src={require("../images/logo.png")} alt="" width="70%"/>
+                            <img src={require("../images/logo.png")} alt="" width="90%"/>
                         </div>
                     </Flex.Item>
                     <Flex.Item style={{flex:1}}>
@@ -134,7 +135,7 @@ class Layout extends React.Component{
                     {
                         ["3","4"].indexOf(this.props.selectedTab) == -1?<div className="text-center fishing_div">
                                 {/* <Tag className="fishing_tag">买币</Tag> */}
-                                <img style={{position:"relative",bottom:"0",}} width="50%" src={require("../images/fishing.png")}/>
+                                <img style={{position:"relative",bottom:"0",}} width="60%" src={require("../images/fishing.png")}/>
                                 {/* <Tag className="fishing_tag">买币</Tag> */}
                             </div>:""
                     }
@@ -165,7 +166,7 @@ class Layout extends React.Component{
                     >
 
                         <TabBar.Item
-                            title="我要买"
+                            title={i18n.t("MyBuy")}
                             key="Life"
                             icon={<div style={{
                                 width: '22px',
@@ -202,7 +203,7 @@ class Layout extends React.Component{
                                     background: 'url(./images/sellselect.png) center center /  21px 21px no-repeat' }}
                                 />
                             }
-                            title="我要卖"
+                            title={i18n.t("MySell")}
                             key="Koubei"
                             selected={this.props.selectedTab === '2'}
                             onPress={() => {
@@ -226,7 +227,7 @@ class Layout extends React.Component{
                                     background: 'url(./images/fundselect.png) center center /  21px 21px no-repeat' }}
                                 />
                             }
-                            title="资金池"
+                            title={i18n.t("CashPooling")}
                             key="Friend"
                             selected={this.props.selectedTab === '3'}
                             onPress={() => {
@@ -238,7 +239,7 @@ class Layout extends React.Component{
                         <TabBar.Item
                             icon={{ uri: './images/dividend.png' }}
                             selectedIcon={{ uri: './images/dividendselect.png' }}
-                            title="分红"
+                            title={i18n.t("Dividend")}
                             key="my"
                             selected={this.props.selectedTab === '4'}
                             onPress={() => {

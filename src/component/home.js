@@ -10,6 +10,9 @@ import BigNumber from "bignumber.js";
 import '../style/style.css'
 import Layout from "./layout";
 import {bnToHex} from './utils/common'
+import i18n from '../i18n'
+import { useTranslation, Trans, Translation } from 'react-i18next'
+
 export class Home extends Component {
     constructor(props) {
         super(props);
@@ -27,7 +30,7 @@ export class Home extends Component {
             amount: [],
             tokenToTokens: new Map(),
             tokenInAmount: null,
-            tokenOutAmount: 0,
+            tokenOutAmount: null,
             orderType: 0,
             modal: false,
             flag: true,
@@ -74,7 +77,7 @@ export class Home extends Component {
         });
     }
 
-    initPair(tokenA, tokenB, callback) {
+    initPair(tokenB, tokenA, callback) {
         let self = this;
         abi.pairInfoWithOrders(this.state.account.mainPKr, tokenA, tokenB, function (pair) {
             callback(pair);
@@ -109,8 +112,6 @@ export class Home extends Component {
 
             });
     }
-
-
     showRate(amountIn) {
         if(isNaN(amountIn)){
             alert("请输入数字")
@@ -118,17 +119,18 @@ export class Home extends Component {
         this.setState({
             inputStyle:amountIn
         })
-        if (!amountIn || !this.state.pair || Number(amountIn) == 0) {
+        if (!amountIn || !this.state.pair || Number(amountIn) === 0) {
             this.setState({tokenInAmount: amountIn, tokenOutAmount: 0, price: 0});
             return;
         }
         let self = this;
-        console.log(this.state.tokenToTokens,">>>>>");
-        console.log(amountIn,",,,,,,,");
+      
+
         let amountOut;
         let pair = this.state.pair;
+        // console.log(pair,"pairpairpair");
         abi.getDecimal(pair.tokenA,function(decimal){
-           abi.estimateSwapBuy(self.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenOut, bnToHex(amountIn, decimal),function (out) {
+           abi.estimateSwapBuy(self.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenOut, bnToHex(amountIn,decimal),function (out) {
                 console.log(out,'OUT');
                 
                 amountOut = new BigNumber(out).dividedBy(10**18);
@@ -136,7 +138,16 @@ export class Home extends Component {
                 self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(),out:out, price: price});
             });
         })
-        
+
+        // console.log(this.state.tokenToTokens,"tokenToTokens");
+        // console.log(amountIn,"amountIn");
+        // console.log(this.state.tokenIn,this.state.tokenOut,"tokenin tokenout");
+        // console.log(amountIn,amountOut,"amountin amountout");
+        // console.log(this.state.tokenInAmount,this.state.tokenOutAmount,"tokenInOutAmount");
+        //tokenInAmount = 输入                           输出
+
+
+
         // abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
 
         //     amountOut = new BigNumber(out).dividedBy(10**18)
@@ -145,11 +156,9 @@ export class Home extends Component {
         //     self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});
         // });
     }
-
     exchange(tokenA, tokenB, amount) {
         abi.swap(this.state.account.pk, this.state.account.mainPKr, tokenA, tokenB, amount);
     }
-
     showAccount(account, len) {
         if (!account || !account.mainPKr) {
             return "";
@@ -160,7 +169,6 @@ export class Home extends Component {
         window.localStorage.setItem("accountPK", account.pk)
         return account.name + " " + account.mainPKr.slice(0, len) + "..." + account.mainPKr.slice(-len)
     }
-
     showModal = (key) => {
         if (this.state.modal) {
             this.setState({
@@ -173,7 +181,6 @@ export class Home extends Component {
         }
 
     }
-
     renderOrders() {
         if (!this.state.pair) {
             return;
@@ -225,7 +232,6 @@ export class Home extends Component {
             put1: num
         })
     }
-
     onSelect = (opt) => {
         this.setState({
             visible: false,
@@ -237,7 +243,6 @@ export class Home extends Component {
             visible,
         });
     };
-
     renderContent(pageText) {
         return (
             <div style={{backgroundColor: '#e9f4f8', height: '100%', textAlign: 'center'}}>
@@ -245,7 +250,6 @@ export class Home extends Component {
             </div>
         );
     }
-
     goPage = (uri) => {
         window.location.href = uri
     }
@@ -281,22 +285,19 @@ export class Home extends Component {
                     <Select
                         className="select"
                         style={{height: "20px"}}
-                        selectedOption={{value: this.state.tokenIn}}
                         options={options_2}
                         onChange={(option) => {
-                            this.setState({option2: option})
-                            let tokenOut = this.state.tokenToTokens.get(option.value)[0];
-                            this.initPair(option.value, this.state.tokenOut, function (pair) {
-                                self.setState({pair: pair, tokenIn: option.value,tokenOut:tokenOut});
+                            this.initPair(this.state.tokenIn,option.value, function (pair) {
+                                self.setState({pair: pair, tokenOut: option.value});
                                 self.showRate(self.state.tokenInAmount);
                             })
                         }}/>
                 </div>
                 <div className="align-item inputmany">
                     <List>
-                        <input style={{marginLeft:"27px",width:"100%"}} value={this.state.tokenInAmount} onChange={(e) => {
+                        <input autoFocus={true} value={this.state.tokenInAmount} onChange={(e) => {
                             this.showRate(e.target.value)
-                        }} type="text" className="inputItem"/>
+                        }} type="number" className="inputItem"/>
                     </List>
                 </div>     
         </div>
@@ -305,52 +306,57 @@ export class Home extends Component {
                 <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
                 <Select
                     options={options_1}
+                    selectedOption={{value: this.state.tokenOut}}
                     onChange={(option) => {
-                        this.setState({option1: option})
-                        this.initPair(this.state.tokenIn,option.value, function (pair) {
-                            self.setState({pair: pair, tokenOut: option.value});
-                            self.showRate(self.state.tokenOutAmount);
+                        let tokenOut = this.state.tokenToTokens.get(option.value)[0];
+                        this.initPair(option.value, this.state.tokenOut, function (pair) {
+                                self.setState({pair: pair, tokenIn: option.value,tokenOut:tokenOut});
+                                self.showRate(self.state.tokenInAmount);
                         })
                     }}/>
             </div>
             <div className="align-item inputmany ">
                 <div>
                     <List>
-                    <input  value={this.state.tokenOutAmount} disabled onChange={(e) => {}} type="text" className="inputItem disable"/>
+                    <input  value={this.state.tokenOutAmount} disabled onChange={(e) => {}} className="inputItem disable"/>
                     </List>
                 </div>
             </div>      
         </div>
+        
         return (
             <Layout selectedTab="1" doUpdate={this.doUpdate}>
                 <div style={{padding:"10px"}} className="flex-center">
                     <div className="header">
-                        <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要买</div>
+                        <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>{i18n.t("MyBuy")}</div>
 
                         <div className="from" style={{marginTop:"20px"}}>
-                             <div className='fontSize text-right color2'>已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
+                        <div className='fontSize text-right color2'>{i18n.t("Referrer")}{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
                            {froms }
                         </div>
 
                         <div className="from">
                             <div>
-                                <div className='fontSize text-right color2'>可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
+                                <div className='fontSize text-right color2'>{i18n.t("usable")}{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
                                 {tos}
                             </div>
                         </div>
 
                         <div className="fontSize color scale" style={{margin:"10px 0",padding:"0 5px"}}>
                             <div style={{textAlign: "left"}}>
-                                当前兑换比例:
-                                {
-                                    this.state.price > 0 &&
-                                    <span>1{this.state.tokenOut} : {this.state.price}{this.state.tokenIn}</span>
-                                }
+                                当前兑换比例:<br/>
+                                <div style={{height:"10px"}}>
+                                    {
+                                        this.state.price > 0 &&
+                                        <span>1{this.state.tokenOut} : {this.state.price}{this.state.tokenIn}</span>
+                                     }
+                                </div>
+                                
                             </div>
                         </div>   
                         <div className="text-center">
-                            <input type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value="确 认 买 入" onClick={() => {
-                                let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
+                            <input type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value={i18n.t("ConfirmBuy")} onClick={() => {
+                                // let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
                                 self.exchange(self.state.tokenIn,self.state.tokenOut , new BigNumber(self.state.out));
                             }}/>
                         </div>

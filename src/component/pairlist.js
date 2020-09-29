@@ -6,7 +6,7 @@ import {Select} from "./select";
 import {showValue} from "./utils/common";
 import Layout from "./layout";
 import SelectToken from './selectToken'
-
+import i18n from '../i18n'
 const alert = Modal.alert;
 const Step = Steps.Step;
 
@@ -385,14 +385,14 @@ export class PairList extends Component {
                         <Button type="warning" size="small" onClick={()=>{this.setShowInitModal(true).catch()}} >+ 初始化资金池</Button>
                     </WingBlank>
                     <WhiteSpace/>
-                    <div>
-                        <input type="text" onChange={(e)=>this.searchcoral(e)} onBlur={(e)=>this.searchcoral(e)} placeholder="搜索CoralSwap对和令牌" className="input search"/>
+                    <div className="searchdiv">
+                        <input type="text" onChange={(e)=>this.searchcoral(e)} onBlur={(e)=>this.searchcoral(e)} placeholder={i18n.t("SearchCoralSwapPairAndToken")} className="input search"/>
                     </div>
                     <WhiteSpace/>
                     <div className="text-right ">
                         <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" onChange={e=>{
                             this.showMyOnly(e.target.checked)
-                        }} />只看我的质押</span>
+                        }} />{i18n.t("MyPledge")}</span>
                     </div>
                     <WhiteSpace/>
                     {
@@ -405,8 +405,8 @@ export class PairList extends Component {
                                                 <img width="50%" src={pictures[0]} />
                                             </div>
                                             <div style={{color:"#f75552"}}>
-                                                <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="20%"/>:""}</div>
-                                                <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>我持有{pair.myShare}份, 比例: {(pair.myShare/pair.totalShares*100).toFixed(2)}%</div>
+                                                <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%"/>:""}</div>
+                            <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>{i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {(pair.myShare/pair.totalShares*100).toFixed(2)}%</div>
                                             </div>
                                         </div>
                                         <div className="text-center">

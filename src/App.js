@@ -5,7 +5,7 @@ import {PairList} from "./component/pairlist";
 import {Shares} from './component/shares'
 import {Home} from "./component/home";
 import {Exchange} from './component/exchange'
-
+import './i18n'
 class App extends Component{
 
     render() {
