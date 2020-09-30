@@ -28,19 +28,27 @@ class Swap extends React.Component{
     }
 
     async init () {
-        const that = this;
+        let self = this;
         return new Promise((resolve, reject) => {
-            const pk = localStorage.getItem("accountPK");
-            if (pk) {
-                abi.accountDetails(pk, function (data) {
-                    that.setState({
-                        account: data
-                    })
+            abi.init.then(() => {
+                let pk = localStorage.getItem("accountPK")
+                abi.accountList(function (accounts) {
+                    if (pk) {
+                        for (let act of accounts) {
+                            if (pk === act.pk) {
+                                self.setState({account: act});
+                                break;
+                            }
+                        }
+                    } else {
+                        pk = accounts[0].pk;
+                        localStorage.setItem("accountPK",pk);
+                        self.setState({account: accounts[0]});
+                    }
                     resolve();
-                })
-            } else {
-                reject("No account")
-            }
+                });
+            });
+
         })
     }
 
@@ -62,6 +70,8 @@ class Swap extends React.Component{
             abi.pairList(account.mainPKr,token,function (datas) {
                 const tokensTmp = [];
                 for(let pair of datas){
+                    abi.getDecimal(pair.tokenA)
+                    abi.getDecimal(pair.tokenB)
                     if(!token){
                         if(tokensTmp.indexOf(pair.tokenB) == -1){
                             tokensTmp.push(pair.tokenB)
@@ -219,7 +229,7 @@ class Swap extends React.Component{
         const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
 
         return (
-            <Layout selectedTab="1">
+            <Layout selectedTab="1" doUpdate={()=>this.init()}>
                 <div style={{padding:"10px"}} className="flex-center">
                     <div className="header">
                         <div className="from" style={{marginTop:"20px"}}>

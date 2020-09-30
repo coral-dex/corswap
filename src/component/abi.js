@@ -61,13 +61,17 @@ class Abi {
     getDecimal(token, callback) {
         let decimalLocal = this.getDecimalLocal(token);
         if (decimalLocal) {
-            return callback(decimalLocal)
+            if(callback){
+                return callback(decimalLocal)
+            }
         } else {
             seropp.getInfo(function (info) {
                 console.log(info.langua,"getinfo");
                 rpc.seroRpc(info.rpc, "sero_getDecimal", [token], function (rets) {
                     localStorage.setItem("D_" + token, new BigNumber(rets.result, 16).toNumber());
-                    callback(new BigNumber(rets.result, 16).toNumber());
+                    if(callback){
+                        callback(new BigNumber(rets.result, 16).toNumber());
+                    }
                 });
             });
         }
