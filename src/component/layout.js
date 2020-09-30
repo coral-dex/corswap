@@ -157,7 +157,7 @@ class Layout extends React.Component{
 
                 {this.props.children}
 
-                <div style={{ position: 'fixed',width: '100%', bottom:"0",left:"0" }}>
+                <div className="tabbar">
                     <TabBar
                         unselectedTintColor="#fff"
                         tintColor="#f75552"
@@ -182,7 +182,7 @@ class Layout extends React.Component{
                             }
                             selected={this.props.selectedTab === '1'}
                             onPress={() => {
-                                this.goPage("#/buy")
+                                this.goPage("#/swap")
                             }}
                             data-seed="logId"
                         >

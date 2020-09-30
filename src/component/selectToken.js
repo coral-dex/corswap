@@ -15,7 +15,7 @@ class SelectToken extends React.Component{
                 >
                     <List renderHeader={() => <div>选择币种</div>} className="popup-list">
                         {tokens.map((token, index) => (
-                            <List.Item key={index} extra={balance&&showValue(balance.get(token),abi.getDecimalLocal(token),3)} onClick={()=>{
+                            <List.Item key={index} extra={balance&&balance.has(token)?showValue(balance.get(token),abi.getDecimalLocal(token)?abi.getDecimalLocal(token):18,3):"0.000"} onClick={()=>{
                                 onOk(token)
                             }}>{token}</List.Item>
                         ))}

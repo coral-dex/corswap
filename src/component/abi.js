@@ -51,7 +51,7 @@ class Abi {
     }
 
     getDecimalLocal(token) { //SERO PFIDKEY GAIL 
-        if (token == "SERO") {
+        if (token == "SERO" || token == "SUSD") {
             return 18;
         } else {
             return localStorage.getItem("D_" + token);
@@ -211,6 +211,7 @@ class Abi {
 
 
     estimateSwap(from, tokenA, tokenB, tokenIn, amountIn, callback) {
+        console.log("estimateSwap>>>> ",tokenA, tokenB, tokenIn);
         let key = hashKey(tokenA, tokenB);
         this.callMethod(contract, 'estimateSwap', from, [key, tokenToBytes(tokenIn), amountIn], function (ret) {
             console.log(ret,"---------ret");
