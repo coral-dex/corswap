@@ -1,10 +1,11 @@
 pragma solidity ^0.6.10;
+// SPDX-License-Identifier: GPL-3.0 pragma solidity >=0.4.16 <0.7.0;
 
 import "../common/math.sol";
+import "./constants.sol";
 
 library CycleList {
 
-    uint256 private constant ONEDAY = 600;
     uint256 private constant LIMIT = 7;
 
     struct RecordOfDay {
@@ -18,8 +19,8 @@ library CycleList {
     }
 
     function getDay(uint256 time, uint256 n) internal pure returns (uint256, uint256) {
-        uint256 index = time % (n * ONEDAY) / ONEDAY;
-        return (index % n, time - time % ONEDAY);
+        uint256 index = time % (n * Constants.ONEDAY) / Constants.ONEDAY;
+        return (index % n, time - time % Constants.ONEDAY);
     }
 
     function push(List storage self, uint256 key) internal returns (uint256[] memory ret) {
@@ -50,14 +51,16 @@ library CycleList {
         }
     }
 
-    function list(List storage self) internal view returns (uint256[] memory ret) {
+    function list(List storage self, uint256 lastTime) internal view returns (uint256[] memory ret) {
         uint256 len;
-        uint256 lastTime = (now - now % ONEDAY) - ((LIMIT - 1) * ONEDAY);
+        if (lastTime == 0) {
+            lastTime = (now - now % Constants.ONEDAY) - ((LIMIT - 1) * Constants.ONEDAY);
+        }
+
         for (uint256 i = 0; i < LIMIT; i++) {
             if (self.maps[i].timestamp >= lastTime) {
                 len += self.maps[i].len;
             }
-
         }
 
         ret = new uint256[](len);

@@ -11,6 +11,7 @@ import "./volume.sol";
 import "./liquidity.sol";
 import "./cyclelist.sol";
 import "./constants.sol";
+import "./types.sol";
 
 library InitValueList {
     using SafeMath for uint256;
@@ -30,7 +31,7 @@ library InitValueList {
     }
 
     function clear(List storage self) internal {
-        for (uint256 i = 0; i < self.tokens.length; i++) {
+        for(uint256 i=0;i<self.tokens.length;i++) {
             delete self.valueMap[self.tokens[i]];
         }
         delete self.tokens;
@@ -46,35 +47,14 @@ contract SwapExchange is SeroInterface, Ownable {
 
     using SafeMath for uint256;
     using ExchangePair for ExchangePair.Pair;
-    using ExchangePair for ExchangePair.Order;
     using VolumeList for VolumeList.List;
     using LiquidityList for LiquidityList.List;
     using InitValueList for InitValueList.List;
 
     bytes32 private SEROBYTES = strings._stringToBytes32("SERO");
 
-    struct Order {
-        uint256 amountIn;
-        uint256 amountOut;
-        uint256 timestamp;
-        uint8 orderType;
-    }
 
-    struct Pair {
-        bytes32 tokenA;
-        bytes32 tokenB;
-        uint256 reserveA;
-        uint256 reserveB;
-        uint256 totalShares;
 
-        uint256 myShare;
-        uint256 shareRreward;
-
-        uint256 totalVolume;
-        uint256 selfVolume;
-        Order[] orderList;
-        Order[] myOrderList;
-    }
 
     mapping(address => InitValueList.List) initValues;
 
@@ -146,25 +126,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function orderList(bytes32 key) public view returns (Order[] memory, Order[] memory) {
-        (ExchangePair.Order[] memory orders,
-        ExchangePair.Order[] memory userOrders) = pairs[key].orderList(msg.sender);
-
-        Order[] memory _orderList = new Order[](orders.length);
-        for (uint256 i = 0; i < orders.length; i++) {
-            _orderList[i] = Order({
-                amountIn : orders[i].amountIn, amountOut : orders[i].amountOut, orderType : orders[i].orderType, timestamp : orders[i].timestamp});
-        }
-
-        Order[] memory _userOrderList = new Order[](userOrders.length);
-        for (uint256 i = 0; i < userOrders.length; i++) {
-            _userOrderList[i] = Order({
-                amountIn : userOrders[i].amountIn,
-                amountOut : userOrders[i].amountOut,
-                orderType : userOrders[i].orderType,
-                timestamp : userOrders[i].timestamp});
-        }
-
-        return (_orderList, _userOrderList);
+        return  pairs[key].orderList(msg.sender);
     }
 
     function pairListByToken(bytes32 token, uint256 _start, uint256 _end) public view returns (Pair[] memory rets) {
@@ -199,7 +161,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function pairInfo(bytes32 key) public view returns (Pair memory) {
-        uint256 shareRreward = _shareReward(key);
+        uint256 shareRreward = shareReward(key);
 
         Pair memory pair = Pair({
             tokenA : pairs[key].tokenA,
@@ -209,8 +171,6 @@ contract SwapExchange is SeroInterface, Ownable {
             totalShares : pairs[key].totalShares,
             myShare : pairs[key].shares[msg.sender],
             shareRreward : shareRreward,
-            totalVolume : wholeVolume.totalVolume(lastIndexsMap[msg.sender]),
-            selfVolume : volumes[key].totalVolume(lastIndexsMap[msg.sender]),
             orderList : new Order[](0),
             myOrderList : new Order[](0)
             });
@@ -219,7 +179,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function pairInfoWithOrders(bytes32 key) public view returns (Pair memory){
 
-        uint256 shareRreward = _shareReward(key);
+        uint256 shareRreward = shareReward(key);
         (Order[] memory _orderList, Order[] memory _userOrderList) = orderList(key);
 
         Pair memory pair = Pair({
@@ -230,24 +190,75 @@ contract SwapExchange is SeroInterface, Ownable {
             totalShares : pairs[key].totalShares,
             myShare : pairs[key].shares[msg.sender],
             shareRreward : shareRreward,
-            totalVolume : wholeVolume.totalVolume(lastIndexsMap[msg.sender]),
-            selfVolume : volumes[key].totalVolume(lastIndexsMap[msg.sender]),
             orderList : _orderList,
             myOrderList : _userOrderList
             });
         return pair;
     }
 
-    function investAmount() public view returns (bytes32 token, uint256 value){
+    function volumesOfPair(bytes32 key) public view returns(Volume[] memory, Volume[] memory) {
+        return (wholeVolume.listVolume(), volumes[key].listVolume());
+    }
+
+    function liquidityOfPair(bytes32 key) public view returns (Liquidity[] memory, Liquidity[] memory) {
+        return pairs[key].liquidityList(msg.sender);
+    }
+
+    function shareReward(bytes32 key) public view returns (uint256 reward) {
+        uint256 lastIndex = lastIndexsMap[msg.sender];
+        if(lastIndex == 0) {
+            lastIndex = startDay;
+        }
+
+        uint256 selfVolume;
+        uint256 totalVolume;
+        uint256 selfLiquidity;
+        uint256 totalLiquidity;
+
+        for(uint256 i=startDay;i<(now/Constants.ONEDAY);i++) {
+            totalVolume = wholeVolume.volumeOfDay(i);
+            selfVolume = volumes[key].volumeOfDay(i);
+
+            if (selfVolume == 0 || totalVolume == 0) {
+                continue;
+            }
+            (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
+
+            if (selfLiquidity == 0 || totalLiquidity == 0) {
+                continue;
+            }
+
+            reward = reward.add(output(i).mul(selfVolume).mul(selfLiquidity).div(totalVolume).div(totalLiquidity));
+        }
+    }
+
+    function output(uint256 index) public view returns (uint256) {
+        if(startDay == 0) {
+            return 0;
+        }
+
+        if(index < startDay) {
+            return 0;
+        }
+
+        if(index-startDay >= outputs.length) {
+            return 1e21;
+        } else {
+            return 1e22;
+            // return outputs[index-startDay]
+        }
+    }
+
+    function investAmount() public view returns(bytes32 token, uint256 value){
         InitValueList.List storage list = initValues[msg.sender];
-        if (list.tokens.length == 0) {
-            return (bytes32(0), 0);
+        if(list.tokens.length == 0) {
+            return(bytes32(0),0);
         }
         token = list.tokens[0];
         value = list.valueMap[token];
     }
 
-    function cancelInvest() public returns (bool) {
+    function cancelInvest() public returns(bool) {
         InitValueList.List storage list = initValues[msg.sender];
         require(list.tokens.length == 1);
         bytes32 token = list.tokens[0];
@@ -258,7 +269,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function withdrawShareReward(bytes32 key) external {
-        uint256 value = _shareReward(key);
+        uint256 value = shareReward(key);
         lastIndexsMap[msg.sender] = now / Constants.ONEDAY;
         require(tokenPool.transfer(msg.sender, value));
     }
@@ -338,6 +349,11 @@ contract SwapExchange is SeroInterface, Ownable {
         } else {
 
         }
+
+        if(lastIndexsMap[sender] == 0) {
+            lastIndexsMap[sender] = now/Constants.ONEDAY;
+        }
+
         initValues[sender].clear();
     }
 
@@ -366,7 +382,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
 
         uint256 feeRate = feeRateMap[key];
-        if (feeRate == 0) {
+        if(feeRate == 0) {
             feeRate = 30;
         }
 
@@ -374,18 +390,18 @@ contract SwapExchange is SeroInterface, Ownable {
 
         uint256 invariant = pair.reserveA.mul(pair.reserveB);
 
-        if (tokenOut == pair.tokenB) {
-            amountOut = amountOut.mul(10000).div(10000 - feeRate);
-            if (amountOut >= pair.reserveB) {
+        if(tokenOut == pair.tokenB) {
+            amountOut = amountOut.mul(10000).div(10000-feeRate);
+            if(amountOut >=pair.reserveB ) {
                 return 0;
             }
             amountIn = invariant.div(pair.reserveB.sub(amountOut)).sub(pair.reserveA);
         } else {
-            if (amountOut >= pair.reserveA) {
+            if(amountOut >= pair.reserveA) {
                 return 0;
             }
             amountIn = invariant.div(pair.reserveA.sub(amountOut)).sub(pair.reserveB);
-            amountIn = amountIn.mul(10000).div(10000 - feeRate);
+            amountIn = amountIn.mul(10000).div(10000-feeRate);
         }
     }
 
@@ -431,23 +447,7 @@ contract SwapExchange is SeroInterface, Ownable {
         }
     }
 
-    function _shareReward(bytes32 key) internal view returns (uint256) {
-        uint256 lastIndex = lastIndexsMap[msg.sender];
 
-        uint256 selfTotalVolume = volumes[key].totalVolume(lastIndex);
-        uint256 totalVolume = wholeVolume.totalVolume(lastIndex);
-        if (selfTotalVolume == 0 || totalVolume == 0) {
-            return 0;
-        }
-
-        (uint256 selfTotal, uint256 total) = pairs[key].liquidity(msg.sender, lastIndex);
-        if (selfTotal == 0 || total == 0) {
-            return 0;
-        }
-
-        uint256 value = output(lastIndex);
-        return value.mul(selfTotalVolume).mul(selfTotal).div(totalVolume).div(total);
-    }
 
     function _hash(bytes32 tokenA, bytes32 tokenB) private pure returns (bytes32) {
         require(tokenA != tokenB, 'same token');
@@ -459,21 +459,7 @@ contract SwapExchange is SeroInterface, Ownable {
         return pairs[key].reserveA != 0 && pairs[key].reserveB != 0;
     }
 
-    function output(uint256 _startDay) public view returns (uint256) {
-        if (startDay == 0) {
-            return 0;
-        }
 
-        if (_startDay < startDay) {
-            _startDay = startDay;
-        }
-        uint256 end = now / Constants.ONEDAY;
-        uint256 count;
-        for (uint256 i = _startDay; i < end; i++) {
-            count += outputs[i - startDay];
-        }
-        return count;
-    }
 }
 
 

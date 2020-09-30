@@ -5,18 +5,12 @@ import "../common/math.sol";
 import "./liquidity.sol";
 import "./cyclelist.sol";
 import "../common/strings.sol";
+import "./types.sol";
 
 library ExchangePair {
     using SafeMath for uint256;
     using LiquidityList for LiquidityList.List;
     using CycleList for CycleList.List;
-
-    struct Order {
-        uint256 amountIn;
-        uint256 amountOut;
-        uint256 timestamp;
-        uint8 orderType;
-    }
 
     struct Pair {
         uint256 seq;
@@ -125,11 +119,11 @@ library ExchangePair {
         if (token == self.tokenB) {
             self.reserveA = self.reserveA.sub(amountOut);
             self.reserveB = self.reserveB.add(amountIn.sub(fee));
-            emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, feeRate);
+            emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, fee);
         } else {
             self.reserveA = self.reserveA.add(amountIn);
             self.reserveB = self.reserveB.sub(amountOut.add(fee));
-            emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, feeRate);
+            emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, fee);
         }
 
         uint256 id = self.seq++;
@@ -147,10 +141,14 @@ library ExchangePair {
         return self.tokenB;
     }
 
-    function liquidity(Pair storage self, address owner, uint256 startIndex) internal view returns (uint256, uint256) {
-        uint256 selfTotal = self.liquiditys[owner].totalLiquidity(startIndex);
-        uint256 total = self.wholeLiquidity.totalLiquidity(startIndex);
+    function liquidity(Pair storage self, address owner, uint256 index) internal view returns (uint256, uint256) {
+        uint256 selfTotal = self.liquiditys[owner].liquidityOfDay(index);
+        uint256 total = self.wholeLiquidity.liquidityOfDay(index);
         return (selfTotal, total);
+    }
+
+    function liquidityList(Pair storage self, address owner) internal view returns (Liquidity[] memory, Liquidity[] memory) {
+        return (self.wholeLiquidity.listLiquidity(), self.liquiditys[owner].listLiquidity());
     }
 
     function userOrderIds(Pair storage self, address owner) internal view returns (uint256[] memory) {
