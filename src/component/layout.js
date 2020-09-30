@@ -166,7 +166,7 @@ class Layout extends React.Component{
                     >
 
                         <TabBar.Item
-                            title={i18n.t("MyBuy")}
+                            title={"兑换"}
                             key="Life"
                             icon={<div style={{
                                 width: '22px',
@@ -188,30 +188,30 @@ class Layout extends React.Component{
                         >
                         </TabBar.Item>
 
-                        <TabBar.Item
-                            icon={
-                                <div style={{
-                                    width: '22px',
-                                    height: '22px',
-                                    background: 'url(./images/sell.png) center center /  21px 21px no-repeat' }}
-                                />
-                            }
-                            selectedIcon={
-                                <div style={{
-                                    width: '22px',
-                                    height: '22px',
-                                    background: 'url(./images/sellselect.png) center center /  21px 21px no-repeat' }}
-                                />
-                            }
-                            title={i18n.t("MySell")}
-                            key="Koubei"
-                            selected={this.props.selectedTab === '2'}
-                            onPress={() => {
-                                this.goPage("#/sell")
-                            }}
-                            data-seed="logId1"
-                        >
-                        </TabBar.Item>
+                        {/*<TabBar.Item*/}
+                        {/*    icon={*/}
+                        {/*        <div style={{*/}
+                        {/*            width: '22px',*/}
+                        {/*            height: '22px',*/}
+                        {/*            background: 'url(./images/sell.png) center center /  21px 21px no-repeat' }}*/}
+                        {/*        />*/}
+                        {/*    }*/}
+                        {/*    selectedIcon={*/}
+                        {/*        <div style={{*/}
+                        {/*            width: '22px',*/}
+                        {/*            height: '22px',*/}
+                        {/*            background: 'url(./images/sellselect.png) center center /  21px 21px no-repeat' }}*/}
+                        {/*        />*/}
+                        {/*    }*/}
+                        {/*    title={i18n.t("MySell")}*/}
+                        {/*    key="Koubei"*/}
+                        {/*    selected={this.props.selectedTab === '2'}*/}
+                        {/*    onPress={() => {*/}
+                        {/*        this.goPage("#/sell")*/}
+                        {/*    }}*/}
+                        {/*    data-seed="logId1"*/}
+                        {/*>*/}
+                        {/*</TabBar.Item>*/}
                         <TabBar.Item
                             icon={
                                 <div style={{
