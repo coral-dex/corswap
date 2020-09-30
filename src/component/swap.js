@@ -55,18 +55,18 @@ class Swap extends React.Component{
 
     componentDidMount() {
         this.init().then(()=>{
-            // this.initPairs("SERO")
+            this.initPairs().catch()
         })
     }
 
     async initPairs (token){
-        const swapBase = ["SERO","SUSD"];
+        // const swapBase = ["SERO","SUSD"];
         let { account}= this.state;
         return new Promise((resolve)=>{
-            if(!token || swapBase.indexOf(token) == -1){
-                resolve(swapBase)
-                return
-            }
+            // if(!token || swapBase.indexOf(token) == -1){
+            //     resolve(swapBase)
+            //     return
+            // }
             abi.pairList(account.mainPKr,token,function (datas) {
                 const tokensTmp = [];
                 for(let pair of datas){
@@ -75,6 +75,9 @@ class Swap extends React.Component{
                     if(!token){
                         if(tokensTmp.indexOf(pair.tokenB) == -1){
                             tokensTmp.push(pair.tokenB)
+                        }
+                        if(tokensTmp.indexOf(pair.tokenA) == -1){
+                            tokensTmp.push(pair.tokenA)
                         }
                     }else{
                         if(token === pair.tokenA){
@@ -145,6 +148,7 @@ class Swap extends React.Component{
         const {tokenToValue} = this.state;
         this.setState({
             tokenFrom:v,
+            tokenTo:"",
             showSelectTokenFrom:false
         })
         this.setTokenToValue(tokenToValue,v)
@@ -153,7 +157,7 @@ class Swap extends React.Component{
     setShowSelectTokenFrom = (f) =>{
         const {tokenTo} = this.state;
         if(f){
-            this.initPairs(tokenTo).then(tokens=>{
+            this.initPairs().then(tokens=>{
                 this.setState({
                     showSelectTokenFrom:f,
                     tokens:tokens
@@ -194,15 +198,15 @@ class Swap extends React.Component{
 
     convert = ()=>{
         const {tokenTo,tokenFrom,tokenToValue,tokenFromValue,estimate} = this.state;
-
-        this.setState({
-            tokenFrom: tokenTo,
-            tokenTo: tokenFrom,
-            tokenFromValue: tokenToValue,
-            tokenToValue:tokenFromValue,
-            estimate:estimate?(estimate=="from"?"to":"from"):""
-        })
-
+        if(tokenTo && tokenFrom ){
+            this.setState({
+                tokenFrom: tokenTo,
+                tokenTo: tokenFrom,
+                tokenFromValue: tokenToValue,
+                tokenToValue:tokenFromValue,
+                estimate:estimate?(estimate=="from"?"to":"from"):""
+            })
+        }
     }
 
     swap = ()=>{
