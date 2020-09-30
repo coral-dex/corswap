@@ -372,14 +372,10 @@ export class Exchange extends Component {
                         })
                     }}/>
             </div>
-            <div className="align-item inputmany">
-                <div>
-                    <List>
-                    <input  value={this.state.tokenInAmount} placeholder="" onChange={(e) => {
+            <div className="align-item tokenOutAmount" style={{width:"100%",textAlign:"left"}}>
+                    <input placeholder="0" value={this.state.tokenInAmount} onChange={(e) => {
                         this.showRate(e.target.value)
-                    }} type="text" className="inputItem disabled"/>
-                    </List>
-                </div>
+                    }} type="text" className="inputItem"/>
             </div>      
         </div>
          let froms = <div className="space-between max_sero">
@@ -399,15 +395,13 @@ export class Exchange extends Component {
                         })
                     }}/>
             </div>
-            <div className="align-item inputmany">
-                <List>
-                    <input style={{marginLeft:"7px",width:"100%"}} disabled value={this.state.tokenOutAmount} onChange={(e) => {}} type="text" className="inputItem disable"/>
-                </List>
+            <div style={{width:"100%",textAlign:"left"}}>
+                <div className="tokenOutAmount" style={{width:"100%",textAlign:"left"}} >{this.state.tokenOutAmount}</div>
             </div>     
         </div>
         return (
             <Layout selectedTab="2" doUpdate={this.doUpdate}>
-                <div className="flex-center" style={{padding:"10px"}}>
+                <div style={{padding:"10px"}}>
                     <div className="header">
                         <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要卖</div>
 
@@ -417,14 +411,28 @@ export class Exchange extends Component {
                         </div>                        
                         <div className="from">
                             <div>
-                            <div className="fontSize text-right color2">已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
-                             {froms}   
+                                <div className="fontSize text-right color2">已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
+                                {froms}   
                             </div>
                         </div>
-                        <div className="flex color fontSize">
-                            <div style={{textAlign: "", margin: "10px 0", height: "20px",padding:"0 5px"}}>
-                                当前兑换比例:<br/>
-                                <div style={{height:"10px"}}>
+                        <div className="color fontSize">
+                            <div>
+                                {
+                                    this.state.tokenInAmount
+                                    ?
+                                    <div>
+                                          当前兑换比例:
+                                    </div>
+                                    :
+                                    <div>
+                                        当前{this.state.tokenIn}和{this.state.tokenOut}数量:
+                                        {
+                                            this.state.pair && showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenIn))+"="+showValue(this.state.pair.reserveB,abi.getDecimalLocal(this.state.tokenOut))
+                                        }  
+                                    </div>   
+                                }
+                               
+                                <div style={{height:"14px"}}>
                                     {
                                         this.state.price > 0 &&
                                         <span>1{this.state.tokenIn} : {this.state.price}{this.state.tokenOut}</span>

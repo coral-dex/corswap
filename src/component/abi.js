@@ -93,8 +93,6 @@ class Abi {
                 });
             });
         })
-
-
     }
 
     async getDecimalAsync(token) {

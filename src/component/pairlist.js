@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Card,NoticeBar,Icon,Steps, Flex, InputItem, List, Modal, SearchBar, Tabs, Toast, WhiteSpace, WingBlank} from "antd-mobile";
+import {Button, Card,NoticeBar,Icon,Steps,Checkbox, Flex, InputItem, List, Modal, SearchBar, Tabs, Toast, WhiteSpace, WingBlank} from "antd-mobile";
 import abi from "./abi";
 import BigNumber from 'bignumber.js'
 import {Select} from "./select";
@@ -9,7 +9,7 @@ import SelectToken from './selectToken'
 import i18n from '../i18n'
 const alert = Modal.alert;
 const Step = Steps.Step;
-
+const CheckboxItem = Checkbox.CheckboxItem;
 export class PairList extends Component {
     constructor(props) {
         super(props);
@@ -56,6 +56,7 @@ export class PairList extends Component {
     }
 
     setSelectTokenA = (v)=>{
+        console.log(v,"vv");
         this.setState({
             selectTokenA:v,
             showSelectTokenA:false
@@ -63,6 +64,7 @@ export class PairList extends Component {
     }
 
     setSelectTokenB = (v)=>{
+        console.log(v,"vSK");
         this.setState({
             selectTokenB:v,
             showSelectTokenB:false
@@ -80,6 +82,7 @@ export class PairList extends Component {
         }
 
         abi.pairList(account.mainPKr, search, function (pairs) {
+            console.log(pairs,"pairss");
             self.setState({pairs: pairs,pairsOrigin:pairs});
         });
     }
@@ -213,6 +216,7 @@ export class PairList extends Component {
             this.setState({
                 pairs:arr
             })
+            console.log(arr,"pair.arr");
         }
 
 
@@ -331,36 +335,34 @@ export class PairList extends Component {
     }
 
     render() {
-
+        console.log(this.state.account,"accountssss");
         let imgs = []
         let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
         imgs.push(pictures);
         account.imgs = pictures;
 
-
+       
         let tokensB = [];
         let tokensA = [];
         const ops = ["SERO","SUSD"];
 
         account.balances.forEach((val, key) => {
             if (val > 0) {
-                tokensB.push(key)
-                tokensA.push(key)
-                // if(ops.indexOf(key) == -1){
-                //     tokensB.push(key)
-                // }else{
-                //
-                // }
+                if(ops.indexOf(key) === -1){
+                    tokensB.push(key)
+                }else{
+                    tokensA.push(key)
+                }
             }
         });
-
         if(!selectTokenA){
             selectTokenA = tokensA.length>0 ? tokensA[0]:""
         }
         if(!selectTokenB){
             selectTokenB = tokensB.length>0 ? tokensB[0]:""
         }
-
+        console.log(account,"余额");
+        console.log(tokensA,tokensB,"余额吗");
         // console.log("render>>>> ",investAmount,selectTokenA,selectTokenB);
 
         let investTokenValue = 0;
@@ -378,48 +380,65 @@ export class PairList extends Component {
                 }
             }
         }
-
-
+        let balances;
+        let balances2;
+        if(selectPair && this.state.account.balances.has(selectPair.tokenB)){
+            balances = this.state.account.balances.get(selectPair.tokenB)
+        }
+        if(selectPair && this.state.account.balances.has(selectPair.tokenA)){
+            balances2 = this.state.account.balances.get(selectPair.tokenA)
+        }
+        console.log(pairs,"pairs是什么是什么");
         return (
             <Layout selectedTab="3" doUpdate={this.doUpdate}>
                 <div className="pairlist">
-                    <p className="flex" style={{color:"#00456b",fontSize:"12px"}} className="text-center">
-                        <img width="14px" src={require('../images/horn.png')}/>
+                    <p className="flex-center" style={{color:"#00456b",fontSize:"12px"}}>
+                        <img width="14px" src={require('../images/horn.png')} alt=""/>
+                        &ensp;
                         <span>通过为不同交易池提供流动性，获得CORAL</span>
                     </p>
                     <WhiteSpace/>
                     <WingBlank>
+
                         <Button type="warning" size="small" onClick={()=>{this.setShowInitModal(true).catch()}} >+ 创建流动池</Button>
+
                     </WingBlank>
                     <WhiteSpace/>
                     <div className="searchdiv">
                         <input type="text" onChange={(e)=>this.searchcoral(e)} onBlur={(e)=>this.searchcoral(e)} placeholder={i18n.t("SearchCoralSwapPairAndToken")} className="input search"/>
                     </div>
                     <WhiteSpace/>
-                    <div className="text-right ">
-                        <span style={{color:"#00456b",fontSize:"12px"}} className="flex-direction"><input style={{borderRadius:"50%",marginTop:"5px"}} type="checkbox" onChange={e=>{
-                            this.showMyOnly(e.target.checked)
-                        }} />{i18n.t("MyPledge")}</span>
+                    <div className="text-right">
+                        <div style={{color:"#00456b",fontSize:"12px"}} className="pledge fontSize">
+                            <Checkbox onChange={e=>{ this.showMyOnly(e.target.checked)}}>
+
+                            </Checkbox>
+                            <span>{i18n.t("MyPledge")}</span>
+                        </div>
                     </div>
                     <WhiteSpace/>
                     {
                         pairs.map((pair, index) => {
+                            console.log(pair,"循环后的pair");
                             return (
-                                <div>
+                                <div className="fontSize">
                                     <div className="am-card card-border">
                                         <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
                                             <div>
-                                                <img width="50%" src={pictures[0]} />
+                                                <img width="50%" src={pictures[0]} alt=""/>
                                             </div>
                                             <div style={{color:"#f75552"}}>
-                                                <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%"/>:""}</div>
+                                                <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
                             <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>{i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {(pair.myShare/pair.totalShares*100).toFixed(2)}%</div>
                                             </div>
                                         </div>
                                         <div className="text-center">
                                             <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB}</div>
                                             <div>
-                                                {showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}
+
+                                                {
+                                                 pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB
+                                                }
                                             </div>
                                             <WhiteSpace/>
                                             <div>
@@ -432,13 +451,13 @@ export class PairList extends Component {
                                             <WhiteSpace/>
                                             <Flex>
                                                 <Flex.Item>
-                                                    <Button type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true,pair).catch()}}>回收流动性</Button>
+                                                    <Button  type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true,pair).catch()}}>回收流动性</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
-                                                    <Button type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>提供流动性</Button>
+                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>提供流动性</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
-                                                    <Button type="primary" size="small" disabled={pair.shareRreward*1 == 0} onClick={() => {this.withdrawCoral(pair)}}>提现</Button>
+                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" disabled={pair.shareRreward*1 === 0} onClick={() => {this.withdrawCoral(pair)}}>提现</Button>
                                                 </Flex.Item>
                                             </Flex>
                                         </div>
@@ -491,7 +510,7 @@ export class PairList extends Component {
                                                 <Flex>
                                                     <Flex.Item style={{flex: 1}} onClick={()=>this.setShowSelectTokenA(true)}>
                                                         <span>{investAmount[0]?investAmount[0]:selectTokenA}</span>
-                                                        <img width="13px" className="absolute1" src={require('../images/bottom.png')}/>
+                                                        <img width="13px" className="absolute1" src={require('../images/bottom.png')} alt=""/>
                                                     </Flex.Item>
                                                     <Flex.Item style={{flex: 2}}>
                                                         {
@@ -512,7 +531,7 @@ export class PairList extends Component {
                                                         交易二
                                                     </Flex.Item>
                                                     <Flex.Item style={{flex: 2}}>
-                                                        {/*余额: {account&&showValue(account.balances.get(selectTokenB),abi.getDecimalLocal(selectTokenB),3)} {selectTokenB}*/}
+                                                        {/* 余额: {account&&showValue(account.balances.get(selectTokenB),abi.getDecimalLocal(selectTokenB),3)} {selectTokenB} */}
                                                     </Flex.Item>
                                                 </Flex>
                                             </div>
@@ -521,7 +540,7 @@ export class PairList extends Component {
                                                 <Flex>
                                                     <Flex.Item style={{flex: 1}} onClick={()=>this.setShowSelectTokenB(true)}>
                                                         <span>{selectTokenB}</span>
-                                                        <img width="13px" className="absolute1" src={require('../images/bottom.png')}/>
+                                                        <img width="13px" className="absolute1" src={require('../images/bottom.png')} alt=" "/>
                                                     </Flex.Item>
                                                     <Flex.Item style={{flex: 2}}>
                                                         <input style={{width: '95%', height: '25px'}} type="number" disabled={!investAmount[0]} placeholder={0} onChange={(e) => { this.setInputValue(e.target.value) }}/>
@@ -569,7 +588,8 @@ export class PairList extends Component {
                                         <div>
                                             <Flex>
                                                 <Flex.Item style={{flex: 1}}>
-                                                    交易一
+                                                   <span>交易一</span>&emsp;&ensp;
+                                                   <span>{selectPair && showValue(balances, abi.getDecimalLocal(selectPair.tokenB))}</span>    
                                                 </Flex.Item>
                                                 <Flex.Item style={{flex: 1}}>
                                                     {investAmount[0]?<Button size="small" type="ghost" onClick={()=>this.revert()}>撤销</Button>:""}
@@ -592,10 +612,13 @@ export class PairList extends Component {
                                             </Flex>
                                         </div>
                                     } />
-                                    <Step key={1} title="交易二" description={
+                                    <Step key={1} title={<div> 
+                                            <span>交易二</span>&emsp;&ensp;
+                                            <span>{selectPair&&showValue(balances2, abi.getDecimalLocal(selectPair.tokenA))}</span>
+                                    </div>} description={
                                         <div>
                                             <Flex>
-                                                <Flex.Item style={{flex: 1}}>
+                                                <Flex.Item style={{flex: 1}}> 
                                                     {selectPair&&selectPair.tokenA}
                                                 </Flex.Item>
                                                 <Flex.Item style={{flex: 2}}>
@@ -622,8 +645,8 @@ export class PairList extends Component {
                                {
                                    text:"取消",
                                    onPress:()=>{
-                                       this.setShowDivestModal(false).catch()
-                                       this.setInputValue("")
+                                       this.setShowDivestModal(false)
+                                    //    this.setInputValue("")
                                    }
                                },
                                {

@@ -11,8 +11,7 @@ import '../style/style.css'
 import Layout from "./layout";
 import {bnToHex} from './utils/common'
 import i18n from '../i18n'
-import { useTranslation, Trans, Translation } from 'react-i18next'
-
+import SelectTokenTo from './selectTokenTo'
 export class Home extends Component {
     constructor(props) {
         super(props);
@@ -39,7 +38,10 @@ export class Home extends Component {
             option1: '',
             option2: '',
             inputStyle:null,
-            out:null
+            out:null,
+            showModal:false,
+            showModal2:false,
+            pairs:null
         }
     }
 
@@ -61,8 +63,13 @@ export class Home extends Component {
                 })
                 abi.getDecimal(tokenToTokens.get(tokens[0])[0],function (d) { 
                 })
-
-                self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {   
+                abi.pairList(account.mainPKr," ",function(pair){
+                    console.log(pair,"home-pair");
+                    self.setState({
+                        pairs:pair
+                    })
+                })
+                self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {  
                     self.setState({
                         tokenIn: tokens[0],
                         tokenIn2: tokens[1],
@@ -113,8 +120,13 @@ export class Home extends Component {
             });
     }
     showRate(amountIn) {
-        if(isNaN(amountIn)){
-            alert("请输入数字")
+        let self = this;
+        // console.log(this.state.tokenInAmount,"tokenInAMOUNT");
+        // console.log(this.state.pair&& this.state.pair,"存在");
+        if(this.state.pair && amountIn>showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenOut))){
+            this.setState({
+                tokenInAmount: showValue(self.state.pair.reserveA,abi.getDecimalLocal(self.state.tokenOut))
+            })
         }
         this.setState({
             inputStyle:amountIn
@@ -123,7 +135,6 @@ export class Home extends Component {
             this.setState({tokenInAmount: amountIn, tokenOutAmount: 0, price: 0});
             return;
         }
-        let self = this;
       
 
         let amountOut;
@@ -257,7 +268,7 @@ export class Home extends Component {
         let self = this;
         let options_1 = []; //可用
         let options_2 = []; //要买
-       
+        let {pairs,pair} = this.state;
         let balance = 0;
         let usable = 0;
         if (this.state.account.balances.has(this.state.tokenIn)) {
@@ -275,13 +286,12 @@ export class Home extends Component {
                 options_2.push({value: each, label: each});
             });
         }
-       
-        console.log(options_1,options_2,this.state.tokenIn,this.state.tokenOut,tokens,"from to ！！");
-        
         let froms = <div className="space-between max_sero">
                
                 <div className="flex modal" onClick={() => this.showModal("")}>
                     <img width="13px" className="absolute" src={ require('../images/bottom.png')} alt=''/>
+                    {/* <SelectTokenTo visible={this.state.showModal} onOk={this.setSelectTokenA} onClose={this.setShowSelectTokenA} tokens={tokensA} balance={account&&account.balances}/> */}
+
                     <Select
                         className="select"
                         style={{height: "20px"}}
@@ -293,12 +303,10 @@ export class Home extends Component {
                             })
                         }}/>
                 </div>
-                <div className="align-item inputmany">
-                    <List>
-                        <input autoFocus={true} value={this.state.tokenInAmount} onChange={(e) => {
+                <div className="tokenOutAmount" style={{width:"100%"}}>
+                        <input value={this.state.tokenInAmount} placeholder="0" onChange={(e) => {
                             this.showRate(e.target.value)
-                        }} type="number" className="inputItem"/>
-                    </List>
+                        }} type="number" className="inputItem"/> 
                 </div>     
         </div>
         let tos = <div className="flex max_sero">
@@ -315,23 +323,22 @@ export class Home extends Component {
                         })
                     }}/>
             </div>
-            <div className="align-item inputmany ">
-                <div>
-                    <List>
-                    <input  value={this.state.tokenOutAmount} disabled onChange={(e) => {}} className="inputItem disable"/>
-                    </List>
-                </div>
+            <div style={{width:"100%"}}>
+                <div className="tokenOutAmount" style={{width:"100%"}}>{this.state.tokenOutAmount&&this.state.tokenOutAmount>0?this.state.tokenOutAmount:''}</div>
             </div>      
         </div>
-        
+        console.log(this.state.pair,"拿到pair了吗");
         return (
             <Layout selectedTab="1" doUpdate={this.doUpdate}>
-                <div style={{padding:"10px"}} className="flex-center">
+                <div style={{padding:"10px"}}>
                     <div className="header">
                         <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>{i18n.t("MyBuy")}</div>
 
                         <div className="from" style={{marginTop:"20px"}}>
-                        <div className='fontSize text-right color2'>{i18n.t("Referrer")}{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
+                            <div className='fontSize text-right color2'>
+                                <span className={pair&&this.state.tokenInAmount>0&& !this.state.tokenOutAmount?'color2':'none'}>输入数量已超!</span>&emsp;
+                                {i18n.t("Referrer")}{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}
+                            </div>
                            {froms }
                         </div>
 
@@ -342,22 +349,37 @@ export class Home extends Component {
                             </div>
                         </div>
 
-                        <div className="fontSize color scale" style={{margin:"10px 0",padding:"0 5px"}}>
-                            <div style={{textAlign: "left"}}>
-                                当前兑换比例:<br/>
-                                <div style={{height:"10px"}}>
+                        <div className="fontSize color">
+                            {
+                                this.state.tokenOutAmount? 
+                                    <div>
+                                        当前兑换比例:
+                                    </div>
+                                    :
+                                    <div>
+                                      当前{this.state.tokenOut}和{this.state.tokenIn}数量:{
+                                            this.state.pair && showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenOut))+"="+showValue(this.state.pair.reserveB,abi.getDecimalLocal(this.state.tokenIn))
+                                        }                 
+                                    </div>
+                            }
+
+                           <div style={{height:"14px"}}>
                                     {
                                         this.state.price > 0 &&
                                         <span>1{this.state.tokenOut} : {this.state.price}{this.state.tokenIn}</span>
                                      }
-                                </div>
-                                
                             </div>
+                        </div>
+                        <div>
+                            {this.renderOrders()}
                         </div>   
                         <div className="text-center">
                             <input type="submit" disabled={!this.state.inputStyle}  className={this.state.inputStyle>0?'inputs':'nothing'} value={i18n.t("ConfirmBuy")} onClick={() => {
                                 // let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
                                 self.exchange(self.state.tokenIn,self.state.tokenOut , new BigNumber(self.state.out));
+                                self.setState({
+                                    tokenInAmount:null
+                                })
                             }}/>
                         </div>
                     </div>
