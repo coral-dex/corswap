@@ -340,7 +340,7 @@ export class PairList extends Component {
         let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
         imgs.push(pictures);
         account.imgs = pictures;
-
+        console.log(account&& account,"accccc");
        
         let tokensB = [];
         let tokensA = [];
@@ -389,9 +389,10 @@ export class PairList extends Component {
             balances2 = this.state.account.balances.get(selectPair.tokenA)
         }
         console.log(pairs,"pairs是什么是什么");
+        let imgCurrent=0;
         return (
             <Layout selectedTab="3" doUpdate={this.doUpdate}>
-                <div className="pairlist">
+                <div className="pairlist fontSize">
                     <p className="flex-center" style={{color:"#00456b",fontSize:"12px"}}>
                         <img width="14px" src={require('../images/horn.png')} alt=""/>
                         &ensp;
@@ -399,9 +400,7 @@ export class PairList extends Component {
                     </p>
                     <WhiteSpace/>
                     <WingBlank>
-
                         <Button type="warning" size="small" onClick={()=>{this.setShowInitModal(true).catch()}} >+ 创建流动池</Button>
-
                     </WingBlank>
                     <WhiteSpace/>
                     <div className="searchdiv">
@@ -419,25 +418,23 @@ export class PairList extends Component {
                     <WhiteSpace/>
                     {
                         pairs.map((pair, index) => {
-                            console.log(pair,"循环后的pair");
                             return (
                                 <div className="fontSize">
                                     <div className="am-card card-border">
                                         <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
                                             <div>
-                                                <img width="50%" src={pictures[0]} alt=""/>
+                                                <img width="50%" src={this.state.pictures && this.state.pictures[index]} alt=""/>
                                             </div>
                                             <div style={{color:"#f75552"}}>
                                                 <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
-                            <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>{i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {(pair.myShare/pair.totalShares*100).toFixed(2)}%</div>
+                                                <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>{i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {(pair.myShare/pair.totalShares*100).toFixed(2)}%</div>
                                             </div>
                                         </div>
                                         <div className="text-center">
                                             <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB}</div>
                                             <div>
-
                                                 {
-                                                 pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB
+                                                    pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB
                                                 }
                                             </div>
                                             <WhiteSpace/>
@@ -588,7 +585,7 @@ export class PairList extends Component {
                                         <div>
                                             <Flex>
                                                 <Flex.Item style={{flex: 1}}>
-                                                   <span>交易一</span>&emsp;&ensp;
+                                                   <span>交易一</span>&emsp;&emsp;{selectPair&&selectPair.tokenB}剩余:
                                                    <span>{selectPair && showValue(balances, abi.getDecimalLocal(selectPair.tokenB))}</span>    
                                                 </Flex.Item>
                                                 <Flex.Item style={{flex: 1}}>
@@ -613,7 +610,7 @@ export class PairList extends Component {
                                         </div>
                                     } />
                                     <Step key={1} title={<div> 
-                                            <span>交易二</span>&emsp;&ensp;
+                                            <span>交易二</span>&emsp;&emsp;{selectPair&&selectPair.tokenA}剩余:
                                             <span>{selectPair&&showValue(balances2, abi.getDecimalLocal(selectPair.tokenA))}</span>
                                     </div>} description={
                                         <div>

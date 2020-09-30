@@ -93,6 +93,8 @@ class Abi {
                 });
             });
         })
+
+
     }
 
     async getDecimalAsync(token) {
@@ -285,7 +287,7 @@ class Abi {
                 }
             }
             callback(tokens,restMap)
-            console.log(tokens,restMap,"tokens---restMap");
+            // console.log(tokens,restMap,"tokens---restMap");
         })
     }
 
@@ -296,7 +298,7 @@ class Abi {
     }
 
     convertToPair(pair){
-        console.log(pair,"pair");
+        // console.log(pair,"pair");
         return {
             tokenA: bytes32ToToken(pair.tokenA),
             tokenB: bytes32ToToken(pair.tokenB),
@@ -312,17 +314,13 @@ class Abi {
 
     orderList(from, tokenA, tokenB, callback) {
         let key = hashKey(tokenA, tokenB);
-        // console.log([key],">><<>><<");
         this.callMethod(contract, 'orderList', from, [key], function (ret) {
-            // console.log(contract,ret,"contract");
             callback(ret);
         });
     }
 
     pairList(from, token, callback) {
-        // console.log("token>>> ",token);
         let self = this;
-        // console.log(token,"---",[tokenToBytes(token), 0, 1000],"tokentobytes");
         if (token) {
             this.callMethod(contract, 'pairListByToken', from, [tokenToBytes(token), 0, 1000], function (ret) {
                 let pairs = [];
@@ -458,6 +456,7 @@ class Abi {
     }
 
     showExchange(from, amount, callback) {
+        console.log(amount,"abi.amount");
         this.callMethod(poolContract, 'showExchange', from, [amount], function (ret) {
             if(ret){
                 let tokens = [];

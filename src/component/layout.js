@@ -102,7 +102,7 @@ class Layout extends React.Component{
                 <Flex className="flex showtais">
                     <Flex.Item style={{flex:1}}>
                         <div>
-                            <img src={require("../images/logo.png")} alt="" width="90%"/>
+                            <img src={require("../images/logo.png")} alt="" width="80%"/>
                         </div>
                     </Flex.Item>
                     <Flex.Item style={{flex:1}}>
@@ -133,9 +133,9 @@ class Layout extends React.Component{
                         </Flex>
                     </div>
                     {
-                        ["3","4"].indexOf(this.props.selectedTab) == -1?<div className="text-center fishing_div">
+                        ["3","4"].indexOf(this.props.selectedTab) === -1?<div className="text-center fishing_div">
                                 {/* <Tag className="fishing_tag">买币</Tag> */}
-                                <img style={{position:"relative",bottom:"0",}} width="60%" src={require("../images/fishing.png")}/>
+                                <img style={{position:"relative",bottom:"0",}} width="60%" src={require("../images/fishing.png")} alt=" "/>
                                 {/* <Tag className="fishing_tag">买币</Tag> */}
                             </div>:""
                     }

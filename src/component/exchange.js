@@ -38,7 +38,8 @@ export class Exchange extends Component {
             flag: false,
             option1: '',
             option2: '',
-            inputStyle:null
+            inputStyle:null,
+            deal:true,
         }
     }
 
@@ -135,11 +136,6 @@ export class Exchange extends Component {
 
         let amountOut;
         let pair = this.state.pair;
-
-        // let reserveA = new BigNumber(pair.reserveA);
-        // let reserveB = new BigNumber(pair.reserveB);
-        // let invariant = reserveA.multipliedBy(reserveB);
-
         abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
             console.log(out,"out-----out");
             amountOut = new BigNumber(out).dividedBy(10**18)
@@ -299,37 +295,11 @@ export class Exchange extends Component {
                 },
             ])
     }
-    // numberMax(balance) {
-    //     let num = showValue(balance, abi.getDecimalLocal(this.state.tokenIn))
-    //     console.log(showValue(balance, abi.getDecimalLocal(this.state.tokenIn)), "111")
-    //     this.setState({
-    //         put1: num
-    //     })
-    // }
-
-    onSelect = (opt) => {
-        // console.log(opt.props.value);
+    showDeal(){
         this.setState({
-            visible: false,
-            selected: opt.props.value,
-        });
-    };
-    // handleVisibleChange = (visible) => {
-    //     this.setState({
-    //         visible,
-    //     });
-    // };
-
-    // renderContent(pageText) {
-    //     return (
-    //         <div style={{backgroundColor: '#e9f4f8', height: '100%', textAlign: 'center'}}>
-    //         </div>
-    //     );
-    // }
-    // goPage = (uri) => {
-    //     window.location.href = uri
-    // }
-
+            deal:!this.state.deal
+        })
+    }
     render() {
         let self = this;
         let options_1 = [];
@@ -399,56 +369,152 @@ export class Exchange extends Component {
                 <div className="tokenOutAmount" style={{width:"100%",textAlign:"left"}} >{this.state.tokenOutAmount}</div>
             </div>     
         </div>
+
+        let tos2 = <div className="flex max_sero">  
+            <div className="flex modal paddingright" onClick={() => this.showModal('')}>
+                <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
+                <Select
+                    options={options_1}
+                    className="select"
+                    // selectedOption={{value: this.state.tokenIn}}
+                    onChange={(option) => {
+                        this.setState({option1: option})
+                        this.initPair(option.value,this.state.tokenIn, function (pair) {
+                            self.setState({pair: pair, tokenOut:option.value,});
+                            self.showRate(self.state.tokenInAmount);
+                        })
+                    }}/>
+            </div>
+            <div className="align-item tokenOutAmount" style={{width:"100%",textAlign:"left"}}>
+                    <input placeholder="0" value={this.state.tokenInAmount} onChange={(e) => {
+                        this.showRate(e.target.value)
+                    }} type="text" className="inputItem"/>
+            </div>      
+        </div>
+        
+        let froms2 = <div className="space-between max_sero">
+            <div className="flex modal">
+                <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>  
+                <Select
+                    className="select"
+                    style={{height: "20px"}}
+                    options={options_2}
+                    selectedOption={{value: this.state.tokenIn}}
+                    onChange={(option) => { 
+                        this.setState({option2: option})
+                        let tokenOut = this.state.tokenToTokens.get(option.value)[0];
+                        this.initPair(this.state.tokenOut,option.value, function (pair) {
+                            self.setState({pair: pair, tokenIn: option.value,tokenOut:tokenOut});
+                            self.showRate(self.state.tokenInAmount);
+                        })
+                    }}/>
+            </div>
+            <div style={{width:"100%",textAlign:"left"}}>
+                <div className="tokenOutAmount" style={{width:"100%",textAlign:"left"}} >{this.state.tokenOutAmount}</div>
+            </div>     
+        </div>
         return (
             <Layout selectedTab="2" doUpdate={this.doUpdate}>
                 <div style={{padding:"10px"}}>
-                    <div className="header">
-                        <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要卖</div>
+                    {   this.state.deal ?
+                         <div className="header">
+                            <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要卖</div>
 
-                        <div className="from" style={{marginTop:"20px"}}>
-                            <div className="fontSize text-right color2">可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
-                            {tos} 
-                        </div>                        
-                        <div className="from">
-                            <div>
-                                <div className="fontSize text-right color2">已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
-                                {froms}   
+                            <div className="from" style={{marginTop:"20px"}}>
+                                <div className="fontSize text-right color2">可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
+                                {tos} 
                             </div>
-                        </div>
-                        <div className="color fontSize">
-                            <div>
-                                {
-                                    this.state.tokenInAmount
-                                    ?
-                                    <div>
-                                          当前兑换比例:
-                                    </div>
-                                    :
-                                    <div>
-                                        当前{this.state.tokenIn}和{this.state.tokenOut}数量:
-                                        {
-                                            this.state.pair && showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenIn))+"="+showValue(this.state.pair.reserveB,abi.getDecimalLocal(this.state.tokenOut))
-                                        }  
-                                    </div>   
-                                }
-                               
-                                <div style={{height:"14px"}}>
-                                    {
-                                        this.state.price > 0 &&
-                                        <span>1{this.state.tokenIn} : {this.state.price}{this.state.tokenOut}</span>
-                                    }
+                            <div className="text-center">
+                                    <img width="20px" onClick={()=>this.showDeal()} src={require("../images/swap.png")} alt=""/>
+                            </div>                        
+                            <div className="from">
+                                <div>
+                                    <div className="fontSize text-right color2">已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
+                                    {froms}   
                                 </div>
+                            </div>
+                            <div className="color fontSize">
+                                <div>
+                                    {this.state.tokenInAmoun?<div>当前兑换比例:</div>:
+                                        <div>
+                                            当前资金池剩余{this.state.tokenIn}和{this.state.tokenOut}:
+                                            {
+                                                this.state.pair && showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenIn))+"="+showValue(this.state.pair.reserveB,abi.getDecimalLocal(this.state.tokenOut))
+                                            }  
+                                        </div>   
+                                    }
+                                    <div style={{height:"14px"}}>
+                                        {
+                                            this.state.price > 0 &&
+                                            <span>1{this.state.tokenIn} : {this.state.price}{this.state.tokenOut}</span>
+                                        }
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <input style={{}} type="submit" disabled={!this.state.inputStyle} className={this.state.inputStyle>0?'inputs':'nothing'} value={i18n.t("ConfirmSell")}
+                                    onClick={() => {
+                                    let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
+                                    self.exchange(self.state.tokenIn,self.state.tokenOut, amount);
+                                }}/>
+                            </div>
+                         </div>
+                         :
+                         <div className="header">
+                            <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>我要买</div>
+
+                            <div className="from">
+                                <div>
+                                    <div className="fontSize text-right color2">已有{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}</div>
+                                    {froms2}   
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                    <img width="20px" onClick={()=>this.showDeal()} src={require("../images/swap.png")} alt=""/>
+                            </div>
+                            <div className="from" style={{marginTop:"20px"}}>
+                                <div className="fontSize text-right color2">可用{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
+                                {tos2} 
+                            </div>                         
+                            <div className="color fontSize">
+                                <div>
+                                    {this.state.tokenInAmoun?<div>当前兑换比例:</div>:
+                                        <div>
+                                            当前资金池剩余{this.state.tokenIn}和{this.state.tokenOut}:
+                                            {
+                                                this.state.pair && showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenIn))+"="+showValue(this.state.pair.reserveB,abi.getDecimalLocal(this.state.tokenOut))
+                                            }  
+                                        </div>   
+                                    }
+                                    <div style={{height:"14px"}}>
+                                        {
+                                            this.state.price > 0 &&
+                                            <span>1{this.state.tokenIn} : {this.state.price}{this.state.tokenOut}</span>
+                                        }
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                {
+                                    this.state.deal ?
+                                    <input style={{}} type="submit" disabled={!this.state.inputStyle} className={this.state.inputStyle>0?'inputs':'nothing'} value={i18n.t("ConfirmSell")}
+                                        onClick={() => {
+                                        let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
+                                        self.exchange(self.state.tokenIn,self.state.tokenOut, amount);
+                                    }}/>:
+                                    <input style={{}} type="submit" disabled={!this.state.inputStyle} className={this.state.inputStyle>0?'inputs':'nothing'} value={i18n.t("ConfirmSell")}
+                                        onClick={() => {
+                                        let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
+                                        self.exchange(self.state.tokenIn,self.state.tokenOut, amount);
+                                    }}/>
+                                }
                                 
                             </div>
-                        </div>
-                        <div className="text-center">
-                            <input style={{}} type="submit" disabled={!this.state.inputStyle} className={this.state.inputStyle>0?'inputs':'nothing'} value={i18n.t("ConfirmSell")}
-                                onClick={() => {
-                                let amount = new BigNumber(self.state.tokenInAmount).multipliedBy(Math.pow(10, abi.getDecimalLocal(self.state.tokenIn)));
-                                self.exchange(self.state.tokenIn,self.state.tokenOut, amount);
-                            }}/>
-                        </div>
-                    </div>
+                         </div>
+                    }
+                   
                 </div>
             </Layout>
         )
