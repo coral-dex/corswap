@@ -31,7 +31,7 @@ library InitValueList {
     }
 
     function clear(List storage self) internal {
-        for(uint256 i=0;i<self.tokens.length;i++) {
+        for (uint256 i = 0; i < self.tokens.length; i++) {
             delete self.valueMap[self.tokens[i]];
         }
         delete self.tokens;
@@ -51,19 +51,16 @@ contract SwapExchange is SeroInterface, Ownable {
     using LiquidityList for LiquidityList.List;
     using InitValueList for InitValueList.List;
 
-    bytes32 private SEROBYTES = strings._stringToBytes32("SERO");
+    bytes32 SEROBYTES = strings._stringToBytes32("SERO");
 
+    mapping(address => InitValueList.List) private initValues;
 
-
-
-    mapping(address => InitValueList.List) initValues;
-
-    mapping(bytes32 => ExchangePair.Pair) pairs;
+    mapping(bytes32 => ExchangePair.Pair) private pairs;
     bytes32[] public pairKeys;
-    mapping(bytes32 => bytes32[]) tokenIndexs;
+    mapping(bytes32 => bytes32[]) private tokenIndexs;
 
-    VolumeList.List public wholeVolume;
-    mapping(bytes32 => VolumeList.List) public volumes;
+    VolumeList.List private wholeVolume;
+    mapping(bytes32 => VolumeList.List) private volumes;
     mapping(address => uint256) public lastIndexsMap;
 
     TokenPool private tokenPool;
@@ -91,13 +88,15 @@ contract SwapExchange is SeroInterface, Ownable {
         tokenPool = TokenPool(_tokenPool);
     }
 
-    function setFeeRate(bytes32 key, uint256 _feeRate) public onlyOwner {
+    function setFeeRate(string memory tokenA, string memory tokenB, uint256 _feeRate) public onlyOwner {
         require(_feeRate < 10000);
+        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
         feeRateMap[key] = _feeRate;
     }
 
-    function setDrawRate(bytes32 key, uint256 _drawRate) public onlyOwner {
+    function setDrawRate(string memory tokenA, string memory tokenB, uint256 _drawRate) public onlyOwner {
         require(_drawRate < 10000);
+        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
         drawRateMap[key] = _drawRate;
     }
 
@@ -126,7 +125,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function orderList(bytes32 key) public view returns (Order[] memory, Order[] memory) {
-        return  pairs[key].orderList(msg.sender);
+        return pairs[key].orderList(msg.sender);
     }
 
     function pairListByToken(bytes32 token, uint256 _start, uint256 _end) public view returns (Pair[] memory rets) {
@@ -196,17 +195,19 @@ contract SwapExchange is SeroInterface, Ownable {
         return pair;
     }
 
-    function volumesOfPair(bytes32 key) public view returns(Volume[] memory, Volume[] memory) {
+    function volumesOfPair(string memory tokenA, string memory tokenB) public view returns (Volume[] memory, Volume[] memory) {
+        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
         return (wholeVolume.listVolume(), volumes[key].listVolume());
     }
 
-    function liquidityOfPair(bytes32 key) public view returns (Liquidity[] memory, Liquidity[] memory) {
+    function liquidityOfPair(string memory tokenA, string memory tokenB) public view returns (Liquidity[] memory, Liquidity[] memory) {
+        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
         return pairs[key].liquidityList(msg.sender);
     }
 
     function shareReward(bytes32 key) public view returns (uint256 reward) {
         uint256 lastIndex = lastIndexsMap[msg.sender];
-        if(lastIndex == 0) {
+        if (lastIndex == 0) {
             lastIndex = startDay;
         }
 
@@ -215,7 +216,7 @@ contract SwapExchange is SeroInterface, Ownable {
         uint256 selfLiquidity;
         uint256 totalLiquidity;
 
-        for(uint256 i=startDay;i<(now/Constants.ONEDAY);i++) {
+        for (uint256 i = startDay; i < (now / Constants.ONEDAY); i++) {
             totalVolume = wholeVolume.volumeOfDay(i);
             selfVolume = volumes[key].volumeOfDay(i);
 
@@ -233,15 +234,15 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function output(uint256 index) public view returns (uint256) {
-        if(startDay == 0) {
+        if (startDay == 0) {
             return 0;
         }
 
-        if(index < startDay) {
+        if (index < startDay) {
             return 0;
         }
 
-        if(index-startDay >= outputs.length) {
+        if (index - startDay >= outputs.length) {
             return 1e21;
         } else {
             return 1e22;
@@ -249,16 +250,16 @@ contract SwapExchange is SeroInterface, Ownable {
         }
     }
 
-    function investAmount() public view returns(bytes32 token, uint256 value){
+    function investAmount() public view returns (bytes32 token, uint256 value){
         InitValueList.List storage list = initValues[msg.sender];
-        if(list.tokens.length == 0) {
-            return(bytes32(0),0);
+        if (list.tokens.length == 0) {
+            return (bytes32(0), 0);
         }
         token = list.tokens[0];
         value = list.valueMap[token];
     }
 
-    function cancelInvest() public returns(bool) {
+    function cancelInvest() public returns (bool) {
         InitValueList.List storage list = initValues[msg.sender];
         require(list.tokens.length == 1);
         bytes32 token = list.tokens[0];
@@ -347,11 +348,11 @@ contract SwapExchange is SeroInterface, Ownable {
                 require(sero_send_token(sender, strings._bytes32ToStr(pairs[key].tokenB), returnB));
             }
         } else {
-
+            require(false);
         }
 
-        if(lastIndexsMap[sender] == 0) {
-            lastIndexsMap[sender] = now/Constants.ONEDAY;
+        if (lastIndexsMap[sender] == 0) {
+            lastIndexsMap[sender] = now / Constants.ONEDAY;
         }
 
         initValues[sender].clear();
@@ -373,36 +374,6 @@ contract SwapExchange is SeroInterface, Ownable {
         }
 
         (value,) = pairs[key].caleSwap(tokenIn, amountIn, feeRateMap[key]);
-    }
-
-    function estimateSwapBuy(bytes32 key, bytes32 tokenOut, uint256 amountOut) public view returns (uint256 amountIn){
-        if (pairs[key].reserveA == 0 || pairs[key].reserveB == 0) {
-            return 0;
-        }
-
-
-        uint256 feeRate = feeRateMap[key];
-        if(feeRate == 0) {
-            feeRate = 30;
-        }
-
-        ExchangePair.Pair storage pair = pairs[key];
-
-        uint256 invariant = pair.reserveA.mul(pair.reserveB);
-
-        if(tokenOut == pair.tokenB) {
-            amountOut = amountOut.mul(10000).div(10000-feeRate);
-            if(amountOut >=pair.reserveB ) {
-                return 0;
-            }
-            amountIn = invariant.div(pair.reserveB.sub(amountOut)).sub(pair.reserveA);
-        } else {
-            if(amountOut >= pair.reserveA) {
-                return 0;
-            }
-            amountIn = invariant.div(pair.reserveA.sub(amountOut)).sub(pair.reserveB);
-            amountIn = amountIn.mul(10000).div(10000-feeRate);
-        }
     }
 
     function swap(bytes32 key, uint256 _minTokensReceived, uint256 _timeout, address _recipient) public payable {
@@ -442,12 +413,10 @@ contract SwapExchange is SeroInterface, Ownable {
             return (tokenOutValue, fee);
         } else {
             bytes32 _key = _hash(pairs[key].tokenB, SEROBYTES);
-            (uint256 fee1, uint256 fee2) = _swap(sender, _key, pairs[key].tokenB, fee, 0);
+            (uint256 fee1, uint256 fee2) = _swap(sender, _key, pairs[key].tokenB, fee, feeRateMap[_key]);
             return (tokenOutValue, fee1 + fee2);
         }
     }
-
-
 
     function _hash(bytes32 tokenA, bytes32 tokenB) private pure returns (bytes32) {
         require(tokenA != tokenB, 'same token');
@@ -455,10 +424,9 @@ contract SwapExchange is SeroInterface, Ownable {
         return keccak256(abi.encode(token0, token1));
     }
 
-    function hasPair(bytes32 key) public view returns (bool) {
-        return pairs[key].reserveA != 0 && pairs[key].reserveB != 0;
+    function hasPair(bytes32 _key) public view returns (bool) {
+        return pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0;
     }
-
 
 }
 
