@@ -461,15 +461,19 @@ class Abi {
 
     showExchange(from, amount, callback) {
         this.callMethod(poolContract, 'showExchange', from, [amount], function (ret) {
-            let tokens = [];
-            ret[0].forEach(each => {
-                tokens.push(bytes32ToToken(each));
-            });
-            let amounts = [];
-            ret[1].forEach(each => {
-                amounts.push(each);
-            })
-            callback(tokens, amounts);
+            if(ret){
+                let tokens = [];
+                ret[0].forEach(each => {
+                    tokens.push(bytes32ToToken(each));
+                });
+                let amounts = [];
+                ret[1].forEach(each => {
+                    amounts.push(each);
+                })
+                callback(tokens, amounts);
+            }else {
+                callback([""],[0]);
+            }
         });
     }
 
