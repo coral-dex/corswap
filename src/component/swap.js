@@ -211,9 +211,9 @@ class Swap extends React.Component{
 
     swap = ()=>{
         const {tokenTo,tokenFrom,tokenToValue,tokenFromValue,estimate,account} = this.state;
-        let amount = "0x0"
+        let amount = new BigNumber(0)
         if(estimate){
-            amount = "0x"+toValue(tokenFromValue,abi.getDecimalLocal(tokenFrom)).toString(16);
+            amount = toValue(tokenFromValue,abi.getDecimalLocal(tokenFrom));
         }
         abi.swap(account.pk,account.mainPKr,tokenFrom,tokenTo,amount,function (hash) {
 
