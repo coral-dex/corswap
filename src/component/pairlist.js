@@ -344,11 +344,13 @@ export class PairList extends Component {
 
         account.balances.forEach((val, key) => {
             if (val > 0) {
-                if(ops.indexOf(key) == -1){
-                    tokensB.push(key)
-                }else{
-                    tokensA.push(key)
-                }
+                tokensB.push(key)
+                tokensA.push(key)
+                // if(ops.indexOf(key) == -1){
+                //     tokensB.push(key)
+                // }else{
+                //
+                // }
             }
         });
 
