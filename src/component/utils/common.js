@@ -60,6 +60,7 @@ export function showValue(val, decimals, decimalPlaces) {
         decimalPlaces = 3;
     }
     let num = new BigNumber(val).dividedBy(new BigNumber(10).pow(decimals));
+    
     // if (num.comparedTo(1000000) >= 0) {
     //     let text = num.dividedBy(1000000).toFixed(decimalPlaces, 1);
     //     return text + "M";

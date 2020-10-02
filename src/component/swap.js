@@ -23,8 +23,10 @@ class Swap extends React.Component{
         showSelectTokenFrom:"",
         showSelectTokenTo:"",
 
-        estimate:""
-
+        estimate:"",
+        pair:[],
+        flag:true,
+        content:null
     }
 
     async init () {
@@ -62,6 +64,7 @@ class Swap extends React.Component{
     async initPairs (token){
         // const swapBase = ["SERO","SUSD"];
         let { account}= this.state;
+        let that = this;
         return new Promise((resolve)=>{
             // if(!token || swapBase.indexOf(token) == -1){
             //     resolve(swapBase)
@@ -69,7 +72,12 @@ class Swap extends React.Component{
             // }
             abi.pairList(account.mainPKr,token,function (datas) {
                 const tokensTmp = [];
+                that.setState({
+                    pair:datas
+                })
                 for(let pair of datas){
+                    
+                    // console.log(datas,"datas");
                     abi.getDecimal(pair.tokenA)
                     abi.getDecimal(pair.tokenB)
                     if(!token){
@@ -97,18 +105,18 @@ class Swap extends React.Component{
     }
 
     setTokenFromValue = (v,tTo)=>{
-        console.log("v=>>",v);
+        // console.log("v=>>",v);
         const that = this;
         const {tokenFrom,tokenTo,account} = this.state;
         if(!tTo){
             tTo = tokenTo
         }
-        if(tTo){
+        if(tTo && tokenFrom){
             abi.estimateSwap(account.mainPKr,tTo,tokenFrom,tokenFrom,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenFrom)).toString(16),function (rest) {
-                console.log("setTokenFromValue>>",rest);
+                // console.log("setTokenFromValue>>",rest);
                 that.setState({
                     tokenFromValue:v,
-                    tokenToValue:fromValue(rest,abi.getDecimalLocal(tTo)).toFixed(6),
+                    tokenToValue:rest?fromValue(rest,abi.getDecimalLocal(tTo)).toFixed(6):"",
                     estimate:"to"
                 })
             })
@@ -126,11 +134,11 @@ class Swap extends React.Component{
         if(!tFrom){
             tFrom = tokenFrom
         }
-        if(tFrom){
+        if(tFrom && tokenTo){
             abi.estimateSwap(account.mainPKr,tokenTo,tFrom,tokenTo,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenTo)).toString(16),function (rest) {
-                console.log("setTokenToValue>>",rest);
+                // console.log("setTokenToValue>>",rest);
                 that.setState({
-                    tokenFromValue:fromValue(rest,abi.getDecimalLocal(tFrom)).toFixed(6),
+                    tokenFromValue:rest?fromValue(rest,abi.getDecimalLocal(tFrom)).toFixed(6):"",
                     tokenToValue:v,
                     estimate:"from"
                 })
@@ -149,12 +157,14 @@ class Swap extends React.Component{
         this.setState({
             tokenFrom:v,
             tokenTo:"",
+            content:"已选择",
             showSelectTokenFrom:false
         })
         this.setTokenToValue(tokenToValue,v)
     }
 
     setShowSelectTokenFrom = (f) =>{
+        this.setState({content:undefined})
         const {tokenTo} = this.state;
         if(f){
             this.initPairs().then(tokens=>{
@@ -172,9 +182,10 @@ class Swap extends React.Component{
 
     setTokenTo = (v)=>{
         const {tokenFromValue} = this.state;
-        console.log("setTokenTo tokenFromValue>>>",tokenFromValue);
+        // console.log("setTokenTo tokenFromValue>>>",tokenFromValue);
         this.setState({
             tokenTo:v,
+            content:"已选择",
             showSelectTokenTo:false
         })
         this.setTokenFromValue(tokenFromValue,v)
@@ -197,9 +208,12 @@ class Swap extends React.Component{
     }
 
     convert = ()=>{
+        console.log(this.state.tokenFrom,this.state.tokenTo,"互换");
         const {tokenTo,tokenFrom,tokenToValue,tokenFromValue,estimate} = this.state;
+        let that =this
         if(tokenTo && tokenFrom ){
             this.setState({
+                flag:!that.state.flag,
                 tokenFrom: tokenTo,
                 tokenTo: tokenFrom,
                 tokenFromValue: tokenToValue,
@@ -229,9 +243,24 @@ class Swap extends React.Component{
 
     }
     render() {
-
-        const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
-
+        let that = this;
+        let psk;
+        let reserveA;
+        let reserveB;
+        const {pair,tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
+        if(this.state.pair){
+            for(psk of that.state.pair){
+                if(that.state.tokenTo == psk.tokenA){
+                    reserveA = psk.reserveA;
+                    reserveB = psk.reserveB;
+                }else if(that.state.tokenFrom == psk.tokenA){
+                    reserveA = psk.reserveA;
+                    reserveB = psk.reserveB;
+                }
+               
+            }  
+        }
+        console.log(pair.reserveA,"pair this");
         return (
             <Layout selectedTab="1" doUpdate={()=>this.init()}>
                 <div style={{padding:"10px"}} className="flex-center">
@@ -249,7 +278,7 @@ class Swap extends React.Component{
                                 </Flex>
 
                                 <Flex>
-                                    <Flex.Item style={{flex:3}}>
+                                    <Flex.Item style={{flex:2}}>
                                         <div>
                                             <InputItem type="number" placeholder="0.0" value={tokenFromValue} onChange={(v)=>{
                                                 this.setTokenFromValue(v)
@@ -259,7 +288,7 @@ class Swap extends React.Component{
                                     <Flex.Item style={{flex:1}} onClick={()=>{
                                         this.setShowSelectTokenFrom(true);
                                     }}>
-                                        <div>
+                                        <div style={{textAlign:"right"}}>
                                             <span>{tokenFrom?tokenFrom:"Select Token"}</span> <img width="13px" src={require('../images/bottom.png')} alt=""/>
                                         </div>
                                     </Flex.Item>
@@ -267,13 +296,13 @@ class Swap extends React.Component{
                             </div>
 
                             <Flex>
-                                <Flex.Item style={{textAlign:'center'}} onClick={()=>{this.convert()}}>
-                                    <img src="./images/down.png" width={22}/>
+                                <Flex.Item style={{textAlign:'center',margin:"10px 0"}} onClick={()=>{this.convert()}}>
+                                    <img src="./images/down.png" width={22} alt=" "/>
                                 </Flex.Item>
                             </Flex>
 
                             <div className="cst-border">
-                                <Flex>
+                                <Flex style={{height:"30%"}}>
                                     <Flex.Item style={{flex:1}}>
                                         TO{estimate == "to"?"(estimated)":""}
                                     </Flex.Item>
@@ -282,9 +311,9 @@ class Swap extends React.Component{
                                     </Flex.Item>
                                 </Flex>
 
-                                <Flex>
-                                    <Flex.Item style={{flex:3}}>
-                                        <div>
+                                <Flex style={{height:"70%"}}>
+                                    <Flex.Item style={{flex:2}}>
+                                        <div className="align-items">
                                             <InputItem type="number" placeholder="0.0" value={tokenToValue} onChange={(v)=>{
                                                 this.setTokenToValue(v)
                                             }} clear/>
@@ -293,15 +322,25 @@ class Swap extends React.Component{
                                     <Flex.Item style={{flex:1}} onClick={()=>{
                                         this.setShowSelectTokenTo(true);
                                     }}>
-                                        <div>
-                                            <span>{tokenTo?tokenTo:"Select Token"}</span> <img width="13px" src={require('../images/bottom.png')} alt=""/>
+                                        <div style={{textAlign:"right"}}>
+                                            <span>{tokenTo?tokenTo:"Select Token"}</span>
+                                            <img width="13px" src={require('../images/bottom.png')} alt=""/>
                                         </div>
                                     </Flex.Item>
                                 </Flex>
                             </div>
                         </div>
+                        <div style={{padding:"10px"}}>
+                            {   this.state.content!=null?
+                                this.state.tokenFrom? "当前奖金池数量:"+ 
+                                showValue(reserveA,abi.getDecimalLocal(this.state.tokenTo)) + this.state.tokenTo + "=" + showValue(reserveB,abi.getDecimalLocal(this.state.tokenFrom))+this.state.tokenFrom 
+                                :
+                                showValue(reserveB,abi.getDecimalLocal(this.state.tokenFrom)) + this.state.tokenTo + "=" + showValue(reserveA,abi.getDecimalLocal(this.state.tokenTo))+this.state.tokenFrom 
+                                :'您还未选择'
+                            }
+                        </div>
                         <div className="text-center">
-                            <Button type="primary" onClick={()=>this.swap()} disabled={!tokenToValue || !tokenFromValue}>确认</Button>
+                            <Button style={{backgroundColor:"#00456e",borderRadius:"10px"}} onClick={()=>this.swap()} disabled={!tokenToValue || !tokenFromValue}>确认</Button>
                         </div>
                     </div>
                 </div>

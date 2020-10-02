@@ -5,7 +5,6 @@ import abi from './abi'
 class SelectToken extends React.Component{
     render() {
         const {visible,onOk,tokens,balance,onClose} = this.props; 
-        console.log(tokens,"tokensss")
         return (
            
             <div>

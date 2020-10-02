@@ -467,6 +467,8 @@ export class PairList extends Component {
 
 
                     <Modal
+
+                        className="Modal"
                         visible={showInitModal}
                         transparent
                         title="初始化资金池"
@@ -583,15 +585,16 @@ export class PairList extends Component {
                                 <Steps current={investAmount[0]?1:0}>
                                     <Step key={0} title={
                                         <div>
-                                            <Flex>
-                                                <Flex.Item style={{flex: 1}}>
+                                            <div>
+                                                <div style={{flex: 1}}>
                                                    <span>交易一</span>&emsp;&emsp;{selectPair&&selectPair.tokenB}剩余:
                                                    <span>{selectPair && showValue(balances, abi.getDecimalLocal(selectPair.tokenB))}</span>    
-                                                </Flex.Item>
-                                                <Flex.Item style={{flex: 1}}>
-                                                    {investAmount[0]?<Button size="small" type="ghost" onClick={()=>this.revert()}>撤销</Button>:""}
-                                                </Flex.Item>
-                                            </Flex>
+                                                </div>
+                                                
+                                                 <div style={{flex: 1}}>
+                                                    {investAmount[0]?<Button style={{width:"50px",backgroundColor:"#00456e",color:"#fff"}} size="small" type="ghost" onClick={()=>this.revert()}>撤销</Button>:""}
+                                                </div>
+                                            </div>
                                         </div>
                                     } description={
                                         <div>

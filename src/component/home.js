@@ -32,15 +32,14 @@ export class Home extends Component {
             tokenOutAmount: null,
             orderType: 0,
             modal: false,
-            flag: true, 
+            flag: true,
             option1: '',
             option2: '',
             inputStyle:null,
             out:null,
             showModal:false,
             showModal2:false,
-            pairs:null,
-            buysell:true,
+
         }
     }
 
@@ -61,12 +60,6 @@ export class Home extends Component {
                     console.log(tokens[0],d);
                 })
                 abi.getDecimal(tokenToTokens.get(tokens[0])[0],function (d) { 
-                })
-                abi.pairList(account.mainPKr," ",function(pair){
-                    console.log(pair,"home-pair");
-                    self.setState({
-                        pairs:pair
-                    })
                 })
                 self.initPair(tokens[0], tokenToTokens.get(tokens[0])[0], function (pair) {  
                     self.setState({
@@ -97,7 +90,6 @@ export class Home extends Component {
         abi.init.then(() => {
                 let pk = localStorage.getItem("accountPK") 
                 abi.accountList(function (accounts) {
-                    console.log(accounts,"list account");
                     if (pk) {
                         for (let act of accounts) {
                             if (pk === act.pk) {
@@ -113,7 +105,6 @@ export class Home extends Component {
                     abi.accountDetails(pk, function (account) {
                         self.setState({account: account}, function () {
                             self.init(account)
-                            console.log(account ,"acccc");
                         })
                     })
                 });
@@ -122,20 +113,25 @@ export class Home extends Component {
     }
     showRate(amountIn) {
         let self = this;
+        // console.log(this.state.tokenInAmount,"tokenInAMOUNT");
+        // console.log(this.state.pair&& this.state.pair,"存在");
         if(this.state.pair && amountIn>showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenOut))){
             this.setState({
                 tokenInAmount: showValue(self.state.pair.reserveA,abi.getDecimalLocal(self.state.tokenOut))
             })
         }
-        this.setState({inputStyle:amountIn})
-
+        this.setState({
+            inputStyle:amountIn
+        })
         if (!amountIn || !this.state.pair || Number(amountIn) === 0) {
             this.setState({tokenInAmount: amountIn, tokenOutAmount: 0, price: 0});
             return;
         }
+      
 
         let amountOut;
         let pair = this.state.pair;
+        // console.log(pair,"pairpairpair");
         abi.getDecimal(pair.tokenA,function(decimal){
            abi.estimateSwapBuy(self.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenOut, bnToHex(amountIn,decimal),function (out) {
                 console.log(out,'OUT');
@@ -233,6 +229,33 @@ export class Home extends Component {
         return orderList;
 
     }
+    numberMax(balance) {
+        let num = showValue(balance, abi.getDecimalLocal(this.state.tokenIn))  
+        this.setState({
+            put1: num
+        })
+    }
+    onSelect = (opt) => {
+        this.setState({
+            visible: false,
+            selected: opt.props.value,
+        });
+    };
+    handleVisibleChange = (visible) => {
+        this.setState({
+            visible,
+        });
+    };
+    renderContent(pageText) {
+        return (
+            <div style={{backgroundColor: '#e9f4f8', height: '100%', textAlign: 'center'}}>
+
+            </div>
+        );
+    }
+    goPage = (uri) => {
+        window.location.href = uri
+    }
     render() {   
         let self = this;
         let options_1 = []; //可用
@@ -259,9 +282,9 @@ export class Home extends Component {
                
                 <div className="flex modal" onClick={() => this.showModal("")}>
                     <img width="13px" className="absolute" src={ require('../images/bottom.png')} alt=''/>
-                    {
-                        self.state.buysell ?
-                        <Select
+                    {/* <SelectTokenTo visible={this.state.showModal} onOk={this.setSelectTokenA} onClose={this.setShowSelectTokenA} tokens={tokensA} balance={account&&account.balances}/> */}
+
+                    <Select
                         className="select"
                         style={{height: "20px"}}
                         options={options_2}
@@ -270,36 +293,18 @@ export class Home extends Component {
                                 self.setState({pair: pair, tokenOut: option.value});
                                 self.showRate(self.state.tokenInAmount);
                             })
-                        }}/>:<Select
-                        className="select"
-                        style={{height: "20px"}}
-                        options={options_2}
-                        selectedOption={{value: this.state.tokenOut}}
-                        onChange={(option) => {
-                            let tokenOut = this.state.tokenToTokens.get(option.value)[0];
-                            this.initPair(option.value,this.state.tokenIn, function (pair) {
-                                self.setState({pair: pair, tokenIn: option.value,tokenOut:tokenOut});
-                                self.showRate(self.state.tokenInAmount);
-                            })
                         }}/>
-                    }
-                    
                 </div>
                 <div className="tokenOutAmount" style={{width:"100%"}}>
-                    {
-                        this.state.buysell?<input value={this.state.tokenInAmount} placeholder="0" onChange={(e) => {
+                        <input value={this.state.tokenInAmount} placeholder="0" onChange={(e) => {
                             this.showRate(e.target.value)
-                        }} type="number" className="inputItem"/> :
-                        <div>{this.state.tokenOutAmount}</div>
-                    }
-                        
+                        }} type="number" className="inputItem"/> 
                 </div>     
         </div>
         let tos = <div className="flex max_sero">
             <div className="flex modal " onClick={() => this.showModal('')}>
                 <img width="13px" className="absolute" src={require('../images/bottom.png')} alt=""/>
-                {
-                    !this.state.buysell?<Select
+                <Select
                     options={options_1}
                     selectedOption={{value: this.state.tokenOut}}
                     onChange={(option) => {
@@ -308,28 +313,10 @@ export class Home extends Component {
                                 self.setState({pair: pair, tokenIn: option.value,tokenOut:tokenOut});
                                 self.showRate(self.state.tokenInAmount);
                         })
-                    }}/>:<Select
-                    options={options_1}
-                    // selectedOption={{value: this.state.tokenOut}}
-                    onChange={(option) => {
-                        // let tokenOut = this.state.tokenToTokens.get(option.value)[0];
-                        this.initPair(this.state.tokenIn,option.value, function (pair) {
-                                self.setState({pair: pair, tokenOut: option.value});
-                                self.showRate(self.state.tokenInAmount);
-                        })
                     }}/>
-                }
-                
             </div>
             <div style={{width:"100%"}}>
-                {
-                    this.state.buysell?
-                    <div className="tokenOutAmount" style={{width:"100%"}}>{this.state.tokenOutAmount}</div>
-                    :<input value={this.state.tokenInAmount} placeholder="0" onChange={(e) => {
-                        this.showRate(e.target.value)
-                    }} type="number" className="inputItem"/>
-                }
-               
+                <div className="tokenOutAmount" style={{width:"100%"}}>{this.state.tokenOutAmount&&this.state.tokenOutAmount>0?this.state.tokenOutAmount:''}</div>
             </div>      
         </div>
         console.log(this.state.pair,"拿到pair了吗");
@@ -338,24 +325,17 @@ export class Home extends Component {
                 <div style={{padding:"10px"}}>
                     <div className="header">
                         <div className="cash color text-center" style={{fontSize:"16px",letterSpacing:"3px"}}>{i18n.t("MyBuy")}</div>
-                        <div>{this.state.buysell?'买':"卖"}</div>
+
                         <div className="from" style={{marginTop:"20px"}}>
                             <div className='fontSize text-right color2'>
                                 <span className={pair&&this.state.tokenInAmount>0&& !this.state.tokenOutAmount?'color2':'none'}>输入数量已超!</span>&emsp;
                                 {i18n.t("Referrer")}{this.state.tokenOut}:{showValue(usable, abi.getDecimalLocal(this.state.tokenOut))}
                             </div>
-                           {/* {this.state.buysell&&froms} */}
-                           {/* {!this.state.buysell&&tos} */}
-                           {froms}
-                        </div>
-                        <div className="text-center">
-                            <img onClick={()=>{this.setState({buysell:!this.state.buysell})}} src={require("../images/swap.png")} width="20px" alt=" "/>
+                           {froms }
                         </div>
                         <div className="from">
                             <div>
                                 <div className='fontSize text-right color2'>{i18n.t("usable")}{this.state.tokenIn}:{showValue(balance, abi.getDecimalLocal(this.state.tokenIn))}</div>
-                                {/* {this.state.buysell&&tos}
-                                {!this.state.buysell && froms} */}
                                 {tos}
                             </div>
                         </div>
@@ -369,7 +349,10 @@ export class Home extends Component {
                                     :
                                     <div>
                                       当前{this.state.tokenOut}和{this.state.tokenIn}数量:{
-                                            this.state.pair && showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenOut))+"="+showValue(this.state.pair.reserveB,abi.getDecimalLocal(this.state.tokenIn))
+                                            this.state.pair && 
+                                            showValue(this.state.pair.reserveA,abi.getDecimalLocal(this.state.tokenOut))
+                                            +"="+
+                                            showValue(this.state.pair.reserveB,abi.getDecimalLocal(this.state.tokenIn))
                                         }                 
                                     </div>
                             }
