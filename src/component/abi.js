@@ -443,16 +443,19 @@ class Abi {
     balanceOf(from, callback) {
         this.callMethod(poolContract, 'getBalance', from, [], function (ret) {
             console.log("balanceOf>>>",ret);
-            let tokens = [];
-            ret[0].forEach(each => {
-                tokens.push(bytes32ToToken(each));
-            });
-            let balances = [];
-            ret[1].forEach(each => {
-                balances.push(each);
-            })
-            callback(tokens, balances);
-            
+            if(ret){
+                let tokens = [];
+                ret[0].forEach(each => {
+                    tokens.push(bytes32ToToken(each));
+                });
+                let balances = [];
+                ret[1].forEach(each => {
+                    balances.push(each);
+                })
+                callback(tokens, balances);
+            }else {
+                callback([""],[0]);
+            }
         });
     }
 
