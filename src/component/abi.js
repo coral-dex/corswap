@@ -451,17 +451,6 @@ class Abi {
             }else {
                 callback([""],[0]);
             }
-            // console.log("balanceOf>>>",ret);
-            let tokens = [];
-            ret[0].forEach(each => {
-                tokens.push(bytes32ToToken(each));
-            });
-            let balances = [];
-            ret[1].forEach(each => {
-                balances.push(each);
-            })
-            callback(tokens, balances);
-            
         });
     }
 
