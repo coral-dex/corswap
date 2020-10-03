@@ -66,7 +66,7 @@ class Abi {
             }
         } else {
             seropp.getInfo(function (info) {
-                console.log(info.langua,"getinfo");
+                // console.log(info.langua,"getinfo");
                 rpc.seroRpc(info.rpc, "sero_getDecimal", [token], function (rets) {
                     localStorage.setItem("D_" + token, new BigNumber(rets.result, 16).toNumber());
                     if(callback){
@@ -87,7 +87,7 @@ class Abi {
     async getTransactionReceipt(txHash){
         return new Promise((resolve,reject)=>{
             seropp.getInfo(function (info) {
-                console.log(info,"getinfo");
+                // console.log(info,"getinfo");
                 rpc.seroRpc(info.rpc, "sero_getTransactionReceipt", [txHash], function (rest) {
                     resolve(rest)
                 });
@@ -104,7 +104,7 @@ class Abi {
                 return resolve(parseInt(decimalLocal))
             } else {
                 seropp.getInfo(function (info) {
-                    console.log(info,"getinfo");
+                    // console.log(info,"getinfo");
                     rpc.seroRpc(info.rpc, "sero_getDecimal", [token], function (rets) {
                         localStorage.setItem("D_" + token, new BigNumber(rets.result, 16).toNumber());
                         resolve(new BigNumber(rets.result, 16).toNumber());
@@ -215,19 +215,18 @@ class Abi {
 
 
     estimateSwap(from, tokenA, tokenB, tokenIn, amountIn, callback) {
-        console.log("estimateSwap>>>> ",tokenA, tokenB, tokenIn);
+        // console.log("estimateSwap>>>> ",tokenA, tokenB, tokenIn);
         let key = hashKey(tokenA, tokenB);
         this.callMethod(contract, 'estimateSwap', from, [key, tokenToBytes(tokenIn), amountIn], function (ret) {
-            console.log(ret,"---------ret");
+            // console.log(ret,"---------ret");
             callback(ret[0]);
         });
     }
-
-    estimateSwapBuy(from, tokenA, tokenB, tokenOut, amountOut, callback) {
+    estimateSwapBuy(from, tokenA, tokenB, tokenOut, amountOut, callback){
         let key = hashKey(tokenA, tokenB);
-        this.callMethod(contract, 'estimateSwapBuy', from, [key, tokenToBytes(tokenOut), amountOut], function (ret) {
+        this.callMethod(contract, 'estimateSwapBuy', from, [key, tokenToBytes(tokenOut), amountOut], function (ret){
             callback(ret[0]);
-        });
+        })
     }
 
     
@@ -456,7 +455,7 @@ class Abi {
     }
 
     showExchange(from, amount, callback) {
-        console.log(amount,"abi.amount");
+        // console.log(amount,"abi.amount");
         this.callMethod(poolContract, 'showExchange', from, [amount], function (ret) {
             if(ret){
                 let tokens = [];

@@ -36,5 +36,9 @@
     "LeastProvideTwo":"最低二部を提供します",
     "PleaseWait":"最初の取引が完了したら発送してください。",
     "ProvideLiquidityGetCoral":"流動性を提供します。あなたはCoralを獲得します。",
-    "MostRecovery":"最大回収できます"
+    "MostRecovery":"最大回収できます",
+    "Convert":"両替する",
+    "Select":"選択してください",
+    "Balances":"残額",
+    "SelectCurrency":"貨幣を選択する"
 }   

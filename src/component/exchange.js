@@ -137,7 +137,7 @@ export class Exchange extends Component {
         let amountOut;
         let pair = this.state.pair;
         abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
-            console.log(out,"out-----out");
+
             amountOut = new BigNumber(out).dividedBy(10**18)
             let price = new BigNumber(amountOut).dividedBy(amountIn).toFixed(6)
             self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(), price: price});

@@ -134,9 +134,7 @@ class Layout extends React.Component{
                     </div>
                     {
                         ["3","4"].indexOf(this.props.selectedTab) === -1?<div className="text-center fishing_div">
-                                {/* <Tag className="fishing_tag">买币</Tag> */}
                                 <img style={{position:"relative",bottom:"0",}} width="60%" src={require("../images/fishing.png")} alt=" "/>
-                                {/* <Tag className="fishing_tag">买币</Tag> */}
                             </div>:""
                     }
 
@@ -157,7 +155,7 @@ class Layout extends React.Component{
 
                 {this.props.children}
 
-                <div className="tabbar">
+                <div style={{ position: 'fixed',width: '100%', bottom:"0",left:"0" }}>
                     <TabBar
                         unselectedTintColor="#fff"
                         tintColor="#f75552"
@@ -166,7 +164,7 @@ class Layout extends React.Component{
                     >
 
                         <TabBar.Item
-                            title={"兑换"}
+                            title={i18n.t("Convert")}
                             key="Life"
                             icon={<div style={{
                                 width: '22px',
@@ -187,31 +185,6 @@ class Layout extends React.Component{
                             data-seed="logId"
                         >
                         </TabBar.Item>
-
-                        {/*<TabBar.Item*/}
-                        {/*    icon={*/}
-                        {/*        <div style={{*/}
-                        {/*            width: '22px',*/}
-                        {/*            height: '22px',*/}
-                        {/*            background: 'url(./images/sell.png) center center /  21px 21px no-repeat' }}*/}
-                        {/*        />*/}
-                        {/*    }*/}
-                        {/*    selectedIcon={*/}
-                        {/*        <div style={{*/}
-                        {/*            width: '22px',*/}
-                        {/*            height: '22px',*/}
-                        {/*            background: 'url(./images/sellselect.png) center center /  21px 21px no-repeat' }}*/}
-                        {/*        />*/}
-                        {/*    }*/}
-                        {/*    title={i18n.t("MySell")}*/}
-                        {/*    key="Koubei"*/}
-                        {/*    selected={this.props.selectedTab === '2'}*/}
-                        {/*    onPress={() => {*/}
-                        {/*        this.goPage("#/sell")*/}
-                        {/*    }}*/}
-                        {/*    data-seed="logId1"*/}
-                        {/*>*/}
-                        {/*</TabBar.Item>*/}
                         <TabBar.Item
                             icon={
                                 <div style={{

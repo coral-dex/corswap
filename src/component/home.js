@@ -141,16 +141,6 @@ export class Home extends Component {
                 self.setState({tokenInAmount: amountIn, tokenOutAmount: amountOut.toNumber(),out:out, price: price});
             });
         })
-
-        // console.log(this.state.tokenToTokens,"tokenToTokens");
-        // console.log(amountIn,"amountIn");
-        // console.log(this.state.tokenIn,this.state.tokenOut,"tokenin tokenout");
-        // console.log(amountIn,amountOut,"amountin amountout");
-        // console.log(this.state.tokenInAmount,this.state.tokenOutAmount,"tokenInOutAmount");
-        //tokenInAmount = 输入                           输出
-
-
-
         // abi.estimateSwap(this.state.account.mainPKr, pair.tokenA, pair.tokenB, self.state.tokenIn, bnToHex(amountIn, parseInt(abi.getDecimalLocal(pair.tokenA))), function (out) {
 
         //     amountOut = new BigNumber(out).dividedBy(10**18)

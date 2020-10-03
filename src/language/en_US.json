@@ -36,5 +36,9 @@
     "LeastProvideTwo":"At least two copies should be provided",
     "PleaseWait":"Please wait for the first transaction to complete before sending",
     "ProvideLiquidityGetCoral":"Provide liquidity and you'll get coral",
-    "MostRecovery":"You can recycle at most"
+    "MostRecovery":"You can recycle at most",
+    "Convert":"exchange",
+    "Select":"Please select",
+    "Balances":"balance",
+    "SelectCurrency":"Select currency"
 }   

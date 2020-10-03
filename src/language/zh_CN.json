@@ -36,5 +36,9 @@
     "LeastProvideTwo":"最少提供两份",
     "PleaseWait":"请等待第一笔交易完成后在发送",
     "ProvideLiquidityGetCoral":"提供流动性，你将获得Coral",
-    "MostRecovery":"您最多可回收"
+    "MostRecovery":"您最多可回收",
+    "Convert":"兑换",
+    "Select":"请选择",
+    "Balances":"余额",
+    "SelectCurrency":"选择币种"
 }   

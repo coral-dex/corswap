@@ -420,18 +420,20 @@ body {
 /* .shares > img {
     margin: 0 0 0 10px;
 } */
-.fishing_tag {
+/* .fishing_tag {
     width: 30%;
     display: inline-block;
     height: 30px;
     line-height: 30px;
-}
+}*/
+
 .inputs, .nothing {
     border: none;
     outline: none;
-    width: 70%;
-    border-radius: 15px;
-    height: 33px;
+    width: 100%;
+    border-radius: 10px;
+    height: 46px;
+    line-height: 46px;
 }
 
 .inputs{
@@ -442,7 +444,7 @@ body {
 .nothing {
     background-color: #ccc;
     color: #362e2b;
-}
+} 
 
 .card-border {
     border-radius: 15px;
@@ -477,10 +479,8 @@ body {
     font-size: 16px;
     text-align: center;
     padding: 5px;
-    /*background: linear-gradient(to left,#e0c3fc,#8ec5fc) ;*/
     border-radius: 5px;
     font-weight: 600;
-    /*letter-spacing: 0.1em;*/
     color: rgb(247, 85, 82)
 }
 
@@ -491,9 +491,7 @@ body {
     overflow: unset !important;
 }
 
-.am-flexbox-align-center {
-    padding-right: 0;
-}
+.am-flexbox-align-center {padding-right: 0;}
 .Flexs {
     display: flex;
     justify-content: space-between;
@@ -518,20 +516,18 @@ body {
 
 .cst-border{
     border: 1px solid rgb(247, 248, 250);
-    /* border:1px solid red; */
     background-color: rgb(255, 255, 255);
     border-radius: 10px;
-    height:50px;
     padding:10px;
+    font-size: 16px;
 }
 .am-flexbox .am-flexbox-item{
     min-width: none !important;
 }
-.am-flexbox-item{
-    height: 100%;
-}
 .am-list-line{
     height: 100%;
+    display: flex;
+    align-items: center;
     border: none !important;
     background: none !important;
 }
