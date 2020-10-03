@@ -147,18 +147,20 @@ export class PairList extends Component {
         abi.getDecimal(token, function (decimals) {
             let amount = new BigNumber(inputValue).multipliedBy(Math.pow(10, decimals))
             abi.investLiquidity(account.pk, self.state.account.mainPKr, token, amount).then(rest=>{
-                Toast.loading("Pending...",60);
-                self.setShowInvestModal(false,selectPair).catch()
-                self.setInputValue("")
-                self.startGetTxReceipt(rest,function () {
-                    abi.investAmount(account.mainPKr).then(data=>{
-                        if(data[0]){
-                            self.setShowInvestModal(true,selectPair).catch()
-                        }else {
-                            Toast.success("SUCCESSFUL")
-                        }
-                    })
-                });
+                if(rest){
+                    Toast.loading("PENDING...",60);
+                    self.setShowInvestModal(false,selectPair).catch()
+                    self.setInputValue("")
+                    self.startGetTxReceipt(rest,function () {
+                        abi.investAmount(account.mainPKr).then(data=>{
+                            if(data[0]){
+                                self.setShowInvestModal(true,selectPair).catch()
+                            }else {
+                                Toast.success("SUCCESSFUL")
+                            }
+                        })
+                    });
+                }
             }).catch(e=>{
                 Toast.fail(e)
             })
@@ -329,7 +331,7 @@ export class PairList extends Component {
             that.setShowInitModal(false).catch()
             that.setShowInvestModal(false).catch()
             that.startGetTxReceipt(rest,()=>{
-                Toast.success("SUCCESSFUL")
+                Toast.success("SUCCESSFULLY")
             });
         })
     }
@@ -348,11 +350,11 @@ export class PairList extends Component {
 
         account.balances.forEach((val, key) => {
             if (val > 0) {
-                if(ops.indexOf(key) === -1){
+                // if(ops.indexOf(key) === -1){
                     tokensB.push(key)
-                }else{
+                // }else{
                     tokensA.push(key)
-                }
+                // }
             }
         });
         if(!selectTokenA){
@@ -587,7 +589,7 @@ export class PairList extends Component {
                                         <div>
                                             <div>
                                                 <div style={{flex: 1}}>
-                                                   <span>交易一</span>&emsp;&emsp;{selectPair&&selectPair.tokenB}剩余:
+                                                   <span>交易一</span>&emsp;&emsp;{selectPair&&selectPair.tokenB}余额:
                                                    <span>{selectPair && showValue(balances, abi.getDecimalLocal(selectPair.tokenB))}</span>    
                                                 </div>
                                                 
@@ -613,7 +615,7 @@ export class PairList extends Component {
                                         </div>
                                     } />
                                     <Step key={1} title={<div> 
-                                            <span>交易二</span>&emsp;&emsp;{selectPair&&selectPair.tokenA}剩余:
+                                            <span>交易二</span>&emsp;&emsp;{selectPair&&selectPair.tokenA}余额:
                                             <span>{selectPair&&showValue(balances2, abi.getDecimalLocal(selectPair.tokenA))}</span>
                                     </div>} description={
                                         <div>
