@@ -66,7 +66,6 @@ class Abi {
             }
         } else {
             seropp.getInfo(function (info) {
-                // console.log(info.langua,"getinfo");
                 rpc.seroRpc(info.rpc, "sero_getDecimal", [token], function (rets) {
                     localStorage.setItem("D_" + token, new BigNumber(rets.result, 16).toNumber());
                     if(callback){
@@ -256,7 +255,6 @@ class Abi {
     //         callback(_tokens, _tokensList);
     //     });
     // }
-
     getGroupTokensEx(from, flag, callback) {
 
         // flag false sero->[a,b,c]

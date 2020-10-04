@@ -252,21 +252,21 @@ class Swap extends React.Component{
 
     }
     render() {
-        let that = this;
-        let psk;
-        let reserveA;
-        let reserveB;
+        // let that = this;
+        // let psk;
+        // let reserveA;
+        // let reserveB;
         const {pair,tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
-        if(this.state.pair){
-            for(psk of that.state.pair){
+        // if(this.state.pair){
+            // for(psk of that.state.pair){
                 // console.log(psk);
-                if(that.state.tokenTo == psk.tokenA || that.state.tokenFrom == psk.tokenA){
-                    reserveA = psk.reserveA;
-                    reserveB = psk.reserveB;
-                }
+                // if(that.state.tokenTo == psk.tokenA || that.state.tokenFrom == psk.tokenA){
+                //     reserveA = psk.reserveA;
+                //     reserveB = psk.reserveB;
+                // }
                
-            }  
-        }
+            // }  
+        // }
         if(tokenFromValue&&tokenToValue){
             console.log(this.state.tokenFromValue,this.state.tokenToValue,"======");
         }
@@ -282,7 +282,7 @@ class Swap extends React.Component{
                                         FROM{estimate == "from"?"预算的":""}
                                     </Flex.Item>
                                     <Flex.Item style={{flex:1}}>
-                                        <div className=' text-right color2 cst-balance'>余额: {this.getBalance(tokenFrom)}</div>
+                                        <div className=' text-right color2 cst-balance'>{i18n.t("Balances")}: {this.getBalance(tokenFrom)}</div>
                                     </Flex.Item>
                                 </Flex>
 
@@ -298,7 +298,7 @@ class Swap extends React.Component{
                                         this.setShowSelectTokenFrom(true);
                                     }}>
                                         <div style={{textAlign:"right"}}>
-                                            <span>{tokenFrom?tokenFrom:"请选择"}</span> <img width="13px" src={require('../images/bottom.png')} alt=""/>
+                                            <span>{tokenFrom?tokenFrom:i18n.t("Select")}</span> <img width="13px" src={require('../images/bottom.png')} alt=""/>
                                         </div>
                                     </Flex.Item>
                                 </Flex>
@@ -316,7 +316,7 @@ class Swap extends React.Component{
                                         TO{estimate == "to"?"预算的":""}
                                     </Flex.Item>
                                     <Flex.Item style={{flex:1}}>
-                                        <div className=' text-right color2'>余额: {this.getBalance(tokenTo)}</div>
+                                        <div className=' text-right color2'>{i18n.t("Balances")}: {this.getBalance(tokenTo)}</div>
                                     </Flex.Item>
                                 </Flex>
 
@@ -332,7 +332,7 @@ class Swap extends React.Component{
                                         this.setShowSelectTokenTo(true);
                                     }}>
                                         <div style={{textAlign:"right"}}>
-                                            <span>{tokenTo?tokenTo:"请选择"}</span>
+                                            <span>{tokenTo?tokenTo:i18n.t("Select")}</span>
                                             <img width="13px" src={require('../images/bottom.png')} alt=""/>
                                         </div>
                                     </Flex.Item>
@@ -364,9 +364,11 @@ class Swap extends React.Component{
                                                     1+this.state.tokenTo+"="+this.state.price+this.state.tokenFrom
                                                 }                                                                    
                         </div>
+
                         <div className="text-center">
                             <Button type="primary" className={this.state.tokenFromValue && this.state.tokenFrom?'inputs':'nothing'} onClick={()=>this.swap()} disabled={!tokenToValue || !tokenFromValue}>确认</Button>
                         </div>
+
                     </div>
                 </div>
 
