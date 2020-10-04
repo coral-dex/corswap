@@ -72,6 +72,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function start() public onlyOwner {
+        require(startDay == 0);
         startDay = now / Constants.ONEDAY;
     }
 
@@ -390,7 +391,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function _swap(address sender, bytes32 key, bytes32 _token, uint256 _value, uint256 _feeRate) private returns (uint256, uint256) {
         (uint256 tokenOutValue, bytes32 tokenFee, uint256 fee) = pairs[key].swap(sender, _token, _value, _feeRate);
-        if (tokenFee == Constants.SEROBYTES) {
+        if (tokenFee == Constants.SEROBYTES || fee == 0) {
             return (tokenOutValue, fee);
         } else if (fee > 0) {
             bytes32 _key = hashKey(tokenFee, Constants.SEROBYTES);
