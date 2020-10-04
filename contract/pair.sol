@@ -36,13 +36,13 @@ library ExchangePair {
 
     function investLiquidity(Pair storage self, address owner, uint256 valueA, uint256 valueB, uint256 _minShares) internal returns (uint256 returnA, uint256 returnB) {
 
-        uint256 perShareB = self.reserveB.div(self.totalShares);
-        uint256 perShareA = self.reserveA.div(self.totalShares);
+        uint256 perShareB= self.reserveB.div(self.totalShares);
+        uint256 perShareA= self.reserveA.div(self.totalShares);
 
         require(valueB >= perShareB && valueA >= perShareA);
 
         uint256 sharesPurchased = valueB.div(perShareB);
-        if (valueA.div(perShareA) < sharesPurchased) {
+        if(valueA.div(perShareA) < sharesPurchased) {
             sharesPurchased = valueA.div(perShareA);
         }
 
@@ -62,8 +62,8 @@ library ExchangePair {
 
     function removeLiquidity(Pair storage self, address owner, uint256 _sharesBurned) internal returns (uint256, uint256) {
 
-        uint256 perShareB = self.reserveB.div(self.totalShares);
-        uint256 perShareA = self.reserveA.div(self.totalShares);
+        uint256 perShareB= self.reserveB.div(self.totalShares);
+        uint256 perShareA= self.reserveA.div(self.totalShares);
 
         self.totalShares = self.totalShares.sub(_sharesBurned);
         self.shares[owner] = self.shares[owner].sub(_sharesBurned);
@@ -80,61 +80,99 @@ library ExchangePair {
         return (divestedA, divestedB);
     }
 
-    function caleSwap(Pair storage self, bytes32 token, uint256 amountIn, uint256 feeRate) internal view returns (uint256, uint256) {
+    function caleSwap(Pair storage self, bytes32 tokenIn, uint256 amountIn, uint256 feeRate) internal view returns(uint256, uint256) {
         uint256 invariant = self.reserveA.mul(self.reserveB);
         uint256 fee;
         uint256 amountOut;
 
         bool flag;
-        if (feeRate == 0) {
+        if(feeRate == 0) {
             feeRate = 30;
             flag = true;
         }
 
-        if (token == self.tokenB) {
-            fee = amountIn.mul(feeRate).div(10000);
-            amountOut = self.reserveA.sub(invariant.div(self.reserveB.add(amountIn.sub(fee))));
-            if (flag) {
-                return (amountOut, 0);
+        if(self.tokenA == Constants.SEROBYTES) {
+            if (tokenIn == self.tokenA) {
+                fee = amountIn.mul(feeRate).div(10000);
+                amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn.sub(fee))));
+                if(flag) {
+                    return (amountOut, 0);
+                } else {
+                    return (amountOut, fee);
+                }
+            } else if (tokenIn == self.tokenB) {
+                amountOut = self.reserveA.sub(invariant.div(self.reserveB.add(amountIn)));
+                fee = amountOut.mul(feeRate).div(10000);
+                if(flag) {
+                    return (amountOut.sub(fee), 0);
+                } else {
+                    return (amountOut.sub(fee), fee);
+                }
             } else {
-                return (amountOut, fee);
-            }
-        } else if (token == self.tokenA) {
-            amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn)));
-            fee = amountOut.mul(feeRate).div(10000);
-            if (flag) {
-                return (amountOut.sub(fee), 0);
-            } else {
-                return (amountOut.sub(fee), fee);
+                require(false);
             }
         } else {
-            require(false);
+            if (tokenIn == self.tokenB) {
+                fee = amountIn.mul(feeRate).div(10000);
+                amountOut = self.reserveA.sub(invariant.div(self.reserveB.add(amountIn.sub(fee))));
+                if(flag) {
+                    return (amountOut, 0);
+                } else {
+                    return (amountOut, fee);
+                }
+            } else if (tokenIn == self.tokenA) {
+                amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn)));
+                fee = amountOut.mul(feeRate).div(10000);
+                if(flag) {
+                    return (amountOut.sub(fee), 0);
+                } else {
+                    return (amountOut.sub(fee), fee);
+                }
+            } else {
+                require(false);
+            }
         }
     }
 
-    function swap(Pair storage self, address owner, bytes32 token, uint256 amountIn, uint256 feeRate) internal returns (uint256, uint256) {
-        (uint256 amountOut,  uint256 fee) = caleSwap(self, token, amountIn, feeRate);
+    function swap(Pair storage self, address owner,  bytes32 tokenIn, uint256 amountIn, uint256 feeRate) internal returns (uint256, bytes32, uint256) {
+        (uint256 amountOut,  uint256 fee) = caleSwap(self, tokenIn, amountIn, feeRate);
 
+        bytes32 tokenFee;
         uint8 orderType;
-        if (token == self.tokenB) {
-            self.reserveA = self.reserveA.sub(amountOut);
-            self.reserveB = self.reserveB.add(amountIn.sub(fee));
-            emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, fee);
+        if(self.tokenA == Constants.SEROBYTES) {
+            tokenFee = self.tokenA;
+            if (tokenIn == self.tokenA)  {
+                self.reserveB = self.reserveB.sub(amountOut);
+                self.reserveA = self.reserveA.add(amountIn.sub(fee));
+                emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, fee);
+            } else {
+                self.reserveB = self.reserveB.add(amountIn);
+                self.reserveA = self.reserveA.sub(amountOut.add(fee));
+                emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, fee);
+            }
         } else {
-            self.reserveA = self.reserveA.add(amountIn);
-            self.reserveB = self.reserveB.sub(amountOut.add(fee));
-            emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, fee);
+            tokenFee = self.tokenB;
+            if (tokenIn == self.tokenB)  {
+                self.reserveA = self.reserveA.sub(amountOut);
+                self.reserveB = self.reserveB.add(amountIn.sub(fee));
+                emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, fee);
+            } else {
+                self.reserveA = self.reserveA.add(amountIn);
+                self.reserveB = self.reserveB.sub(amountOut.add(fee));
+                emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, fee);
+            }
         }
 
+
         uint256 id = self.seq++;
-        self.ordersMap[id] = Order({amountIn : amountIn, amountOut : amountOut, orderType : orderType, timestamp : now});
+        self.ordersMap[id] = Order({amountIn:amountIn,amountOut:amountOut,orderType:orderType, timestamp:now});
         self.usersOrderList[owner].push(id);
         uint256[] memory delIds = self.orderlist.push(id);
-        for (uint256 i = 0; i < delIds.length; i++) {
+        for(uint256 i=0;i<delIds.length;i++) {
             delete self.ordersMap[delIds[i]];
         }
 
-        return (amountOut, fee);
+        return (amountOut, tokenFee, fee);
     }
 
     function feeToken(Pair storage self) internal view returns (bytes32) {
@@ -147,25 +185,25 @@ library ExchangePair {
         return (selfTotal, total);
     }
 
-    function liquidityList(Pair storage self, address owner) internal view returns (Liquidity[] memory, Liquidity[] memory) {
+    function liquidityList(Pair storage self, address owner) internal view returns(Liquidity[] memory, Liquidity[] memory) {
         return (self.wholeLiquidity.listLiquidity(), self.liquiditys[owner].listLiquidity());
     }
 
-    function userOrderIds(Pair storage self, address owner) internal view returns (uint256[] memory) {
-        return self.usersOrderList[owner].list(0);
+    function userOrderIds(Pair storage self, address owner) internal view returns(uint256[] memory) {
+        return  self.usersOrderList[owner].list(0);
     }
 
-    function orderList(Pair storage self, address owner) internal view returns (Order[] memory, Order[] memory) {
+    function orderList(Pair storage self, address owner) internal view returns(Order[] memory, Order[] memory) {
 
         uint256[] memory _userIds = self.usersOrderList[owner].list(0);
         Order[] memory _userOrderList = new Order[](_userIds.length);
-        for (uint256 i = 0; i < _userIds.length; i++) {
+        for(uint256 i=0;i<_userIds.length;i++) {
             _userOrderList[i] = self.ordersMap[_userIds[i]];
         }
 
         uint256[] memory _ids = self.orderlist.list(0);
         Order[] memory _orderList = new Order[](_ids.length);
-        for (uint256 i = 0; i < _ids.length; i++) {
+        for(uint256 i=0;i<_ids.length;i++) {
             _orderList[i] = self.ordersMap[_ids[i]];
         }
 
