@@ -59,7 +59,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
     VolumeList.List private wholeVolume;
     mapping(bytes32 => VolumeList.List) private volumes;
-    mapping(address => uint256) public lastIndexsMap;
+    mapping(address => mapping(bytes32 => uint256)) public lastIndexsMap;
 
     TokenPool private tokenPool;
     mapping(bytes32 => uint256) public feeRateMap;
@@ -207,7 +207,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function shareReward(bytes32 key) public view returns (uint256 reward) {
-        uint256 lastIndex = lastIndexsMap[msg.sender];
+        uint256 lastIndex = lastIndexsMap[msg.sender][key];
         if (lastIndex == 0) {
             lastIndex = startDay;
         }
@@ -217,16 +217,18 @@ contract SwapExchange is SeroInterface, Ownable {
         uint256 selfLiquidity;
         uint256 totalLiquidity;
 
-        for (uint256 i = startDay; i < (now / Constants.ONEDAY); i++) {
+        for (uint256 i = lastIndex; i < (now / Constants.ONEDAY); i++) {
+
+            (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
+
+            if (selfLiquidity == 0 || totalLiquidity == 0) {
+                continue;
+            }
+
             totalVolume = wholeVolume.volumeOfDay(i);
             selfVolume = volumes[key].volumeOfDay(i);
 
             if (selfVolume == 0 || totalVolume == 0) {
-                continue;
-            }
-            (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
-
-            if (selfLiquidity == 0 || totalLiquidity == 0) {
                 continue;
             }
 
@@ -272,21 +274,9 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function withdrawShareReward(bytes32 key) external {
         uint256 value = shareReward(key);
-        lastIndexsMap[msg.sender] = now / Constants.ONEDAY;
+        lastIndexsMap[msg.sender][key] = now / Constants.ONEDAY;
         require(tokenPool.transfer(msg.sender, value));
     }
-
-    // function initializePair() external payable {
-    //     require(startDay > 0);
-    //     require(msg.value > 0);
-    //     bytes32 token = strings._stringToBytes32(sero_msg_currency());
-    //     uint256 size = initValues[msg.sender].push(token, msg.value);
-    //     if (size < 2) {
-    //         return;
-    //     }
-
-    //     _investLiquidity(msg.sender, 0);
-    // }
 
     function investLiquidity(uint256 _minShares) external payable {
         require(startDay > 0);
@@ -309,17 +299,6 @@ contract SwapExchange is SeroInterface, Ownable {
         bytes32 key = hashKey(tokenA, tokenB);
 
         if (pairs[key].reserveA == 0 && pairs[key].reserveB == 0) {
-            //init pair
-            // if (tokenB != SEROBYTES) {
-            //     bytes32 _key = _hash(tokenB, SEROBYTES);
-            //     if (pairs[_key].reserveA == 0 || pairs[_key].reserveB == 0) {
-            //         require(sero_send_token(sender, strings._bytes32ToStr(tokenA), initValue.valueMap[tokenA]));
-            //         require(sero_send_token(sender, strings._bytes32ToStr(tokenB), initValue.valueMap[tokenB]));
-            //         initValues[sender].clear();
-            //         return;
-            //     }
-            // }
-
             tokenIndexs[initValues[msg.sender].tokens[0]].push(key);
             tokenIndexs[initValues[msg.sender].tokens[1]].push(key);
             pairKeys.push(key);
@@ -350,8 +329,8 @@ contract SwapExchange is SeroInterface, Ownable {
             require(false);
         }
 
-        if (lastIndexsMap[sender] == 0) {
-            lastIndexsMap[sender] = now / Constants.ONEDAY;
+        if (lastIndexsMap[sender][key] == 0) {
+            lastIndexsMap[sender][key] = now / Constants.ONEDAY;
         }
 
         initValues[sender].clear();
@@ -390,13 +369,15 @@ contract SwapExchange is SeroInterface, Ownable {
         _excuteSwap(msg.sender, key, _token, msg.value, _minTokensReceived, _recipient);
     }
 
-    function _excuteSwap(address sender, bytes32 key, bytes32 _token, uint256 value, uint256 _minTokensReceived, address _recipient) internal {
+    function _excuteSwap(address sender, bytes32 key, bytes32 _token, uint256 value, uint256 _minTokensReceived, address _recipient) internal returns (uint256){
         (uint256 tokenOutValue, uint256 fee) = _swap(sender, key, _token, value, feeRateMap[key]);
-        require(_minTokensReceived <= tokenOutValue);
-        if (_token == pairs[key].tokenA) {
-            require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenB), tokenOutValue));
-        } else {
-            require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenA), tokenOutValue));
+        if (_recipient != address(0)) {
+            require(_minTokensReceived <= tokenOutValue);
+            if (_token == pairs[key].tokenA) {
+                require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenB), tokenOutValue));
+            } else {
+                require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenA), tokenOutValue));
+            }
         }
 
         if (fee > 0) {
@@ -404,6 +385,7 @@ contract SwapExchange is SeroInterface, Ownable {
             wholeVolume.add(fee);
             volumes[key].add(fee);
         }
+        return tokenOutValue;
     }
 
     function _swap(address sender, bytes32 key, bytes32 _token, uint256 _value, uint256 _feeRate) private returns (uint256, uint256) {
@@ -413,9 +395,9 @@ contract SwapExchange is SeroInterface, Ownable {
         } else if (fee > 0) {
             bytes32 _key = hashKey(tokenFee, Constants.SEROBYTES);
             require(pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0, "exchange not initialized");
-            (uint256 fee1, bytes32 token,uint256 fee2) = pairs[_key].swap(sender, tokenFee, fee, feeRateMap[_key]);
-            require(token == Constants.SEROBYTES);
-            return (tokenOutValue, fee1 + fee2);
+            fee = _excuteSwap(address(0), _key, tokenFee, fee, 0, address(0));
+
+            return (tokenOutValue, fee);
         }
     }
 
