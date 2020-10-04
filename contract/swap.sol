@@ -299,9 +299,10 @@ contract SwapExchange is SeroInterface, Ownable {
 
         bytes32 key = hashKey(tokenA, tokenB);
 
-        if (pairs[key].reserveA == 0 && pairs[key].reserveB == 0) {
+        if (pairs[key].tokenA == bytes32(0) && pairs[key].tokenB == bytes32(0)) {
             tokenIndexs[initValues[msg.sender].tokens[0]].push(key);
             tokenIndexs[initValues[msg.sender].tokens[1]].push(key);
+
             pairKeys.push(key);
 
             pairs[key] = ExchangePair.Pair({seq : 0, tokenA : tokenA, tokenB : tokenB,
@@ -313,8 +314,7 @@ contract SwapExchange is SeroInterface, Ownable {
             pairs[key].shares[msg.sender] = 1000;
             pairs[key].wholeLiquidity.add(1000);
             pairs[key].liquiditys[msg.sender].add(1000);
-        } else if (pairs[key].reserveA != 0 && pairs[key].reserveB != 0) {
-            //invest liquidity
+        } else {
             (uint256 returnA, uint256 returnB) = pairs[key].investLiquidity(sender,
                 initValue.valueMap[pairs[key].tokenA],
                 initValue.valueMap[pairs[key].tokenB],
@@ -326,8 +326,6 @@ contract SwapExchange is SeroInterface, Ownable {
             if (returnB != 0) {
                 require(sero_send_token(sender, strings._bytes32ToStr(pairs[key].tokenB), returnB));
             }
-        } else {
-            require(false);
         }
 
         if (lastIndexsMap[sender][key] == 0) {
