@@ -224,8 +224,12 @@ class Swap extends React.Component{
         }
         abi.swap(account.pk,account.mainPKr,tokenFrom,tokenTo,amount,function (hash) {
             if(hash){
-                Toast.info("PENDING...")
+                Toast.loading("PENDING...",60)
                 that.startGetTxReceipt(hash,()=>{
+                    that.setState({
+                        tokenFromValue:"",
+                        tokenToValue:""
+                    })
                     Toast.success("SUCCESSFULLY")
                     that.init().catch();
                 })

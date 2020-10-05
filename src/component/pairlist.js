@@ -175,7 +175,7 @@ export class PairList extends Component {
             return
         }
         abi.divestLiquidity(account.pk, account.mainPKr, selectPair.tokenA, selectPair.tokenB, inputValue).then(rest=>{
-            Toast.loading("Pending...",60);
+            Toast.loading("PENDING...",60)
             self.startGetTxReceipt(rest,()=>{
                 self.setState({
                     // selectPair:{},
@@ -191,7 +191,7 @@ export class PairList extends Component {
     withdrawCoral = (pair) => {
         const self = this;
         abi.withdrawShareReward(this.state.account.pk, this.state.account.mainPKr, pair.tokenA, pair.tokenB).then(rest=>{
-            Toast.loading("Pending...",60);
+            Toast.loading("PENDING...",60)
             self.startGetTxReceipt(rest);
         }).catch(e=>{
             Toast.fail(e)
@@ -288,7 +288,7 @@ export class PairList extends Component {
         abi.getDecimal(token, function (decimals) {
             let value = new BigNumber(inputValue).multipliedBy(Math.pow(10, decimals));
             abi.initializePair(account.pk, account.mainPKr, token, value).then(rest=>{
-                Toast.loading("Pending...",60);
+                Toast.loading("PENDING...",60)
                 that.setShowInitModal(false).catch()
                 that.setInputValue("")
                 that.startGetTxReceipt(rest,()=>{
@@ -327,7 +327,7 @@ export class PairList extends Component {
         const that = this;
         const {account} = this.state;
         abi.cancelInvest(account.pk,account.mainPKr,function (rest) {
-            Toast.loading("Pending...",60);
+            Toast.loading("PENDING...",60)
             that.setShowInitModal(false).catch()
             that.setShowInvestModal(false).catch()
             that.startGetTxReceipt(rest,()=>{
@@ -338,10 +338,7 @@ export class PairList extends Component {
 
     render() {
         console.log(this.state.account,"accountssss");
-        let imgs = []
         let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
-        imgs.push(pictures);
-        account.imgs = pictures;
         console.log(account&& account,"accccc");
        
         let tokensB = [];
@@ -420,12 +417,13 @@ export class PairList extends Component {
                     <WhiteSpace/>
                     {
                         pairs.map((pair, index) => {
+
                             return (
                                 <div className="fontSize">
                                     <div className="am-card card-border">
                                         <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
                                             <div>
-                                                <img width="50%" src={this.state.pictures && this.state.pictures[index]} alt=""/>
+                                                <img width="50%" src={pictures[index%3]} alt=""/>
                                             </div>
                                             <div style={{color:"#f75552"}}>
                                                 <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
@@ -571,11 +569,7 @@ export class PairList extends Component {
                                {
                                    text:"确定",
                                    onPress:()=>{
-                                       if(investShares && parseInt(investShares)>0){
-                                           this.invest(investTokenValue).catch()
-                                       }else{
-                                           Toast.info("最少提供1份",2)
-                                       }
+                                       this.invest(investTokenValue).catch()
                                    }
                                }
                            ]}>

@@ -11,10 +11,10 @@ body {
     background-image: url("../images/background.png");
     padding: 16px 0 0 0;
     margin-bottom: 70px;
-    font-family: consola;
+    /*font-family: consola;*/
     shape-margin: 0%;
     /* font-family: consolab; */
-    font-size: 12px;
+    /*font-size: 12px;*/
     -webkit-text-size-adjust: none;
 }
 
@@ -97,6 +97,14 @@ body {
     justify-content: space-between;
     border: none;
 }
+
+
+.flex-only {
+    display: flex;
+    align-items: center;
+    border: none;
+}
+
 .pledge{
     display: flex;
     align-items: center;
@@ -332,7 +340,7 @@ body {
     color: #fff;
 }
 .fontSize {
-    font-size: 12px;
+    /*font-size: 12px;*/
 }
 .inputItem {
     height: 30px;
@@ -401,7 +409,7 @@ body {
 .am-card {
     padding: 10px 10px 12px 10px;
     background-color: #fff;
-    box-shadow: #00456b 0px 0 8px;
+    /*box-shadow: #00456b 0px 0 8px;*/
 }
 
 .am-tabs-pane-wrap .am-tabs-pane-wrap-active {
@@ -447,7 +455,7 @@ body {
 } 
 
 .card-border {
-    border-radius: 15px;
+    border-radius: 5px;
     background-color: #f2fcfc;
 }
 
@@ -476,7 +484,7 @@ body {
 }
 
 .totalSupply {
-    font-size: 16px;
+    font-size: 20px;
     text-align: center;
     padding: 5px;
     border-radius: 5px;
@@ -538,4 +546,8 @@ body {
     background-color: #00456e;
     border: 1PX solid #00456e;
     border-radius: 5px;
+}
+
+.am-tab-bar-bar .am-tab-bar-tab-title{
+    font-size: 12px !important;
 }
