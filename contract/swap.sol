@@ -67,6 +67,10 @@ contract SwapExchange is SeroInterface, Ownable {
     uint256 public startDay;
     uint256[7000] public outputs;
 
+    //test
+    uint256 public lastFee;
+    uint256 public lastSupply;
+
     constructor(address _tokenPool) public payable {
         tokenPool = TokenPool(_tokenPool);
     }
@@ -197,6 +201,10 @@ contract SwapExchange is SeroInterface, Ownable {
         return pair;
     }
 
+    function nowDays() public view returns (uint256) {
+        return now / Constants.ONEDAY;
+    }
+
     function volumesOfPair(string memory tokenA, string memory tokenB) public view returns (Volume[] memory, Volume[] memory) {
         bytes32 key = hashKey(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
         return (wholeVolume.listVolume(), volumes[key].listVolume());
@@ -276,6 +284,7 @@ contract SwapExchange is SeroInterface, Ownable {
     function withdrawShareReward(bytes32 key) external {
         uint256 value = shareReward(key);
         lastIndexsMap[msg.sender][key] = now / Constants.ONEDAY;
+        lastSupply = value;
         require(tokenPool.transfer(msg.sender, value));
     }
 
@@ -310,9 +319,6 @@ contract SwapExchange is SeroInterface, Ownable {
                 totalShares : 0,
                 wholeLiquidity : LiquidityList.List({lastIndex : 0}),
                 orderlist : CycleList.List()});
-            // pairs[key].shares[msg.sender] = 1000;
-            // pairs[key].wholeLiquidity.add(1000);
-            // pairs[key].liquiditys[msg.sender].add(1000);
         }
 
         (uint256 returnA, uint256 returnB) = pairs[key].investLiquidity(sender,
@@ -378,6 +384,7 @@ contract SwapExchange is SeroInterface, Ownable {
             }
         }
 
+        lastFee = fee;
         if (fee > 0) {
             require(sero_send_token(address(tokenPool), "SERO", fee));
             wholeVolume.add(fee);
@@ -406,7 +413,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function hasPair(bytes32 _key) public view returns (bool) {
-        return pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0;
+        return pairs[_key].tokenA != bytes32(0) && pairs[_key].tokenB != bytes32(0);
     }
 
 }
