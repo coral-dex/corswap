@@ -23,6 +23,6 @@ function tokenToBytes(token) {
 
 // console.log(hashKey("SERO", "GAIL"));
 
-console.log(hashKey("PFIDKEY", "SERO"));
-console.log(hashKey("SERO", "PFIDKEY"));
-// console.log(tokenToBytes("SERO"));
+// console.log(hashKey("PFIDKEY", "SERO"));
+// console.log(hashKey("SERO", "PFIDKEY"));
+console.log(tokenToBytes("SERO"));

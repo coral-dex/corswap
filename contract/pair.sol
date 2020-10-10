@@ -80,7 +80,7 @@ library ExchangePair {
         return (divestedA, divestedB);
     }
 
-    function caleSwap(Pair storage self, bytes32 token, uint256 amountIn, uint256 feeRate) internal view returns (uint256, uint256) {
+    function caleSwap(Pair storage self, bytes32 tokenIn, uint256 amountIn, uint256 feeRate) internal view returns (uint256, uint256) {
         uint256 invariant = self.reserveA.mul(self.reserveB);
         uint256 fee;
         uint256 amountOut;
@@ -91,50 +91,90 @@ library ExchangePair {
             flag = true;
         }
 
-        if (token == self.tokenB) {
-            fee = amountIn.mul(feeRate).div(10000);
-            amountOut = self.reserveA.sub(invariant.div(self.reserveB.add(amountIn.sub(fee))));
-            if (flag) {
-                return (amountOut, 0);
+        if (self.tokenA == Constants.SEROBYTES) {
+            if (tokenIn == self.tokenA) {
+                fee = amountIn.mul(feeRate).div(10000);
+                amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn.sub(fee))));
+                if (flag) {
+                    return (amountOut, 0);
+                } else {
+                    return (amountOut, fee);
+                }
+            } else if (tokenIn == self.tokenB) {
+                amountOut = self.reserveA.sub(invariant.div(self.reserveB.add(amountIn)));
+                fee = amountOut.mul(feeRate).div(10000);
+                if (flag) {
+                    return (amountOut.sub(fee), 0);
+                } else {
+                    return (amountOut.sub(fee), fee);
+                }
             } else {
-                return (amountOut, fee);
-            }
-        } else if (token == self.tokenA) {
-            amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn)));
-            fee = amountOut.mul(feeRate).div(10000);
-            if (flag) {
-                return (amountOut.sub(fee), 0);
-            } else {
-                return (amountOut.sub(fee), fee);
+                require(false);
             }
         } else {
-            require(false);
+            if (tokenIn == self.tokenB) {
+                fee = amountIn.mul(feeRate).div(10000);
+                amountOut = self.reserveA.sub(invariant.div(self.reserveB.add(amountIn.sub(fee))));
+                if (flag) {
+                    return (amountOut, 0);
+                } else {
+                    return (amountOut, fee);
+                }
+            } else if (tokenIn == self.tokenA) {
+                amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn)));
+                fee = amountOut.mul(feeRate).div(10000);
+                if (flag) {
+                    return (amountOut.sub(fee), 0);
+                } else {
+                    return (amountOut.sub(fee), fee);
+                }
+            } else {
+                require(false);
+            }
         }
     }
 
-    function swap(Pair storage self, address owner, bytes32 token, uint256 amountIn, uint256 feeRate) internal returns (uint256, uint256) {
-        (uint256 amountOut,  uint256 fee) = caleSwap(self, token, amountIn, feeRate);
+    function swap(Pair storage self, address owner, bytes32 tokenIn, uint256 amountIn, uint256 feeRate) internal returns (uint256, bytes32, uint256) {
+        (uint256 amountOut,  uint256 fee) = caleSwap(self, tokenIn, amountIn, feeRate);
 
+        bytes32 tokenFee;
         uint8 orderType;
-        if (token == self.tokenB) {
-            self.reserveA = self.reserveA.sub(amountOut);
-            self.reserveB = self.reserveB.add(amountIn.sub(fee));
-            emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, fee);
+        if (self.tokenA == Constants.SEROBYTES) {
+            tokenFee = self.tokenA;
+            if (tokenIn == self.tokenA) {
+                self.reserveB = self.reserveB.sub(amountOut);
+                self.reserveA = self.reserveA.add(amountIn.sub(fee));
+                emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, fee);
+            } else {
+                self.reserveB = self.reserveB.add(amountIn);
+                self.reserveA = self.reserveA.sub(amountOut.add(fee));
+                emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, fee);
+            }
         } else {
-            self.reserveA = self.reserveA.add(amountIn);
-            self.reserveB = self.reserveB.sub(amountOut.add(fee));
-            emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, fee);
+            tokenFee = self.tokenB;
+            if (tokenIn == self.tokenB) {
+                self.reserveA = self.reserveA.sub(amountOut);
+                self.reserveB = self.reserveB.add(amountIn.sub(fee));
+                emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut, fee);
+            } else {
+                self.reserveA = self.reserveA.add(amountIn);
+                self.reserveB = self.reserveB.sub(amountOut.add(fee));
+                emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut, fee);
+            }
         }
 
+
         uint256 id = self.seq++;
-        self.ordersMap[id] = Order({amountIn : amountIn, amountOut : amountOut, orderType : orderType, timestamp : now});
-        self.usersOrderList[owner].push(id);
+        if (owner != address(0)) {
+            self.ordersMap[id] = Order({amountIn : amountIn, amountOut : amountOut, orderType : orderType, timestamp : now});
+            self.usersOrderList[owner].push(id);
+        }
         uint256[] memory delIds = self.orderlist.push(id);
         for (uint256 i = 0; i < delIds.length; i++) {
             delete self.ordersMap[delIds[i]];
         }
 
-        return (amountOut, fee);
+        return (amountOut, tokenFee, fee);
     }
 
     function feeToken(Pair storage self) internal view returns (bytes32) {

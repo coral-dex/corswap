@@ -33,8 +33,7 @@ export class PairList extends Component {
 
             showSelectTokenA:false,
             showSelectTokenB:false,
-            // tokensA:[],
-            // tokensB:[],
+
             selectTokenA:"",
             selectTokenB:"",
 
@@ -147,18 +146,20 @@ export class PairList extends Component {
         abi.getDecimal(token, function (decimals) {
             let amount = new BigNumber(inputValue).multipliedBy(Math.pow(10, decimals))
             abi.investLiquidity(account.pk, self.state.account.mainPKr, token, amount).then(rest=>{
-                Toast.loading("Pending...",60);
-                self.setShowInvestModal(false,selectPair).catch()
-                self.setInputValue("")
-                self.startGetTxReceipt(rest,function () {
-                    abi.investAmount(account.mainPKr).then(data=>{
-                        if(data[0]){
-                            self.setShowInvestModal(true,selectPair).catch()
-                        }else {
-                            Toast.success("SUCCESSFUL")
-                        }
-                    })
-                });
+                if(rest){
+                    Toast.loading("PENDING...",60);
+                    self.setShowInvestModal(false,selectPair).catch()
+                    self.setInputValue("")
+                    self.startGetTxReceipt(rest,function () {
+                        abi.investAmount(account.mainPKr).then(data=>{
+                            if(data[0]){
+                                self.setShowInvestModal(true,selectPair).catch()
+                            }else {
+                                Toast.success("SUCCESSFUL")
+                            }
+                        })
+                    });
+                }
             }).catch(e=>{
                 Toast.fail(e)
             })
@@ -173,7 +174,7 @@ export class PairList extends Component {
             return
         }
         abi.divestLiquidity(account.pk, account.mainPKr, selectPair.tokenA, selectPair.tokenB, inputValue).then(rest=>{
-            Toast.loading("Pending...",60);
+            Toast.loading("PENDING...",60)
             self.startGetTxReceipt(rest,()=>{
                 self.setState({
                     // selectPair:{},
@@ -189,7 +190,7 @@ export class PairList extends Component {
     withdrawCoral = (pair) => {
         const self = this;
         abi.withdrawShareReward(this.state.account.pk, this.state.account.mainPKr, pair.tokenA, pair.tokenB).then(rest=>{
-            Toast.loading("Pending...",60);
+            Toast.loading("PENDING...",60)
             self.startGetTxReceipt(rest);
         }).catch(e=>{
             Toast.fail(e)
@@ -286,7 +287,7 @@ export class PairList extends Component {
         abi.getDecimal(token, function (decimals) {
             let value = new BigNumber(inputValue).multipliedBy(Math.pow(10, decimals));
             abi.initializePair(account.pk, account.mainPKr, token, value).then(rest=>{
-                Toast.loading("Pending...",60);
+                Toast.loading("PENDING...",60)
                 that.setShowInitModal(false).catch()
                 that.setInputValue("")
                 that.startGetTxReceipt(rest,()=>{
@@ -325,21 +326,18 @@ export class PairList extends Component {
         const that = this;
         const {account} = this.state;
         abi.cancelInvest(account.pk,account.mainPKr,function (rest) {
-            Toast.loading("Pending...",60);
+            Toast.loading("PENDING...",60)
             that.setShowInitModal(false).catch()
             that.setShowInvestModal(false).catch()
             that.startGetTxReceipt(rest,()=>{
-                Toast.success("SUCCESSFUL")
+                Toast.success("SUCCESSFULLY")
             });
         })
     }
 
     render() {
         console.log(this.state.account,"accountssss");
-        let imgs = []
         let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
-        imgs.push(pictures);
-        account.imgs = pictures;
         console.log(account&& account,"accccc");
        
         let tokensB = [];
@@ -348,11 +346,11 @@ export class PairList extends Component {
 
         account.balances.forEach((val, key) => {
             if (val > 0) {
-                if(ops.indexOf(key) === -1){
+                // if(ops.indexOf(key) === -1){
                     tokensB.push(key)
-                }else{
+                // }else{
                     tokensA.push(key)
-                }
+                // }
             }
         });
         if(!selectTokenA){
@@ -361,10 +359,6 @@ export class PairList extends Component {
         if(!selectTokenB){
             selectTokenB = tokensB.length>0 ? tokensB[0]:""
         }
-        console.log(account,"余额");
-        console.log(tokensA,tokensB,"余额吗");
-        // console.log("render>>>> ",investAmount,selectTokenA,selectTokenB);
-
         let investTokenValue = 0;
         let investShares = 0;
         if(!investAmount[0]){
@@ -388,8 +382,9 @@ export class PairList extends Component {
         if(selectPair && this.state.account.balances.has(selectPair.tokenA)){
             balances2 = this.state.account.balances.get(selectPair.tokenA)
         }
-        console.log(pairs,"pairs是什么是什么");
-        let imgCurrent=0;
+        if(pairs){
+            console.log(pairs,"!!!")
+        }
         return (
             <Layout selectedTab="3" doUpdate={this.doUpdate}>
                 <div className="pairlist fontSize">
@@ -423,11 +418,13 @@ export class PairList extends Component {
                                     <div className="am-card card-border">
                                         <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
                                             <div>
-                                                <img width="50%" src={this.state.pictures && this.state.pictures[index]} alt=""/>
+                                                <img width="50%" src={pictures[index%3]} alt=""/>
                                             </div>
                                             <div style={{color:"#f75552"}}>
                                                 <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
-                                                <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>{i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {(pair.myShare/pair.totalShares*100).toFixed(2)}%</div>
+                                                <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>
+                                                    {i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {(pair.myShare/pair.totalShares*100).toFixed(2)}%
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="text-center">
@@ -443,18 +440,18 @@ export class PairList extends Component {
                                             </div>
                                             <WhiteSpace/>
                                             <div>
-                                                可提现{showValue(pair.shareRreward,18,3)}CORAL
+                                                {i18n.t("Withdrawable")}{showValue(pair.shareRreward,18,3)}CORAL
                                             </div>
                                             <WhiteSpace/>
                                             <Flex>
                                                 <Flex.Item>
-                                                    <Button  type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true,pair).catch()}}>回收流动性</Button>
+                                                    <Button  type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true,pair).catch()}}>{i18n.t("RecoveryLiquidity")}</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
-                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>提供流动性</Button>
+                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>{i18n.t("ProvideLiquidity")}</Button>
                                                 </Flex.Item>
                                                 <Flex.Item>
-                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" disabled={pair.shareRreward*1 === 0} onClick={() => {this.withdrawCoral(pair)}}>提现</Button>
+                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" disabled={pair.shareRreward*1 === 0} onClick={() => {this.withdrawCoral(pair)}}>{i18n.t("Withdraw")}</Button>
                                                 </Flex.Item>
                                             </Flex>
                                         </div>
@@ -569,11 +566,7 @@ export class PairList extends Component {
                                {
                                    text:"确定",
                                    onPress:()=>{
-                                       if(investShares && parseInt(investShares)>0){
-                                           this.invest(investTokenValue).catch()
-                                       }else{
-                                           Toast.info("最少提供1份",2)
-                                       }
+                                       this.invest(investTokenValue).catch()
                                    }
                                }
                            ]}>
@@ -587,7 +580,7 @@ export class PairList extends Component {
                                         <div>
                                             <div>
                                                 <div style={{flex: 1}}>
-                                                   <span>交易一</span>&emsp;&emsp;{selectPair&&selectPair.tokenB}剩余:
+                                                   <span>交易一</span>&emsp;&emsp;{selectPair&&selectPair.tokenB}余额:
                                                    <span>{selectPair && showValue(balances, abi.getDecimalLocal(selectPair.tokenB))}</span>    
                                                 </div>
                                                 
@@ -613,7 +606,7 @@ export class PairList extends Component {
                                         </div>
                                     } />
                                     <Step key={1} title={<div> 
-                                            <span>交易二</span>&emsp;&emsp;{selectPair&&selectPair.tokenA}剩余:
+                                            <span>交易二</span>&emsp;&emsp;{selectPair&&selectPair.tokenA}余额:
                                             <span>{selectPair&&showValue(balances2, abi.getDecimalLocal(selectPair.tokenA))}</span>
                                     </div>} description={
                                         <div>
@@ -684,7 +677,7 @@ export class PairList extends Component {
 
                     <SelectToken visible={showSelectTokenA} onOk={this.setSelectTokenA} onClose={this.setShowSelectTokenA} tokens={tokensA} balance={account&&account.balances}/>
 
-                    <SelectToken visible={showSelectTokenB} onOk={this.setSelectTokenB} onClose={this.setShowSelectTokenB}  tokens={tokensB} balance={account&&account.balances}/>
+                    <SelectToken visible={showSelectTokenB} onOk={this.setSelectTokenB} onClose={this.setShowSelectTokenB} tokens={tokensB} balance={account&&account.balances}/>
                 </div>
             </Layout>
         )

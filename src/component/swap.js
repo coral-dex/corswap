@@ -5,7 +5,7 @@ import {showValue,toValue,fromValue} from "./utils/common";
 import abi from "./abi";
 import BigNumber from "bignumber.js";
 import {Select} from "./select";
-import {Button, Flex, InputItem, List} from "antd-mobile";
+import {Button, Flex, InputItem, List, Toast} from "antd-mobile";
 import SelectToken from "./selectToken";
 
 class Swap extends React.Component{
@@ -24,12 +24,6 @@ class Swap extends React.Component{
         showSelectTokenTo:"",
 
         estimate:"",
-        pair:[],
-        flag:true,
-        content:null,
-        price:0,
-        price2:0,
-        showBuySell:true,
     }
 
     async init () {
@@ -67,19 +61,10 @@ class Swap extends React.Component{
     async initPairs (token){
         // const swapBase = ["SERO","SUSD"];
         let { account}= this.state;
-        let that = this;
         return new Promise((resolve)=>{
-            // if(!token || swapBase.indexOf(token) == -1){
-            //     resolve(swapBase)
-            //     return
-            // }
             abi.pairList(account.mainPKr,token,function (datas) {
                 const tokensTmp = [];
-                that.setState({
-                    pair:datas
-                })
                 for(let pair of datas){
-                    
                     // console.log(datas,"datas");
                     abi.getDecimal(pair.tokenA)
                     abi.getDecimal(pair.tokenB)
@@ -108,51 +93,57 @@ class Swap extends React.Component{
     }
 
     setTokenFromValue = (v,tTo)=>{
-        const self = this;
+        const that = this;
+        if(!v){
+            this.setState({
+                tokenFromValue: "",
+                tokenToValue:""
+            })
+            return
+        }
         const {tokenFrom,tokenTo,account} = this.state;
         if(!tTo){
             tTo = tokenTo
         }
-        let amountOut;
         if(tTo && tokenFrom){
-            abi.estimateSwap(account.mainPKr,tTo,tokenFrom,tokenFrom,"0x"+toValue(v?v:0,parseInt(abi.getDecimalLocal(tokenFrom)).toString(16)),function (rest) {
-                amountOut = new BigNumber(rest).dividedBy(10**18);
-                let price = new BigNumber(amountOut).dividedBy(v).toFixed(6);
-                self.setState({
-                    price:price,
+            abi.estimateSwap(account.mainPKr,tTo,tokenFrom,tokenFrom,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenFrom)).toString(16),function (rest) {
+                that.setState({
                     tokenFromValue:v,
                     tokenToValue:rest?fromValue(rest,abi.getDecimalLocal(tTo)).toFixed(6):"",
                     estimate:"to"
                 })
             })
         }else{
-            self.setState({
+            that.setState({
                 tokenFromValue:v,
-                estimate:"from"
+                estimate:"to"
             })
         }
     }
 
     setTokenToValue = (v,tFrom)=>{
-        const self = this;
+        const that = this;
+        if(!v){
+            this.setState({
+                tokenFromValue: "",
+                tokenToValue:""
+            })
+            return
+        }
         const {tokenFrom,tokenTo,account} = this.state;
         if(!tFrom){ 
             tFrom = tokenFrom
         }
-        let amountOut;
         if(tFrom && tokenTo){
-            abi.estimateSwap(account.mainPKr,tFrom,tokenTo,tokenTo,"0x"+fromValue(v?v:0,abi.getDecimalLocal(tokenTo)).toString(16),function (rest) {
-                amountOut = new BigNumber(rest).dividedBy(10**18);
-                let price = new BigNumber(amountOut).dividedBy(v).toFixed(6);
-                self.setState({
-                    tokenFromValue:rest?toValue(rest,abi.getDecimalLocal(tFrom)).toFixed(6):"",
+            abi.estimateSwap(account.mainPKr,tFrom,tokenTo,tokenTo,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenTo)).toString(16),function (rest) {
+                that.setState({
+                    tokenFromValue:rest?fromValue(rest,abi.getDecimalLocal(tFrom)).toFixed(6):"",
                     tokenToValue:v,
-                    price:price,
-                    estimate:"to"
+                    estimate:"from"
                 })
             })
         }else{
-            self.setState({
+            that.setState({
                 tokenToValue:v,
                 estimate:"from"
             })
@@ -165,14 +156,12 @@ class Swap extends React.Component{
         this.setState({
             tokenFrom:v,
             tokenTo:"",
-            content:"已选择",
             showSelectTokenFrom:false
         })
         this.setTokenToValue(tokenToValue,v)
     }
 
     setShowSelectTokenFrom = (f) =>{
-        this.setState({content:undefined})
         const {tokenTo} = this.state;
         if(f){
             this.initPairs().then(tokens=>{
@@ -190,10 +179,8 @@ class Swap extends React.Component{
 
     setTokenTo = (v)=>{
         const {tokenFromValue} = this.state;
-        // console.log("setTokenTo tokenFromValue>>>",tokenFromValue);
         this.setState({
             tokenTo:v,
-            content:"已选择",
             showSelectTokenTo:false
         })
         this.setTokenFromValue(tokenFromValue,v)
@@ -216,13 +203,9 @@ class Swap extends React.Component{
     }
 
     convert = ()=>{
-        const {tokenTo,tokenFrom,tokenToValue,tokenFromValue,estimate,price} = this.state;
-        let self =this
-        let amountOut;
+        const {tokenTo,tokenFrom,tokenToValue,tokenFromValue,estimate} = this.state;
         if(tokenTo && tokenFrom ){
             this.setState({
-                price:price,
-                flag:!self.state.flag,
                 tokenFrom: tokenTo,
                 tokenTo: tokenFrom,
                 tokenFromValue: tokenToValue,
@@ -233,13 +216,24 @@ class Swap extends React.Component{
     }
 
     swap = ()=>{
+        const that = this;
         const {tokenTo,tokenFrom,tokenToValue,tokenFromValue,estimate,account} = this.state;
-        let amount = "0x0"
+        let amount = new BigNumber(0)
         if(estimate){
-            amount = "0x"+toValue(tokenFromValue,abi.getDecimalLocal(tokenFrom)).toString(16);
+            amount = toValue(tokenFromValue,abi.getDecimalLocal(tokenFrom));
         }
         abi.swap(account.pk,account.mainPKr,tokenFrom,tokenTo,amount,function (hash) {
-            
+            if(hash){
+                Toast.loading("PENDING...",60)
+                that.startGetTxReceipt(hash,()=>{
+                    that.setState({
+                        tokenFromValue:"",
+                        tokenToValue:""
+                    })
+                    Toast.success("SUCCESSFULLY")
+                    that.init().catch();
+                })
+            }
         })
     }
 
@@ -251,25 +245,24 @@ class Swap extends React.Component{
         return "0.000"
 
     }
+
+    startGetTxReceipt = (hash,cb) =>{
+        const that = this;
+        abi.getTransactionReceipt(hash).then(res=>{
+            if(res && res.result){
+                if(cb){
+                    cb();
+                }
+            }else{
+                setTimeout(function () {
+                    that.startGetTxReceipt(hash,cb)
+                },2000)
+            }
+        })
+    }
+
     render() {
-        // let that = this;
-        // let psk;
-        // let reserveA;
-        // let reserveB;
-        const {pair,tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
-        // if(this.state.pair){
-            // for(psk of that.state.pair){
-                // console.log(psk);
-                // if(that.state.tokenTo == psk.tokenA || that.state.tokenFrom == psk.tokenA){
-                //     reserveA = psk.reserveA;
-                //     reserveB = psk.reserveB;
-                // }
-               
-            // }  
-        // }
-        if(tokenFromValue&&tokenToValue){
-            console.log(this.state.tokenFromValue,this.state.tokenToValue,"======");
-        }
+        const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
         return (
             <Layout selectedTab="1" doUpdate={()=>this.init()}>
                 <div style={{padding:"10px"}} className="flex-center fontSize">
@@ -279,7 +272,7 @@ class Swap extends React.Component{
                             <div className="cst-border color">
                                 <Flex>
                                     <Flex.Item style={{flex:1}}>
-                                        FROM{estimate == "from"?"预算的":""}
+                                        FROM{estimate == "from"?"(estimated)":""}
                                     </Flex.Item>
                                     <Flex.Item style={{flex:1}}>
                                         <div className=' text-right color2 cst-balance'>{i18n.t("Balances")}: {this.getBalance(tokenFrom)}</div>
@@ -313,7 +306,7 @@ class Swap extends React.Component{
                             <div className="cst-border color" >
                                 <Flex style={{height:"30%"}}>
                                     <Flex.Item style={{flex:1}}>
-                                        TO{estimate == "to"?"预算的":""}
+                                        TO{estimate == "to"?"(estimated)":""}
                                     </Flex.Item>
                                     <Flex.Item style={{flex:1}}>
                                         <div className=' text-right color2'>{i18n.t("Balances")}: {this.getBalance(tokenTo)}</div>
@@ -332,50 +325,26 @@ class Swap extends React.Component{
                                         this.setShowSelectTokenTo(true);
                                     }}>
                                         <div style={{textAlign:"right"}}>
-                                            <span>{tokenTo?tokenTo:i18n.t("Select")}</span>
+                                            <span>{tokenTo?tokenTo:"Select Token"}</span>
                                             <img width="13px" src={require('../images/bottom.png')} alt=""/>
                                         </div>
                                     </Flex.Item>
                                 </Flex>
                             </div>
                         </div>
-                        <div style={{paddingLeft:"10px",height:"20PX",fontSize:"16px"}} className="color">
-
-                                            
-                                            {/* <div>
-                                                {   !this.state.tokenFromValue||!this.state.tokenToValue?
-                                                    this.state.content!=null &&
-                                                    this.state.tokenFrom!="SERO" ? 
-                                                    showValue(reserveA,abi.getDecimalLocal(this.state.tokenTo)) + this.state.tokenTo + "=" + showValue(reserveB,abi.getDecimalLocal(this.state.tokenFrom))+this.state.tokenFrom 
-                                                    :
-                                                    showValue(reserveB,abi.getDecimalLocal(this.state.tokenTo)) + this.state.tokenTo + "=" + showValue(reserveA,abi.getDecimalLocal(this.state.tokenFrom))+this.state.tokenFrom 
-                                                    : " "
-                                                } 
-                                            </div> */}
-                                                {/* {
-                                                   this.state.price+
-                                                   this.state.tokenFromValue&& this.state.tokenFromValue+this.state.tokenFrom+" : "+this.state.tokenToValue+this.state.tokenTo
-                                                }  */}
-
-                                                {  
-                                                    this.state.tokenFrom&&this.state.tokenTo&&this.state.tokenToValue&&this.state.tokenFromValue&&this.state.flag?
-                                                    1+this.state.tokenFrom+"="+this.state.price+this.state.tokenTo
-                                                    :
-                                                    1+this.state.tokenTo+"="+this.state.price+this.state.tokenFrom
-                                                }                                                                    
+                        <div style={{padding:"12px"}} className="color">
+                            { tokenToValue&& tokenFromValue &&`1 ${tokenFrom} = ${(tokenToValue/tokenFromValue).toFixed(6)} ${tokenTo}` }
                         </div>
 
                         <div className="text-center">
-                            <Button type="primary" className={this.state.tokenFromValue && this.state.tokenFrom?'inputs':'nothing'} onClick={()=>this.swap()} disabled={!tokenToValue || !tokenFromValue}>确认</Button>
+                            <Button type="primary" onClick={()=>this.swap()} disabled={!tokenToValue || !tokenFromValue}>确认</Button>
                         </div>
 
                     </div>
                 </div>
 
                 <SelectToken visible={showSelectTokenFrom} onOk={this.setTokenFrom} onClose={this.setShowSelectTokenFrom}  tokens={tokens} balance={account&&account.balances}/>
-
                 <SelectToken visible={showSelectTokenTo} onOk={this.setTokenTo} onClose={this.setShowSelectTokenTo}  tokens={tokens} balance={account&&account.balances}/>
-
             </Layout>
         )
     }

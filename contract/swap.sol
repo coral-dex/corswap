@@ -51,8 +51,6 @@ contract SwapExchange is SeroInterface, Ownable {
     using LiquidityList for LiquidityList.List;
     using InitValueList for InitValueList.List;
 
-    bytes32 SEROBYTES = strings._stringToBytes32("SERO");
-
     mapping(address => InitValueList.List) private initValues;
 
     mapping(bytes32 => ExchangePair.Pair) private pairs;
@@ -61,11 +59,10 @@ contract SwapExchange is SeroInterface, Ownable {
 
     VolumeList.List private wholeVolume;
     mapping(bytes32 => VolumeList.List) private volumes;
-    mapping(address => uint256) public lastIndexsMap;
+    mapping(address => mapping(bytes32 => uint256)) public lastIndexsMap;
 
     TokenPool private tokenPool;
     mapping(bytes32 => uint256) public feeRateMap;
-    mapping(bytes32 => uint256) public drawRateMap;
 
     uint256 public startDay;
     uint256[7000] public outputs;
@@ -75,6 +72,7 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function start() public onlyOwner {
+        require(startDay == 0);
         startDay = now / Constants.ONEDAY;
     }
 
@@ -90,14 +88,18 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function setFeeRate(string memory tokenA, string memory tokenB, uint256 _feeRate) public onlyOwner {
         require(_feeRate < 10000);
-        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
-        feeRateMap[key] = _feeRate;
-    }
+        bytes32 _tokenA = strings._stringToBytes32(tokenA);
+        bytes32 _tokenB = strings._stringToBytes32(tokenB);
+        bytes32 key = hashKey(_tokenA, _tokenB);
 
-    function setDrawRate(string memory tokenA, string memory tokenB, uint256 _drawRate) public onlyOwner {
-        require(_drawRate < 10000);
-        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
-        drawRateMap[key] = _drawRate;
+        require(pairs[key].reserveA != 0 && pairs[key].reserveB != 0, "exchange not initialized");
+
+        if (pairs[key].tokenA != Constants.SEROBYTES && pairs[key].tokenB != Constants.SEROBYTES) {
+            bytes32 _key = hashKey(_tokenB, Constants.SEROBYTES);
+            require(pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0);
+        }
+
+        feeRateMap[key] = _feeRate;
     }
 
     function getGroupTokens(bytes32[] memory tokens) public view returns (bytes32[][] memory rets) {
@@ -196,17 +198,17 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function volumesOfPair(string memory tokenA, string memory tokenB) public view returns (Volume[] memory, Volume[] memory) {
-        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
+        bytes32 key = hashKey(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
         return (wholeVolume.listVolume(), volumes[key].listVolume());
     }
 
     function liquidityOfPair(string memory tokenA, string memory tokenB) public view returns (Liquidity[] memory, Liquidity[] memory) {
-        bytes32 key = _hash(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
+        bytes32 key = hashKey(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
         return pairs[key].liquidityList(msg.sender);
     }
 
     function shareReward(bytes32 key) public view returns (uint256 reward) {
-        uint256 lastIndex = lastIndexsMap[msg.sender];
+        uint256 lastIndex = lastIndexsMap[msg.sender][key];
         if (lastIndex == 0) {
             lastIndex = startDay;
         }
@@ -216,16 +218,18 @@ contract SwapExchange is SeroInterface, Ownable {
         uint256 selfLiquidity;
         uint256 totalLiquidity;
 
-        for (uint256 i = startDay; i < (now / Constants.ONEDAY); i++) {
+        for (uint256 i = lastIndex; i < (now / Constants.ONEDAY); i++) {
+
+            (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
+
+            if (selfLiquidity == 0 || totalLiquidity == 0) {
+                continue;
+            }
+
             totalVolume = wholeVolume.volumeOfDay(i);
             selfVolume = volumes[key].volumeOfDay(i);
 
             if (selfVolume == 0 || totalVolume == 0) {
-                continue;
-            }
-            (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
-
-            if (selfLiquidity == 0 || totalLiquidity == 0) {
                 continue;
             }
 
@@ -271,28 +275,14 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function withdrawShareReward(bytes32 key) external {
         uint256 value = shareReward(key);
-        lastIndexsMap[msg.sender] = now / Constants.ONEDAY;
+        lastIndexsMap[msg.sender][key] = now / Constants.ONEDAY;
         require(tokenPool.transfer(msg.sender, value));
-    }
-
-    function initializePair() external payable {
-        require(startDay > 0);
-        require(msg.value > 0);
-        bytes32 token = strings._stringToBytes32(sero_msg_currency());
-        uint256 size = initValues[msg.sender].push(token, msg.value);
-        if (size < 2) {
-            return;
-        }
-
-        _investLiquidity(msg.sender, 0);
     }
 
     function investLiquidity(uint256 _minShares) external payable {
         require(startDay > 0);
         require(msg.value > 0);
         bytes32 token = strings._stringToBytes32(sero_msg_currency());
-
-        require(tokenIndexs[token].length > 0);
 
         uint256 size = initValues[msg.sender].push(token, msg.value);
         if (size < 2) {
@@ -307,22 +297,12 @@ contract SwapExchange is SeroInterface, Ownable {
         bytes32 tokenA = initValue.tokens[1];
         bytes32 tokenB = initValue.tokens[0];
 
-        bytes32 key = _hash(tokenA, tokenB);
+        bytes32 key = hashKey(tokenA, tokenB);
 
-        if (pairs[key].reserveA == 0 && pairs[key].reserveB == 0) {
-            //init pair
-            if (tokenB != SEROBYTES) {
-                bytes32 _key = _hash(tokenB, SEROBYTES);
-                if (pairs[_key].reserveA == 0 || pairs[_key].reserveB == 0) {
-                    require(sero_send_token(sender, strings._bytes32ToStr(tokenA), initValue.valueMap[tokenA]));
-                    require(sero_send_token(sender, strings._bytes32ToStr(tokenB), initValue.valueMap[tokenB]));
-                    initValues[sender].clear();
-                    return;
-                }
-            }
-
+        if (pairs[key].tokenA == bytes32(0) && pairs[key].tokenB == bytes32(0)) {
             tokenIndexs[initValues[msg.sender].tokens[0]].push(key);
             tokenIndexs[initValues[msg.sender].tokens[1]].push(key);
+
             pairKeys.push(key);
 
             pairs[key] = ExchangePair.Pair({seq : 0, tokenA : tokenA, tokenB : tokenB,
@@ -334,8 +314,7 @@ contract SwapExchange is SeroInterface, Ownable {
             pairs[key].shares[msg.sender] = 1000;
             pairs[key].wholeLiquidity.add(1000);
             pairs[key].liquiditys[msg.sender].add(1000);
-        } else if (pairs[key].reserveA != 0 && pairs[key].reserveB != 0) {
-            //invest liquidity
+        } else {
             (uint256 returnA, uint256 returnB) = pairs[key].investLiquidity(sender,
                 initValue.valueMap[pairs[key].tokenA],
                 initValue.valueMap[pairs[key].tokenB],
@@ -347,12 +326,10 @@ contract SwapExchange is SeroInterface, Ownable {
             if (returnB != 0) {
                 require(sero_send_token(sender, strings._bytes32ToStr(pairs[key].tokenB), returnB));
             }
-        } else {
-            require(false);
         }
 
-        if (lastIndexsMap[sender] == 0) {
-            lastIndexsMap[sender] = now / Constants.ONEDAY;
+        if (lastIndexsMap[sender][key] == 0) {
+            lastIndexsMap[sender][key] = now / Constants.ONEDAY;
         }
 
         initValues[sender].clear();
@@ -391,13 +368,15 @@ contract SwapExchange is SeroInterface, Ownable {
         _excuteSwap(msg.sender, key, _token, msg.value, _minTokensReceived, _recipient);
     }
 
-    function _excuteSwap(address sender, bytes32 key, bytes32 _token, uint256 value, uint256 _minTokensReceived, address _recipient) internal {
+    function _excuteSwap(address sender, bytes32 key, bytes32 _token, uint256 value, uint256 _minTokensReceived, address _recipient) internal returns (uint256){
         (uint256 tokenOutValue, uint256 fee) = _swap(sender, key, _token, value, feeRateMap[key]);
-        require(_minTokensReceived <= tokenOutValue);
-        if (_token == pairs[key].tokenA) {
-            require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenB), tokenOutValue));
-        } else {
-            require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenA), tokenOutValue));
+        if (_recipient != address(0)) {
+            require(_minTokensReceived <= tokenOutValue);
+            if (_token == pairs[key].tokenA) {
+                require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenB), tokenOutValue));
+            } else {
+                require(sero_send_token(_recipient, strings._bytes32ToStr(pairs[key].tokenA), tokenOutValue));
+            }
         }
 
         if (fee > 0) {
@@ -405,20 +384,23 @@ contract SwapExchange is SeroInterface, Ownable {
             wholeVolume.add(fee);
             volumes[key].add(fee);
         }
+        return tokenOutValue;
     }
 
     function _swap(address sender, bytes32 key, bytes32 _token, uint256 _value, uint256 _feeRate) private returns (uint256, uint256) {
-        (uint256 tokenOutValue, uint256 fee) = pairs[key].swap(sender, _token, _value, _feeRate);
-        if (pairs[key].tokenB == SEROBYTES) {
+        (uint256 tokenOutValue, bytes32 tokenFee, uint256 fee) = pairs[key].swap(sender, _token, _value, _feeRate);
+        if (tokenFee == Constants.SEROBYTES || fee == 0) {
             return (tokenOutValue, fee);
-        } else {
-            bytes32 _key = _hash(pairs[key].tokenB, SEROBYTES);
-            (uint256 fee1, uint256 fee2) = _swap(sender, _key, pairs[key].tokenB, fee, feeRateMap[_key]);
-            return (tokenOutValue, fee1 + fee2);
+        } else if (fee > 0) {
+            bytes32 _key = hashKey(tokenFee, Constants.SEROBYTES);
+            require(pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0, "exchange not initialized");
+            fee = _excuteSwap(address(0), _key, tokenFee, fee, 0, address(0));
+
+            return (tokenOutValue, fee);
         }
     }
 
-    function _hash(bytes32 tokenA, bytes32 tokenB) private pure returns (bytes32) {
+    function hashKey(bytes32 tokenA, bytes32 tokenB) public pure returns (bytes32) {
         require(tokenA != tokenB, 'same token');
         (bytes32 token0, bytes32 token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
         return keccak256(abi.encode(token0, token1));
