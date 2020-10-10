@@ -306,26 +306,25 @@ contract SwapExchange is SeroInterface, Ownable {
             pairKeys.push(key);
 
             pairs[key] = ExchangePair.Pair({seq : 0, tokenA : tokenA, tokenB : tokenB,
-                reserveA : initValue.valueMap[tokenA], reserveB : initValue.valueMap[tokenB],
-                totalShares : 1000,
+                reserveA : 0, reserveB : 0,
+                totalShares : 0,
                 wholeLiquidity : LiquidityList.List({lastIndex : 0}),
                 orderlist : CycleList.List()});
+            // pairs[key].shares[msg.sender] = 1000;
+            // pairs[key].wholeLiquidity.add(1000);
+            // pairs[key].liquiditys[msg.sender].add(1000);
+        }
 
-            pairs[key].shares[msg.sender] = 1000;
-            pairs[key].wholeLiquidity.add(1000);
-            pairs[key].liquiditys[msg.sender].add(1000);
-        } else {
-            (uint256 returnA, uint256 returnB) = pairs[key].investLiquidity(sender,
-                initValue.valueMap[pairs[key].tokenA],
-                initValue.valueMap[pairs[key].tokenB],
-                _minShares);
+        (uint256 returnA, uint256 returnB) = pairs[key].investLiquidity(sender,
+            initValue.valueMap[pairs[key].tokenA],
+            initValue.valueMap[pairs[key].tokenB],
+            _minShares);
 
-            if (returnA != 0) {
-                require(sero_send_token(sender, strings._bytes32ToStr(pairs[key].tokenA), returnA));
-            }
-            if (returnB != 0) {
-                require(sero_send_token(sender, strings._bytes32ToStr(pairs[key].tokenB), returnB));
-            }
+        if (returnA != 0) {
+            require(sero_send_token(sender, strings._bytes32ToStr(pairs[key].tokenA), returnA));
+        }
+        if (returnB != 0) {
+            require(sero_send_token(sender, strings._bytes32ToStr(pairs[key].tokenB), returnB));
         }
 
         if (lastIndexsMap[sender][key] == 0) {
@@ -391,7 +390,7 @@ contract SwapExchange is SeroInterface, Ownable {
         (uint256 tokenOutValue, bytes32 tokenFee, uint256 fee) = pairs[key].swap(sender, _token, _value, _feeRate);
         if (tokenFee == Constants.SEROBYTES || fee == 0) {
             return (tokenOutValue, fee);
-        } else if (fee > 0) {
+        } else {
             bytes32 _key = hashKey(tokenFee, Constants.SEROBYTES);
             require(pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0, "exchange not initialized");
             fee = _excuteSwap(address(0), _key, tokenFee, fee, 0, address(0));

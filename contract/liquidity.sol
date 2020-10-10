@@ -16,7 +16,7 @@ library LiquidityList {
 
     function add(List storage self, uint256 value) internal {
         uint256 index = now / Constants.ONEDAY;
-        if (self.list[index].value == 0) {
+        if (self.list[index].index == 0) {
             self.list[index] = Liquidity({value : self.list[self.lastIndex].nextValue.add(
                 value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY)
             ),
@@ -32,7 +32,7 @@ library LiquidityList {
 
     function sub(List storage self, uint256 value) internal {
         uint256 index = now / Constants.ONEDAY;
-        if (self.list[index].value == 0) {
+        if (self.list[index].index == 0) {
             self.list[index] = Liquidity({value : self.list[self.lastIndex].nextValue.sub(
                 value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY)
             ),
@@ -51,7 +51,7 @@ library LiquidityList {
             return self.list[index].value;
         } else {
             uint256 currentIndex = self.lastIndex;
-            while (self.list[currentIndex].value != 0 && currentIndex > index) {
+            while (self.list[currentIndex].index != 0 && currentIndex > index) {
                 currentIndex = self.list[index].index;
             }
             return self.list[currentIndex].nextValue;

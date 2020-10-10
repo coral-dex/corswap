@@ -36,17 +36,31 @@ library ExchangePair {
 
     function investLiquidity(Pair storage self, address owner, uint256 valueA, uint256 valueB, uint256 _minShares) internal returns (uint256 returnA, uint256 returnB) {
 
-        uint256 perShareB = self.reserveB.div(self.totalShares);
-        uint256 perShareA = self.reserveA.div(self.totalShares);
+        uint256 divestedB;
+        uint256 divestedA;
+        uint256 sharesPurchased;
+        if (self.totalShares == 0) {
+            sharesPurchased = 1000;
+            divestedB = valueB;
+            divestedA = valueA;
+        } else {
+            uint256 perShareB = self.reserveB.div(self.totalShares);
+            uint256 perShareA = self.reserveA.div(self.totalShares);
 
-        require(valueB >= perShareB && valueA >= perShareA);
+            require(valueB >= perShareB && valueA >= perShareA);
 
-        uint256 sharesPurchased = valueB.div(perShareB);
-        if (valueA.div(perShareA) < sharesPurchased) {
-            sharesPurchased = valueA.div(perShareA);
+            sharesPurchased = valueB.div(perShareB);
+            if (valueA.div(perShareA) < sharesPurchased) {
+                sharesPurchased = valueA.div(perShareA);
+            }
+            divestedA = sharesPurchased.mul(perShareA);
+            divestedB = sharesPurchased.mul(perShareB);
         }
 
         require(_minShares <= sharesPurchased);
+
+        self.reserveA = self.reserveA.add(divestedA);
+        self.reserveB = self.reserveB.add(divestedB);
 
         self.shares[owner] = self.shares[owner].add(sharesPurchased);
         self.totalShares = self.totalShares.add(sharesPurchased);
@@ -54,25 +68,27 @@ library ExchangePair {
         self.wholeLiquidity.add(sharesPurchased);
         self.liquiditys[owner].add(sharesPurchased);
 
-        self.reserveA = self.reserveA.add(sharesPurchased.mul(perShareA));
-        self.reserveB = self.reserveB.add(sharesPurchased.mul(perShareB));
-
-        return (valueA.sub(sharesPurchased.mul(perShareA)), valueB.sub(sharesPurchased.mul(perShareB)));
+        return (valueA.sub(divestedA), valueB.sub(divestedB));
     }
 
     function removeLiquidity(Pair storage self, address owner, uint256 _sharesBurned) internal returns (uint256, uint256) {
-
-        uint256 perShareB = self.reserveB.div(self.totalShares);
-        uint256 perShareA = self.reserveA.div(self.totalShares);
+        uint256 divestedB;
+        uint256 divestedA;
+        if (_sharesBurned == self.totalShares) {
+            divestedB = self.reserveB;
+            divestedA = self.reserveA;
+        } else {
+            uint256 perShareB = self.reserveB.div(self.totalShares);
+            uint256 perShareA = self.reserveA.div(self.totalShares);
+            divestedB = perShareB.mul(_sharesBurned);
+            divestedA = perShareA.mul(_sharesBurned);
+        }
 
         self.totalShares = self.totalShares.sub(_sharesBurned);
         self.shares[owner] = self.shares[owner].sub(_sharesBurned);
 
         self.wholeLiquidity.sub(_sharesBurned);
         self.liquiditys[owner].sub(_sharesBurned);
-
-        uint256 divestedB = perShareB.mul(_sharesBurned);
-        uint256 divestedA = perShareA.mul(_sharesBurned);
 
         self.reserveA = self.reserveA.sub(divestedA);
         self.reserveB = self.reserveB.sub(divestedB);
