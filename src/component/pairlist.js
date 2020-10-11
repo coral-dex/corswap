@@ -91,7 +91,7 @@ export class PairList extends Component {
         abi.getTransactionReceipt(hash).then(res=>{
             console.log("getTxReceipt>>>> ",res);
             if(res && res.result){
-                Toast.success("SUCCESSFUL")
+                Toast.success("SUCCESSFULLY")
                 this.init()
                 if(cb){
                     cb();
@@ -155,7 +155,7 @@ export class PairList extends Component {
                             if(data[0]){
                                 self.setShowInvestModal(true,selectPair).catch()
                             }else {
-                                Toast.success("SUCCESSFUL")
+                                Toast.success("SUCCESSFULLY")
                             }
                         })
                     });
@@ -423,7 +423,7 @@ export class PairList extends Component {
                                             <div style={{color:"#f75552"}}>
                                                 <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
                                                 <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>
-                                                    {i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {(pair.myShare/pair.totalShares*100).toFixed(2)}%
+                                                    {i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {pair.totalShares*1>0?(pair.myShare/pair.totalShares*100).toFixed(2):"0.00"}%
                                                 </div>
                                             </div>
                                         </div>
@@ -468,7 +468,7 @@ export class PairList extends Component {
                         className="Modal"
                         visible={showInitModal}
                         transparent
-                        title="初始化资金池"
+                        title="创建流动池"
                         footer={[
                             {
                                 text:"取消",
@@ -487,8 +487,8 @@ export class PairList extends Component {
                         <div>
                             <Flex>
                                 <Flex.Item>
-                                    1. 初始化资金需要分两次交易完成<br/>
-                                    2. 请等待第一笔交易完成后再发送
+                                    1. 创建流动池需要分两次交易完成<br/>
+                                    2. 请等待第一笔交易完成后再发送下一笔交易
                                     <Steps current={investAmount[0]?1:0}>
                                         <Step key={0} title={
                                             <div>
@@ -633,7 +633,7 @@ export class PairList extends Component {
 
                     <Modal visible={showDivestModal}
                            transparent
-                           title="销毁流动性"
+                           title="回收流动性"
                            footer={[
                                {
                                    text:"取消",

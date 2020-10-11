@@ -265,7 +265,7 @@ class Swap extends React.Component{
         const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
         return (
             <Layout selectedTab="1" doUpdate={()=>this.init()}>
-                <div style={{padding:"10px"}} className="flex-center fontSize">
+                <div style={{padding:"10px"}} className="flex-center fontSize am-center">
                     <div className="header">
                         <div className="from" style={{marginTop:"20px"}}>
 

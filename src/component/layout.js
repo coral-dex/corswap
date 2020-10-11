@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Flex, Modal,Tag, TabBar, WingBlank} from "antd-mobile";
+import {Flex, Modal, Tag, TabBar, WingBlank, WhiteSpace} from "antd-mobile";
 import {Select} from "./select";
 import abi from './abi'
 import BigNumber from "bignumber.js";
@@ -98,7 +98,7 @@ class Layout extends React.Component{
 
     render() {
         return (
-            <div>
+            <div style={{maxHeight:document.documentElement.clientHeight,overflowY:"scroll"}}>
                 <Flex className="flex showtais">
                     <Flex.Item style={{flex:1}}>
                         <div>
@@ -106,20 +106,23 @@ class Layout extends React.Component{
                         </div>
                     </Flex.Item>
                     <Flex.Item style={{flex:1}}>
-                        <div className="text-right">
+                        <div className="text-right shares">
                             {/*{this.props.selectedTab == "3"?<div style={{color:"#f75552"}} >初始化资金池</div>:""}*/}
+                            <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="16%" src={require("../images/icon2.png")}/>
+                            <img width="16%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
                         </div>
                     </Flex.Item>
                 </Flex>
+                <WhiteSpace size="lg"/>
                 <WingBlank>
-                    <div className="shares text-right padding">
-                        {/*<img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>*/}
-                        {/*<img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>*/}
-                        {/*<img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>*/}
-                        {/*<img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>*/}
-                        {/*<img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>*/}
-                        {/*<img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>*/}
-                    </div>
+                    {/*<div className="shares text-right padding">*/}
+                    {/*    /!*<img onClick={()=>this.goPage("https://t.me/coralswap")} width="8%" src={require("../images/icon1.png")}/>*!/*/}
+                    {/*    <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="8%" src={require("../images/icon2.png")}/>*/}
+                    {/*    /!*<img onClick={()=>this.goPage("https://github.com/coral-dex/corswap")} width="8%" src={require("../images/icon3.png")}/>*!/*/}
+                    {/*    /!*<img onClick={()=>this.goPage("https://discord.gg/QM4JEKK")} width="8%" src={require("../images/icon4.png")}/>*!/*/}
+                    {/*    /!*<img onClick={()=>this.goPage("https://medium.com/coraldex")} width="8%" src={require("../images/icon5.png")}/>*!/*/}
+                    {/*    <img width="8%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>*/}
+                    {/*</div>*/}
                     <div className="fishing">
                         <Flex style={{width:"100%"}} onClick={() => {
                             this.changeAccount();
@@ -132,11 +135,11 @@ class Layout extends React.Component{
                             </Flex.Item>
                         </Flex>
                     </div>
-                    {
-                        ["3"].indexOf(this.props.selectedTab) === -1?<div className="text-center fishing_div">
-                                <img style={{position:"relative",bottom:"0",}} width="60%" src={require("../images/fishing.png")} alt=" "/>
-                            </div>:""
-                    }
+                    {/*{*/}
+                    {/*    ["3"].indexOf(this.props.selectedTab) === -1?<div className="text-center fishing_div">*/}
+                    {/*            <img style={{position:"relative",bottom:"0",}} width="60%" src={require("../images/fishing.png")} alt=" "/>*/}
+                    {/*        </div>:""*/}
+                    {/*}*/}
 
                     <Modal
                     visible={this.state.modal1}
@@ -144,9 +147,9 @@ class Layout extends React.Component{
                     maskClosable={false}
                     onClose={this.onClose('modal1')}
                     title=""
-                    footer={[{ text: '我知道了', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
+                    footer={[{ text: 'OK', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
                 >
-                    <div style={{ height: 100, width:"auto",textAlign:"center"}}>
+                    <div style={{ minHeight: 150, width:"auto",textAlign:"center"}}>
                         <img width="40%" src={require('../images/wx.jpg')}/>
                     </div>
                     </Modal>
@@ -155,73 +158,86 @@ class Layout extends React.Component{
 
                 {this.props.children}
 
-                <div style={{ position: 'fixed',width: '100%', bottom:"0",left:"0" }}>
-                    <TabBar
-                        unselectedTintColor="#fff"
-                        tintColor="#f75552"
-                        barTintColor="#17567c"
-                        // hidden={this.state.hidden}
+                <TabBar
+                    unselectedTintColor="#fff"
+                    tintColor="#f75552"
+                    barTintColor="#17567c"
+                    // hidden={this.state.hidden}
+                    // style={{ position: 'fixed',width: '100%', bottom:"0"}}
+                    tabBarPosition="bottom"
+                    swipeable={false}
+                >
+
+                    <TabBar.Item
+                        title={i18n.t("Convert")}
+                        key="Life"
+                        icon={<div style={{
+                            width: '22px',
+                            height: '22px',
+                            background: 'url(./images/buy.png) center center /  22px 22px no-repeat' }}
+                        />
+                        }
+                        selectedIcon={<div style={{
+                            width: '22px',
+                            height: '22px',
+                            background: 'url(./images/buyselect.png) center center /  22px 22px no-repeat' }}
+                        />
+                        }
+                        selected={this.props.selectedTab === '1'}
+                        onPress={() => {
+                            this.goPage("#/swap")
+                        }}
+                        data-seed="logId"
+                    >
+                    </TabBar.Item>
+                    <TabBar.Item
+                        icon={
+                            <div style={{
+                                width: '22px',
+                                height: '22px',
+                                background: 'url(./images/fund.png) center center /  22px 22px no-repeat' }}
+                            />
+                        }
+                        selectedIcon={
+                            <div style={{
+                                width: '22px',
+                                height: '22px',
+                                background: 'url(./images/fundselect.png) center center /  22px 22px no-repeat' }}
+                            />
+                        }
+                        title={i18n.t("CashPooling")}
+                        key="Friend"
+                        selected={this.props.selectedTab === '3'}
+                        onPress={() => {
+                            this.goPage("#/pairlist")
+                        }}
                     >
 
-                        <TabBar.Item
-                            title={i18n.t("Convert")}
-                            key="Life"
-                            icon={<div style={{
+                    </TabBar.Item>
+                    <TabBar.Item
+                        icon={
+                            <div style={{
                                 width: '22px',
                                 height: '22px',
-                                background: 'url(./images/buy.png) center center /  21px 21px no-repeat' }}
+                                background: 'url(./images/dividend.png) center center /  22px 22px no-repeat' }}
                             />
-                            }
-                            selectedIcon={<div style={{
+                        }
+                        selectedIcon={
+                            <div style={{
                                 width: '22px',
                                 height: '22px',
-                                background: 'url(./images/buyselect.png) center center /  21px 21px no-repeat' }}
+                                background: 'url(./images/dividendselect.png) center center /  22px 22px no-repeat' }}
                             />
-                            }
-                            selected={this.props.selectedTab === '1'}
-                            onPress={() => {
-                                this.goPage("#/swap")
-                            }}
-                            data-seed="logId"
-                        >
-                        </TabBar.Item>
-                        <TabBar.Item
-                            icon={
-                                <div style={{
-                                    width: '22px',
-                                    height: '22px',
-                                    background: 'url(./images/fund.png) center center /  21px 21px no-repeat' }}
-                                />
-                            }
-                            selectedIcon={
-                                <div style={{
-                                    width: '22px',
-                                    height: '22px',
-                                    background: 'url(./images/fundselect.png) center center /  21px 21px no-repeat' }}
-                                />
-                            }
-                            title={i18n.t("CashPooling")}
-                            key="Friend"
-                            selected={this.props.selectedTab === '3'}
-                            onPress={() => {
-                                this.goPage("#/pairlist")
-                            }}
-                        >
-
-                        </TabBar.Item>
-                        <TabBar.Item
-                            icon={{ uri: './images/dividend.png' }}
-                            selectedIcon={{ uri: './images/dividendselect.png' }}
-                            title={i18n.t("Dividend")}
-                            key="my"
-                            selected={this.props.selectedTab === '4'}
-                            onPress={() => {
-                                this.goPage("#/shares")
-                            }}
-                        >
-                        </TabBar.Item>
-                    </TabBar>
-                </div>
+                        }
+                        title={i18n.t("Dividend")}
+                        key="my"
+                        selected={this.props.selectedTab === '4'}
+                        onPress={() => {
+                            this.goPage("#/shares")
+                        }}
+                    >
+                    </TabBar.Item>
+                </TabBar>
             </div>
         );
     }

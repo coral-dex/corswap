@@ -11,7 +11,6 @@ import '../style/style.css'
 import Layout from "./layout";
 import {bnToHex} from './utils/common'
 import i18n from '../i18n'
-import SelectTokenTo from './selectTokenTo'
 export class Home extends Component {
     constructor(props) {
         super(props);

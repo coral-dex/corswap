@@ -138,7 +138,7 @@ export class Shares extends Component {
                 <WingBlank>
                     <WhiteSpace size="lg"/>
                     <div className="totalSupply">
-                        发行总量: <span>{showValue(totalSupply,18,6)} CORAL</span>
+                        已发行: <span>{showValue(totalSupply,18,6)} CORAL</span>
                     </div>
                     <WhiteSpace size="lg"/>
                     <div>
@@ -203,7 +203,7 @@ export class Shares extends Component {
                        ]}
 
                 >
-                    <InputItem placeholder="请输入您要销毁的数量" type="digit" autoFocus  clear onChange={(e)=>{this.calPoolBalance(e)}}>
+                    <InputItem placeholder="请输入您要销毁的数量" type="digit" autoFocus  clear onChange={(e)=>{this.calPoolBalance(parseFloat(e))}}>
                         CORAL
                     </InputItem>
                     <div>

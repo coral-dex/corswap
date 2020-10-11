@@ -8,7 +8,7 @@ import {JsonRpc} from "./utils/jsonrpc";
 import i18n from "../i18n";
 
 const config = {
-    name: "CORSWAP",
+    name: "Coral Swap",
     contractAddress: "5iHvvmEuHSqNYiCyWzaRGXMP55YPfPsdxr1zmdK3uyha9Y4rBjBwByMD8yiCdiG6HFZnmHX7FbLTGb8PT9YkQ6kv",
     github: "https://github.com/coswap",
     author: "coswap",

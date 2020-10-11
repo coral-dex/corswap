@@ -3,6 +3,12 @@
     src: url("/docs/typeface/CONSOLA.TTF"),
 }
 
+
+html,body {
+    overflow: hidden;
+    height: 100%;
+}
+
 /* @font-face {
     font-family:"consolab";
     src: url("/docs/typeface/SIMYOU.TTF");
@@ -422,12 +428,12 @@ body {
 }
 
 .shares {
-    margin: 17px 0;
+    margin-right: 10px;
 }
 
-/* .shares > img {
+.shares > img {
     margin: 0 0 0 10px;
-} */
+}
 /* .fishing_tag {
     width: 30%;
     display: inline-block;
@@ -550,4 +556,13 @@ body {
 
 .am-tab-bar-bar .am-tab-bar-tab-title{
     font-size: 12px !important;
+}
+
+
+.am-modal-close {
+    top: 10px;
+}
+
+.am-center{
+    margin-top:2em;
 }
