@@ -20,6 +20,7 @@ uint256 shareRreward;
 
 Order[] orderList;
 Order[] myOrderList;
+bool mining;
 }
 
 struct Volume {

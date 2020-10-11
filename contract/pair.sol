@@ -103,7 +103,7 @@ library ExchangePair {
 
         bool flag;
         if (feeRate == 0) {
-            feeRate = 30;
+            feeRate = 20;
             flag = true;
         }
 

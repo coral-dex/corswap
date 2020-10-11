@@ -63,9 +63,11 @@ contract SwapExchange is SeroInterface, Ownable {
 
     TokenPool private tokenPool;
     mapping(bytes32 => uint256) public feeRateMap;
+    mapping(bytes32 => uint256) public rateMap;
 
     uint256 public startDay;
     uint256[7000] public outputs;
+    uint256 public mintDayIndex;
 
     //test
     uint256 public lastFee;
@@ -73,6 +75,9 @@ contract SwapExchange is SeroInterface, Ownable {
 
     constructor(address _tokenPool) public payable {
         tokenPool = TokenPool(_tokenPool);
+    }
+
+    receive() external payable {
     }
 
     function start() public onlyOwner {
@@ -90,7 +95,7 @@ contract SwapExchange is SeroInterface, Ownable {
         tokenPool = TokenPool(_tokenPool);
     }
 
-    function setFeeRate(string memory tokenA, string memory tokenB, uint256 _feeRate) public onlyOwner {
+    function setFeeRate(string memory tokenA, string memory tokenB, uint256 _feeRate, uint256 _rate) public onlyOwner {
         require(_feeRate < 10000);
         bytes32 _tokenA = strings._stringToBytes32(tokenA);
         bytes32 _tokenB = strings._stringToBytes32(tokenB);
@@ -99,11 +104,12 @@ contract SwapExchange is SeroInterface, Ownable {
         require(pairs[key].reserveA != 0 && pairs[key].reserveB != 0, "exchange not initialized");
 
         if (pairs[key].tokenA != Constants.SEROBYTES && pairs[key].tokenB != Constants.SEROBYTES) {
-            bytes32 _key = hashKey(_tokenB, Constants.SEROBYTES);
+            bytes32 _key = hashKey(pairs[key].tokenB, Constants.SEROBYTES);
             require(pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0);
         }
 
         feeRateMap[key] = _feeRate;
+        rateMap[key] = _rate;
     }
 
     function getGroupTokens(bytes32[] memory tokens) public view returns (bytes32[][] memory rets) {
@@ -177,7 +183,8 @@ contract SwapExchange is SeroInterface, Ownable {
             myShare : pairs[key].shares[msg.sender],
             shareRreward : shareRreward,
             orderList : new Order[](0),
-            myOrderList : new Order[](0)
+            myOrderList : new Order[](0),
+            mining : feeRateMap[key] > 0
             });
         return pair;
     }
@@ -196,7 +203,8 @@ contract SwapExchange is SeroInterface, Ownable {
             myShare : pairs[key].shares[msg.sender],
             shareRreward : shareRreward,
             orderList : _orderList,
-            myOrderList : _userOrderList
+            myOrderList : _userOrderList,
+            mining : feeRateMap[key] > 0
             });
         return pair;
     }
@@ -225,6 +233,7 @@ contract SwapExchange is SeroInterface, Ownable {
         uint256 totalVolume;
         uint256 selfLiquidity;
         uint256 totalLiquidity;
+        uint256 value;
 
         for (uint256 i = lastIndex; i < (now / Constants.ONEDAY); i++) {
 
@@ -241,7 +250,10 @@ contract SwapExchange is SeroInterface, Ownable {
                 continue;
             }
 
-            reward = reward.add(output(i).mul(selfVolume).mul(selfLiquidity).div(totalVolume).div(totalLiquidity));
+            value = output(i);
+            value = value.sub(value / 10);
+
+            reward = reward.add(value.mul(selfVolume).mul(selfLiquidity).div(totalVolume).div(totalLiquidity));
         }
     }
 
@@ -284,8 +296,7 @@ contract SwapExchange is SeroInterface, Ownable {
     function withdrawShareReward(bytes32 key) external {
         uint256 value = shareReward(key);
         lastIndexsMap[msg.sender][key] = now / Constants.ONEDAY;
-        lastSupply = value;
-        require(tokenPool.transfer(msg.sender, value));
+        require(sero_send_token(msg.sender, Constants.CORAL, value));
     }
 
     function investLiquidity(uint256 _minShares) external payable {
@@ -358,6 +369,15 @@ contract SwapExchange is SeroInterface, Ownable {
         (value,) = pairs[key].caleSwap(tokenIn, amountIn, feeRateMap[key]);
     }
 
+    function mint() internal {
+        require(mintDayIndex < now / Constants.ONEDAY);
+        mintDayIndex = now / Constants.ONEDAY;
+        uint256 value = output(mintDayIndex);
+
+        require(tokenPool.transfer(address(this), value));
+        require(sero_send_token(owner, Constants.CORAL, value / 10));
+    }
+
     function swap(bytes32 key, uint256 _minTokensReceived, uint256 _timeout, address _recipient) public payable {
         require(startDay > 0);
         require(pairs[key].reserveA != 0 && pairs[key].reserveB != 0, "exchange not initialized");
@@ -371,6 +391,8 @@ contract SwapExchange is SeroInterface, Ownable {
         bytes32 _token = strings._stringToBytes32(sero_msg_currency());
         require(pairs[key].tokenA == _token || pairs[key].tokenB == _token);
         _excuteSwap(msg.sender, key, _token, msg.value, _minTokensReceived, _recipient);
+
+
     }
 
     function _excuteSwap(address sender, bytes32 key, bytes32 _token, uint256 value, uint256 _minTokensReceived, address _recipient) internal returns (uint256){
@@ -387,8 +409,18 @@ contract SwapExchange is SeroInterface, Ownable {
         lastFee = fee;
         if (fee > 0) {
             require(sero_send_token(address(tokenPool), "SERO", fee));
-            wholeVolume.add(fee);
-            volumes[key].add(fee);
+            if (rateMap[key] != 0) {
+                fee = fee.mul(rateMap[key]).div(100);
+                wholeVolume.add(fee);
+                volumes[key].add(fee);
+            } else {
+                wholeVolume.add(fee);
+                volumes[key].add(fee);
+            }
+
+            if (mintDayIndex != now / Constants.ONEDAY) {
+                mint();
+            }
         }
         return tokenOutValue;
     }

@@ -5,5 +5,7 @@ import "../common/strings.sol";
 library Constants {
     uint256 constant ONEDAY = 600;
 
+    string constant CORAL = "CORALA"; //TODO test CORAL
+
     bytes32 constant SEROBYTES = 0x5345524f00000000000000000000000000000000000000000000000000000000;
 }
