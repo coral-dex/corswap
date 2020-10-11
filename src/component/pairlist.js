@@ -411,56 +411,58 @@ export class PairList extends Component {
                         </div>
                     </div>
                     <WhiteSpace/>
-                    {
-                        pairs.map((pair, index) => {
-                            return (
-                                <div className="fontSize">
-                                    <div className="am-card card-border">
-                                        <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
-                                            <div>
-                                                <img width="50%" src={pictures[index%3]} alt=""/>
-                                            </div>
-                                            <div style={{color:"#f75552"}}>
-                                                <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
-                                                <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>
-                                                    {i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {pair.totalShares*1>0?(pair.myShare/pair.totalShares*100).toFixed(2):"0.00"}%
+                    <div style={{paddingBottom:'70px'}}>
+                        {
+                            pairs.map((pair, index) => {
+                                return (
+                                    <div className="fontSize">
+                                        <div className="am-card card-border">
+                                            <div className="flex" style={{borderBottom:"1px dotted #00456b",paddingBottom:"7px"}}>
+                                                <div>
+                                                    <img width="50%" src={pictures[index%3]} alt=""/>
+                                                </div>
+                                                <div style={{color:"#f75552"}}>
+                                                    <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
+                                                    <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>
+                                                        {i18n.t("MyHold")}{pair.myShare}{i18n.t("Share")}, {i18n.t("Proporttion")}: {pair.totalShares*1>0?(pair.myShare/pair.totalShares*100).toFixed(2):"0.00"}%
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="text-center">
-                                            <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB}</div>
-                                            <div>
-                                                {
-                                                    pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB
+                                            <div className="text-center">
+                                                <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB}</div>
+                                                <div>
+                                                    {
+                                                        pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB
                                                 }
+                                                </div>
+                                                <WhiteSpace/>
+                                                <div>
+                                                    总共{pair.totalShares}份
+                                                </div>
+                                                <WhiteSpace/>
+                                                <div>
+                                                    {i18n.t("Withdrawable")}{showValue(pair.shareRreward,18,3)}CORAL
+                                                </div>
+                                                <WhiteSpace/>
+                                                <Flex>
+                                                    <Flex.Item>
+                                                        <Button  type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true,pair).catch()}}>{i18n.t("RecoveryLiquidity")}</Button>
+                                                    </Flex.Item>
+                                                    <Flex.Item>
+                                                        <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>{i18n.t("ProvideLiquidity")}</Button>
+                                                    </Flex.Item>
+                                                    <Flex.Item>
+                                                        <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" disabled={pair.shareRreward*1 === 0} onClick={() => {this.withdrawCoral(pair)}}>{i18n.t("Withdraw")}</Button>
+                                                    </Flex.Item>
+                                                </Flex>
                                             </div>
-                                            <WhiteSpace/>
-                                            <div>
-                                                总共{pair.totalShares}份
-                                            </div>
-                                            <WhiteSpace/>
-                                            <div>
-                                                {i18n.t("Withdrawable")}{showValue(pair.shareRreward,18,3)}CORAL
-                                            </div>
-                                            <WhiteSpace/>
-                                            <Flex>
-                                                <Flex.Item>
-                                                    <Button  type="warning" size="small" disabled={pair.myShare*1 == 0} onClick={() => {this.setShowDivestModal(true,pair).catch()}}>{i18n.t("RecoveryLiquidity")}</Button>
-                                                </Flex.Item>
-                                                <Flex.Item>
-                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>{i18n.t("ProvideLiquidity")}</Button>
-                                                </Flex.Item>
-                                                <Flex.Item>
-                                                    <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" disabled={pair.shareRreward*1 === 0} onClick={() => {this.withdrawCoral(pair)}}>{i18n.t("Withdraw")}</Button>
-                                                </Flex.Item>
-                                            </Flex>
                                         </div>
+                                        <WhiteSpace size="lg"/>
                                     </div>
-                                    <WhiteSpace size="lg"/>
-                                </div>
-                            )
-                        })
-                    }
+                                )
+                            })
+                        }
+                    </div>
 
 
                     <Modal
