@@ -63,9 +63,12 @@ export class Shares extends Component {
 
     }
 
-    doUpdate = ()=>{
+    doUpdate = (pkey)=>{
         let self = this;
         let pk = localStorage.getItem("accountPK")
+        if(pkey){
+            pk = pkey;
+        }
         if(pk){
             self.setState({pk:pk})
         }else{
@@ -92,7 +95,7 @@ export class Shares extends Component {
             return
         }
         const value = new BigNumber(amount).multipliedBy(10**18);
-        if(!account.balances.has(abi.coral) || value.comparedTo(new BigNumber(account.balances.get(abi.coral))) >=0){
+        if(!account.balances.has(abi.coral) || value.comparedTo(new BigNumber(account.balances.get(abi.coral))) >0){
             Toast.fail(i18n.t("insufficientBalance"),2)
             return
         }
@@ -203,7 +206,7 @@ export class Shares extends Component {
                        ]}
 
                 >
-                    <InputItem placeholder={i18n.t("inputDestroyNum")} type="digit" autoFocus  clear onChange={(e)=>{this.calPoolBalance(parseFloat(e))}}>
+                    <InputItem placeholder={i18n.t("inputDestroyNum")} type="digit" autoFocus  clear onChange={(e)=>{this.calPoolBalance(parseFloat(e))}} onBlur={(e)=>{this.calPoolBalance(parseFloat(e))}}>
                         CORAL
                     </InputItem>
                     <div>

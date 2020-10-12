@@ -103,9 +103,12 @@ export class PairList extends Component {
         this.doUpdate()
     }
 
-    doUpdate = ()=>{
+    doUpdate = (pkey)=>{
         let self = this;
         let pk = localStorage.getItem("accountPK")
+        if(pkey){
+            pk = pkey;
+        }
         if(pk){
             self.setState({pk:pk})
         }else{
@@ -118,6 +121,7 @@ export class PairList extends Component {
             });
         });
     }
+
     componentWillReceiveProps(nextProps, nextContext) {
         this.doUpdate()
     }
@@ -357,7 +361,6 @@ export class PairList extends Component {
         }else{
             if(!investAmount[0]){
                 investTokenValue = selectPair && inputValue &&selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(inputValue).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
-                investShares = selectPair && inputValue &&selectPair.reserveB&&selectPair.reserveB*1>0 ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
             }else{
                 investTokenValue = selectPair && investAmount[0] && selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(investAmount[1]).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(10**abi.getDecimalLocal(investAmount[0])).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
                 investShares = selectPair && investAmount[0]&&selectPair.reserveB&&selectPair.reserveB*1>0 ? new BigNumber(investAmount[1]).dividedBy(new BigNumber(selectPair.reserveB)).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
@@ -417,7 +420,7 @@ export class PairList extends Component {
                                                 <div style={{color:"#f75552"}}>
                                                     <div className="text-right">{pair.myShare*1>0?<img src={require("../images/user.png")} width="10%" alt=""/>:""}</div>
                                                     <div style={{color:"#f75552",marginRight:"30px",fontSize:"12px",whiteSpace:"nowrap"}}>
-                                                        {`${i18n.t("myShares").replace("$1",pair.myShare).replace("$2",pair.totalShares*1>0?(pair.myShare/pair.totalShares*100):"0.00")}`}%
+                                                        {`${i18n.t("myShares").replace("$1",pair.myShare).replace("$2",pair.totalShares*1>0?(pair.myShare/pair.totalShares*100).toFixed(3):"0.00")}`}%
 
                                                     </div>
                                                 </div>
@@ -426,8 +429,7 @@ export class PairList extends Component {
                                                 <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB}</div>
                                                 <div>
                                                     {
-                                                        pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA,))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB
-                                                }
+                                                        pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}
                                                 </div>
                                                 <WhiteSpace/>
                                                 <div>
@@ -575,11 +577,11 @@ export class PairList extends Component {
                                         <div>
                                             <div>
                                                 <div style={{flex: 1}}>
-                                                   <span>{i18n.t("tx1")}</span>&emsp;&emsp;{selectPair&&selectPair.tokenB} {i18n.t("balance")}:
-                                                   <span>{selectPair && showValue(balances, abi.getDecimalLocal(selectPair.tokenB))}</span>
+                                                    <span>{i18n.t("tx1")}</span>&emsp;&emsp;{selectPair&&selectPair.tokenB} {i18n.t("balance")}:
+                                                    <span>{selectPair && showValue(balances, abi.getDecimalLocal(selectPair.tokenB))}</span>
                                                 </div>
-                                                
-                                                 <div style={{flex: 1}}>
+
+                                                <div style={{flex: 1}}>
                                                     {investAmount[0]?<Button style={{width:"50px",backgroundColor:"#00456e",color:"#fff"}} size="small" type="ghost" onClick={()=>this.revert()}>撤销</Button>:""}
                                                 </div>
                                             </div>
@@ -600,13 +602,13 @@ export class PairList extends Component {
                                             </Flex>
                                         </div>
                                     } />
-                                    <Step key={1} title={<div> 
-                                            <span>{i18n.t("tx2")}</span>&emsp;&emsp;{selectPair&&selectPair.tokenA} {i18n.t("balance")}:
-                                            <span>{selectPair&&showValue(balances2, abi.getDecimalLocal(selectPair.tokenA))}</span>
+                                    <Step key={1} title={<div>
+                                        <span>{i18n.t("tx2")}</span>&emsp;&emsp;{selectPair&&selectPair.tokenA} {i18n.t("balance")}:
+                                        <span>{selectPair&&showValue(balances2, abi.getDecimalLocal(selectPair.tokenA))}</span>
                                     </div>} description={
                                         <div>
                                             <Flex>
-                                                <Flex.Item style={{flex: 1}}> 
+                                                <Flex.Item style={{flex: 1}}>
                                                     {selectPair&&selectPair.tokenA}
                                                 </Flex.Item>
                                                 <Flex.Item style={{flex: 2}}>

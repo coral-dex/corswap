@@ -25,11 +25,14 @@ class Swap extends React.Component{
         estimate:"",
     }
 
-    async init () {
+    async init (pkey) {
         let self = this;
         return new Promise((resolve, reject) => {
             abi.init.then(() => {
                 let pk = localStorage.getItem("accountPK")
+                if(pkey){
+                    pk = pkey;
+                }
                 abi.accountList(function (accounts) {
                     if (pk) {
                         for (let act of accounts) {
@@ -49,7 +52,6 @@ class Swap extends React.Component{
 
         })
     }
-
 
     componentDidMount() {
         this.init().then(()=>{
@@ -105,7 +107,7 @@ class Swap extends React.Component{
             tTo = tokenTo
         }
         if(tTo && tokenFrom){
-            abi.estimateSwap(account.mainPKr,tTo,tokenFrom,tokenFrom,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenFrom)).toString(16),function (rest) {
+            abi.estimateSwap(account.mainPKr,tokenFrom,tTo,tokenFrom,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenFrom)).toString(16),function (rest) {
                 that.setState({
                     tokenFromValue:v,
                     tokenToValue:rest?fromValue(rest,abi.getDecimalLocal(tTo)).toFixed(6):"",
@@ -134,7 +136,7 @@ class Swap extends React.Component{
             tFrom = tokenFrom
         }
         if(tFrom && tokenTo){
-            abi.estimateSwap(account.mainPKr,tFrom,tokenTo,tokenTo,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenTo)).toString(16),function (rest) {
+            abi.estimateSwapBuy(account.mainPKr,tFrom,tokenTo,tokenTo,"0x"+toValue(v?v:0,abi.getDecimalLocal(tokenTo)).toString(16),function (rest) {
                 that.setState({
                     tokenFromValue:rest?fromValue(rest,abi.getDecimalLocal(tFrom)).toFixed(6):"",
                     tokenToValue:v,
@@ -332,7 +334,7 @@ class Swap extends React.Component{
                             </div>
                         </div>
                         <div style={{padding:"12px"}} className="color">
-                            { tokenToValue&& tokenFromValue &&`1 ${tokenFrom} = ${(tokenToValue/tokenFromValue).toFixed(6)} ${tokenTo}` }
+                            {tokenToValue && tokenFromValue &&`1 ${tokenFrom} = ${(tokenToValue/tokenFromValue).toFixed(6)} ${tokenTo}` }
                         </div>
 
                         <div className="text-center">

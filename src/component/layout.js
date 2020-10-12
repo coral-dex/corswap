@@ -75,7 +75,7 @@ class Layout extends React.Component{
                                 text: <span>{self.showAccount(account)}</span>, onPress: () => {
                                     window.localStorage.setItem("accountPK", account.pk)
                                     if(self.props.doUpdate){
-                                        self.props.doUpdate()
+                                        self.props.doUpdate(account.pk)
                                     }
                                     self.setState({account: account});
                                 }
