@@ -53,6 +53,9 @@ export function hashKey(token1, token2) {
 
 
 export function showValue(val, decimals, decimalPlaces) {
+    if(!val){
+        val = 0 ;
+    }
     if (!decimals) {
         decimals = 18;
     }

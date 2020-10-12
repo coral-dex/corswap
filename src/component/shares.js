@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button, Card, Flex, InputItem, List, Modal, SearchBar, Tabs, Toast, WhiteSpace, WingBlank} from "antd-mobile";
 import abi from "./abi";
 import BigNumber from 'bignumber.js'
-import {Select} from "./select";
+import i18n from "../i18n";
 import {showValue} from "./utils/common";
 import Layout from "./layout";
 
@@ -88,18 +88,18 @@ export class Shares extends Component {
         const self = this;
         const {account,amount} = this.state;
         if(!amount){
-            Toast.fail("Please Input Coral Amount",2)
+            Toast.fail(i18n.t("inputDestroyNum"),2)
             return
         }
         const value = new BigNumber(amount).multipliedBy(10**18);
         if(!account.balances.has(abi.coral) || value.comparedTo(new BigNumber(account.balances.get(abi.coral))) >=0){
-            Toast.fail("Insufficient balance",2)
+            Toast.fail(i18n.t("insufficientBalance"),2)
             return
         }
         abi.exchange(account.pk,account.mainPKr,account.mainPKr, value ,function (rest) {
             if(rest){
                 self.setState({amount:""})
-                Toast.loading("PENDING...",60)
+                Toast.loading(i18n.t("pending"),60)
                 self.startGetTxReceipt(rest,()=>{
                     self.init()
                     self.setShowModal(false)
@@ -112,7 +112,7 @@ export class Shares extends Component {
         const that = this;
         abi.getTransactionReceipt(hash).then(res=>{
             if(res && res.result){
-                Toast.success("SUCCESSFULLY")
+                Toast.success(i18n.t("success"))
                 if(cb){
                     cb();
                 }
@@ -138,7 +138,7 @@ export class Shares extends Component {
                 <WingBlank>
                     <WhiteSpace size="lg"/>
                     <div className="totalSupply">
-                        已发行: <span>{showValue(totalSupply,18,6)} CORAL</span>
+                        {i18n.t("issue")}: <span>{showValue(totalSupply,18,6)} CORAL</span>
                     </div>
                     <WhiteSpace size="lg"/>
                     <div>
@@ -148,14 +148,14 @@ export class Shares extends Component {
                                     <img width="50%" src="./images/dividendselect.png"/>
                                 </div>
                                 <div style={{color:"#f75552"}}>
-                                    分红池
+                                    {i18n.t("dividendPool")}
                                 </div>
                             </div>
                             <div className="text-center">
                                 <WhiteSpace/>
                                 <Flex>
-                                    <Flex.Item style={{textAlign:"center"}}>TOKEN</Flex.Item>
-                                    <Flex.Item style={{textAlign:"center"}}>数量</Flex.Item>
+                                    <Flex.Item style={{textAlign:"center"}}>{i18n.t("token")}</Flex.Item>
+                                    <Flex.Item style={{textAlign:"center"}}>{i18n.t("quantity")}</Flex.Item>
                                 </Flex>
                                 <div style={{maxHeight:document.documentElement.clientHeight * 0.3,overflowY:"scroll"}}>
                                     {
@@ -168,7 +168,7 @@ export class Shares extends Component {
                                                 </Flex>
                                             </>
                                         }):<div className="nodata">
-                                            暂无数据
+                                            No Data
                                         </div>
                                     }
                                 </div>
@@ -179,23 +179,23 @@ export class Shares extends Component {
                     <WhiteSpace size="lg"/>
                     <Button type="primary" onClick={()=>{
                         this.setShowModal(true)
-                    }}>兑换分红池(销毁)</Button>
+                    }}>{i18n.t("exchangeDividend")}</Button>
 
                 </WingBlank>
 
                 <Modal visible={showModal}
                        transparent
-                       title="兑换分红池(销毁)"
+                       title={i18n.t("exchangeDividend")}
                        footer={[
                            {
-                               text:"取消",
+                               text:i18n.t("cancel"),
                                onPress:()=>{
                                    this.setShowModal(false)
                                    //    this.setInputValue("")
                                }
                            },
                            {
-                               text:"确定",
+                               text:i18n.t("ok"),
                                onPress:()=>{
                                    this.sub()
                                }
@@ -203,7 +203,7 @@ export class Shares extends Component {
                        ]}
 
                 >
-                    <InputItem placeholder="请输入您要销毁的数量" type="digit" autoFocus  clear onChange={(e)=>{this.calPoolBalance(parseFloat(e))}}>
+                    <InputItem placeholder={i18n.t("inputDestroyNum")} type="digit" autoFocus  clear onChange={(e)=>{this.calPoolBalance(parseFloat(e))}}>
                         CORAL
                     </InputItem>
                     <div>
@@ -214,7 +214,7 @@ export class Shares extends Component {
                                         return <>
                                             <WhiteSpace/>
                                             <Flex>
-                                                <Flex.Item  style={{textAlign:'left',color:'rgb(247, 85, 82)'}}>Estimated: {showValue(myBalance[1][i], 18, 4)} {v}</Flex.Item>
+                                                <Flex.Item  style={{textAlign:'left',color:'rgb(247, 85, 82)'}}>{i18n.t("estimated")}: {showValue(myBalance[1][i], 18, 4)} {v}</Flex.Item>
                                             </Flex>
                                         </>
                                     })
@@ -222,7 +222,7 @@ export class Shares extends Component {
                             </div> : <>
                                 <WhiteSpace/>
                                 <Flex>
-                                    <Flex.Item  style={{textAlign:'left',color:'rgb(247, 85, 82)'}}>Estimated: 0.000</Flex.Item>
+                                    <Flex.Item  style={{textAlign:'left',color:'rgb(247, 85, 82)'}}>{i18n.t("estimated")}: 0.000</Flex.Item>
                                 </Flex>
                             </>
                         }

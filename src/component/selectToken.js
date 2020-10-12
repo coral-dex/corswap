@@ -2,6 +2,8 @@ import * as React from 'react';
 import {Modal, List} from 'antd-mobile'
 import {showValue} from './utils/common'
 import abi from './abi'
+import i18n from '../i18n';
+
 class SelectToken extends React.Component{
     render() {
         const {visible,onOk,tokens,balance,onClose} = this.props; 
@@ -14,7 +16,7 @@ class SelectToken extends React.Component{
                        closable={true}
                        onClose={()=>onClose(false)}
                 >
-                    <List renderHeader={() => <div>选择币种</div>} className="popup-list">
+                    <List renderHeader={() => <div>{i18n.t("selectToken")}</div>} className="popup-list">
                         {tokens.map((token, index) => (
                             <List.Item key={index} extra={balance&&balance.has(token)?showValue(balance.get(token),abi.getDecimalLocal(token)?abi.getDecimalLocal(token):18,3):"0.000"} onClick={()=>{
                                 onOk(token)

@@ -4,7 +4,6 @@ import i18n from "../i18n";
 import {showValue,toValue,fromValue} from "./utils/common";
 import abi from "./abi";
 import BigNumber from "bignumber.js";
-import {Select} from "./select";
 import {Button, Flex, InputItem, List, Toast} from "antd-mobile";
 import SelectToken from "./selectToken";
 
@@ -224,13 +223,13 @@ class Swap extends React.Component{
         }
         abi.swap(account.pk,account.mainPKr,tokenFrom,tokenTo,amount,function (hash) {
             if(hash){
-                Toast.loading("PENDING...",60)
+                Toast.loading(i18n.t("pending"),60)
                 that.startGetTxReceipt(hash,()=>{
                     that.setState({
                         tokenFromValue:"",
                         tokenToValue:""
                     })
-                    Toast.success("SUCCESSFULLY")
+                    Toast.success(i18n.t("success"))
                     that.init().catch();
                 })
             }
@@ -272,10 +271,10 @@ class Swap extends React.Component{
                             <div className="cst-border color">
                                 <Flex>
                                     <Flex.Item style={{flex:1}}>
-                                        FROM{estimate == "from"?"(estimated)":""}
+                                        {i18n.t("from")}{estimate == "from"?`(${i18n.t("estimated")})`:""}
                                     </Flex.Item>
                                     <Flex.Item style={{flex:1}}>
-                                        <div className=' text-right color2 cst-balance'>{i18n.t("Balances")}: {this.getBalance(tokenFrom)}</div>
+                                        <div className=' text-right color2 cst-balance'>{i18n.t("balance")}: {this.getBalance(tokenFrom)}</div>
                                     </Flex.Item>
                                 </Flex>
 
@@ -291,7 +290,7 @@ class Swap extends React.Component{
                                         this.setShowSelectTokenFrom(true);
                                     }}>
                                         <div style={{textAlign:"right"}}>
-                                            <span>{tokenFrom?tokenFrom:i18n.t("Select")}</span> <img width="13px" src={require('../images/bottom.png')} alt=""/>
+                                            <span>{tokenFrom?tokenFrom:i18n.t("selectToken")}</span> <img width="13px" src={require('../images/bottom.png')} alt=""/>
                                         </div>
                                     </Flex.Item>
                                 </Flex>
@@ -306,10 +305,10 @@ class Swap extends React.Component{
                             <div className="cst-border color" >
                                 <Flex style={{height:"30%"}}>
                                     <Flex.Item style={{flex:1}}>
-                                        TO{estimate == "to"?"(estimated)":""}
+                                        {i18n.t("to")}{estimate == "to"?`(${i18n.t("estimated")})`:""}
                                     </Flex.Item>
                                     <Flex.Item style={{flex:1}}>
-                                        <div className=' text-right color2'>{i18n.t("Balances")}: {this.getBalance(tokenTo)}</div>
+                                        <div className=' text-right color2'>{i18n.t("balance")}: {this.getBalance(tokenTo)}</div>
                                     </Flex.Item>
                                 </Flex>
 
@@ -325,7 +324,7 @@ class Swap extends React.Component{
                                         this.setShowSelectTokenTo(true);
                                     }}>
                                         <div style={{textAlign:"right"}}>
-                                            <span>{tokenTo?tokenTo:"Select Token"}</span>
+                                            <span>{tokenTo?tokenTo:i18n.t("selectToken")}</span>
                                             <img width="13px" src={require('../images/bottom.png')} alt=""/>
                                         </div>
                                     </Flex.Item>

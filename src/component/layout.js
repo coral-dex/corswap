@@ -169,7 +169,7 @@ class Layout extends React.Component{
                 >
 
                     <TabBar.Item
-                        title={i18n.t("Convert")}
+                        title={i18n.t("swap")}
                         key="Life"
                         icon={<div style={{
                             width: '22px',
@@ -205,7 +205,7 @@ class Layout extends React.Component{
                                 background: 'url(./images/fundselect.png) center center /  22px 22px no-repeat' }}
                             />
                         }
-                        title={i18n.t("CashPooling")}
+                        title={i18n.t("assetsPool")}
                         key="Friend"
                         selected={this.props.selectedTab === '3'}
                         onPress={() => {
@@ -229,7 +229,7 @@ class Layout extends React.Component{
                                 background: 'url(./images/dividendselect.png) center center /  22px 22px no-repeat' }}
                             />
                         }
-                        title={i18n.t("Dividend")}
+                        title={i18n.t("dividendPool")}
                         key="my"
                         selected={this.props.selectedTab === '4'}
                         onPress={() => {
