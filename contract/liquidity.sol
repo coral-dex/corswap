@@ -21,9 +21,11 @@ library LiquidityList {
                 value : self.list[self.lastIndex].nextValue.add(value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY)),
 
                 nextValue : self.list[self.lastIndex].nextValue.add(value),
-                index : self.lastIndex,
+                prevIndex : self.lastIndex,
+                nextIndex : 0,
                 flag : true});
 
+            self.list[self.lastIndex].nextIndex = index;
             self.lastIndex = index;
         } else {
             self.list[index].value = self.list[index].value.add(value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY));
@@ -38,8 +40,10 @@ library LiquidityList {
                 value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY)
             ),
                 nextValue : self.list[self.lastIndex].nextValue.sub(value),
-                index : self.lastIndex, flag : true});
-
+                prevIndex : self.lastIndex,
+                nextIndex : 0,
+                flag : true});
+            self.list[self.lastIndex].nextIndex = index;
             self.lastIndex = index;
         } else {
             self.list[index].value = self.list[index].value.sub(value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY));
@@ -51,33 +55,34 @@ library LiquidityList {
         return self.list[self.lastIndex].nextValue;
     }
 
-    function liquidityOfDay(List storage self, uint256 index) internal view returns (uint256) {
-        if (self.list[index].flag) {
-            return self.list[index].value;
+    function index(List storage self, uint256 startIndex) internal view returns (uint256, Liquidity storage) {
+        if (self.list[startIndex].flag) {
+            return (startIndex, self.list[startIndex]);
         } else {
             uint256 currentIndex = self.lastIndex;
-            while (currentIndex > index) {
-                currentIndex = self.list[currentIndex].index;
+            while (currentIndex > startIndex) {
+                currentIndex = self.list[currentIndex].prevIndex;
             }
-            return self.list[currentIndex].nextValue;
+            return (currentIndex, self.list[currentIndex]);
         }
     }
 
 
     function listLiquidity(List storage self) internal view returns (Liquidity[] memory rets){
-        uint256 index = self.lastIndex;
+        uint256 _index = self.lastIndex;
         uint256 count;
-        while (self.list[index].value != 0) {
+        while (self.list[_index].value != 0) {
             count++;
-            index = self.list[index].index;
+            _index = self.list[_index].prevIndex;
         }
 
         rets = new Liquidity[](count);
-        index = self.lastIndex;
+        _index = self.lastIndex;
         uint256 len;
-        while (self.list[index].value != 0) {
-            rets[len] = self.list[index];
-            (index, rets[len].index) = (rets[len].index, index);
+        while (self.list[_index].value != 0) {
+            rets[len] = self.list[_index];
+            // _index = rets[len].prevIndex;
+            (_index, rets[len].prevIndex) = (rets[len].prevIndex, _index);
             len++;
         }
     }

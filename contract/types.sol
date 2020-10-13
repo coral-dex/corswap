@@ -14,12 +14,8 @@ bytes32 tokenB;
 uint256 reserveA;
 uint256 reserveB;
 uint256 totalShares;
-
 uint256 myShare;
 uint256 shareRreward;
-
-Order[] orderList;
-Order[] myOrderList;
 bool mining;
 }
 
@@ -29,8 +25,9 @@ uint256 value;
 }
 
 struct Liquidity {
-uint256 index;
 uint256 value;
 uint256 nextValue;
+uint256 nextIndex;
+uint256 prevIndex;
 bool flag;
 }

@@ -199,44 +199,90 @@ contract SwapExchange is SeroInterface, Ownable {
         return pairs[key].liquidityList(msg.sender);
     }
 
+
+    function caleReward(bytes32 key, uint256 dayIndex, uint256 selfLiquidity, uint256 totalLiquidity) private view returns (uint256) {
+        uint256 totalVolume = wholeVolume.volumeOfDay(dayIndex);
+        uint256 selfVolume = volumes[key].volumeOfDay(dayIndex);
+
+        if (selfVolume == 0 || totalVolume == 0) {
+            return 0;
+        }
+
+        uint256 value = output(dayIndex);
+        value = value.sub(value / 10);
+
+        return value.mul(selfVolume).mul(selfLiquidity).div(totalVolume).div(totalLiquidity);
+    }
+
     function shareReward(bytes32 key) public view returns (uint256 reward) {
-        uint256 lastIndex = lastIndexsMap[msg.sender][key];
-        if (lastIndex == 0) {
-            lastIndex = startDay;
+        uint256 dayIndex = lastIndexsMap[msg.sender][key];
+        if (dayIndex == 0) {
+            dayIndex = startDay;
         }
 
-        uint256 newIndex = now / Constants.ONEDAY;
+        LiquidityList.List storage wholeLiquidityList = pairs[key].wholeLiquidity;
+        LiquidityList.List storage selfLiquidityList = pairs[key].liquiditys[msg.sender];
 
-        if (newIndex - lastIndex > 300) {
-            lastIndex = newIndex - 300;
-        }
+        uint256 index;
+        Liquidity storage selfNode;
+        Liquidity storage wholeNode;
 
-        uint256 selfVolume;
-        uint256 totalVolume;
         uint256 selfLiquidity;
-        uint256 totalLiquidity;
-        uint256 value;
+        uint256 wholeLiquidity;
+        uint256 endIndex;
+        while (dayIndex < now / Constants.ONEDAY) {
+            (index, selfNode) = selfLiquidityList.index(dayIndex);
+            (, wholeNode) = wholeLiquidityList.index(dayIndex);
 
-        for (uint256 i = lastIndex; i < (now / Constants.ONEDAY); i++) {
-
-            (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
-
-            if (selfLiquidity == 0 || totalLiquidity == 0) {
-                continue;
+            if (index == dayIndex) {
+                if (selfNode.value != 0) {
+                    reward = reward.add(caleReward(key, index, selfNode.value, wholeNode.value));
+                }
+                dayIndex++;
             }
 
-            totalVolume = wholeVolume.volumeOfDay(i);
-            selfVolume = volumes[key].volumeOfDay(i);
-
-            if (selfVolume == 0 || totalVolume == 0) {
-                continue;
+            endIndex = selfNode.nextIndex;
+            if (endIndex == 0) {
+                endIndex = now / Constants.ONEDAY;
             }
 
-            value = output(i);
-            value = value.sub(value / 10);
-
-            reward = reward.add(value.mul(selfVolume).mul(selfLiquidity).div(totalVolume).div(totalLiquidity));
+            selfLiquidity = selfNode.nextValue;
+            if (selfLiquidity != 0) {
+                while (dayIndex < endIndex) {
+                    if (wholeNode.nextIndex == 0 || dayIndex < wholeNode.nextIndex) {
+                        wholeLiquidity = wholeNode.nextValue;
+                    } else {
+                        wholeNode = wholeLiquidityList.list[wholeNode.nextIndex];
+                        wholeLiquidity = wholeNode.value;
+                    }
+                    reward = reward.add(caleReward(key, dayIndex, selfLiquidity, wholeLiquidity));
+                    dayIndex++;
+                }
+            } else {
+                dayIndex = endIndex;
+            }
         }
+
+        // for (uint256 i = lastIndex; i < (now / Constants.ONEDAY); i++) {
+
+        //     (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
+
+        //     if (selfLiquidity == 0 || totalLiquidity == 0) {
+        //         continue;
+        //     }
+
+        //     totalVolume = wholeVolume.volumeOfDay(i);
+        //     selfVolume = volumes[key].volumeOfDay(i);
+
+        //     if (selfVolume == 0 || totalVolume == 0) {
+        //         continue;
+        //     }
+
+        //     value = output(i);
+        //     value = value.sub(value/10);
+
+        //     reward = reward.add(value.mul(selfVolume).mul(selfLiquidity).div(totalVolume).div(totalLiquidity));
+        // }
     }
 
     function output(uint256 index) public view returns (uint256) {

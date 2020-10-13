@@ -3,9 +3,9 @@ pragma solidity ^0.6.10;
 import "../common/strings.sol";
 
 library Constants {
-    uint256 constant ONEDAY = 600;
+    uint256 constant ONEDAY = 300;
 
-    string constant CORAL = "CORALA"; //TODO test CORAL
+    string constant CORAL = "CORALA";
 
     bytes32 constant SEROBYTES = 0x5345524f00000000000000000000000000000000000000000000000000000000;
 }

@@ -172,12 +172,6 @@ library ExchangePair {
         return (self.wholeLiquidity.currentLiquidity(), self.liquiditys[owner].currentLiquidity());
     }
 
-    function liquidity(Pair storage self, address owner, uint256 index) internal view returns (uint256, uint256) {
-        uint256 selfTotal = self.liquiditys[owner].liquidityOfDay(index);
-        uint256 total = self.wholeLiquidity.liquidityOfDay(index);
-        return (selfTotal, total);
-    }
-
     function liquidityList(Pair storage self, address owner) internal view returns (Liquidity[] memory, Liquidity[] memory) {
         return (self.wholeLiquidity.listLiquidity(), self.liquiditys[owner].listLiquidity());
     }
