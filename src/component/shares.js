@@ -89,12 +89,13 @@ export class Shares extends Component {
 
     sub(){
         const self = this;
-        const {account,amount} = this.state;
+        const {account,amount,pk} = this.state;
         if(!amount){
             Toast.fail(i18n.t("inputDestroyNum"),2)
             return
         }
         const value = new BigNumber(amount).multipliedBy(10**18);
+        console.log(pk,account,!account.balances.has(abi.coral) , value.comparedTo(new BigNumber(account.balances.get(abi.coral))) >0);
         if(!account.balances.has(abi.coral) || value.comparedTo(new BigNumber(account.balances.get(abi.coral))) >0){
             Toast.fail(i18n.t("insufficientBalance"),2)
             return
@@ -136,7 +137,7 @@ export class Shares extends Component {
     render() {
         const {totalSupply,myBalance,poolBalance,amount,showModal} = this.state;
         return (
-            <Layout selectedTab="4">
+            <Layout selectedTab="4" doUpdate={this.doUpdate}>
 
                 <WingBlank>
                     <WhiteSpace size="lg"/>

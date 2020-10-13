@@ -438,7 +438,7 @@ export class PairList extends Component {
                                                     {i18n.t("totalShares").replace("$1",pair.totalShares)}
                                                 </div>
 
-                                                {pair.mining && <div>
+                                                { (pair.mining||pair.shareRreward*1>0)  && <div>
                                                     <WhiteSpace/>
                                                     {i18n.t("withdrawAble")}{showValue(pair.shareRreward,18,3)}CORAL
                                                 </div>
@@ -452,7 +452,7 @@ export class PairList extends Component {
                                                         <Button style={{backgroundColor:"#00456b",border:"none"}} disabled={investAmount[0]&&investAmount[0]!==pair.tokenB} type="primary" size="small" onClick={() => {this.setShowInvestModal(true,pair).catch();}}>{i18n.t("provideLiquidity")}</Button>
                                                     </Flex.Item>
                                                     {
-                                                        pair.mining && <Flex.Item>
+                                                        (pair.mining||pair.shareRreward*1>0) && <Flex.Item>
                                                             <Button style={{backgroundColor:"#00456b",border:"none"}} type="primary" size="small" disabled={pair.shareRreward*1 === 0} onClick={() => {this.withdrawCoral(pair)}}>{i18n.t("withdraw")}</Button>
                                                         </Flex.Item>
                                                     }
