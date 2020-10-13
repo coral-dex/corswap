@@ -29,7 +29,7 @@
     "exchangeDividend": "兑换分红(销毁CORAL)",
     "inputDestroyNum": "请输入CORAL数量",
     "pending": "正在进行交易打包...",
-    "success": "交易发送成功!",
+    "success": "交易成功!",
     "revoke": "撤回",
     "input": "请输入",
     "tx1": "交易一",

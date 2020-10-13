@@ -5,6 +5,7 @@ import {PairList} from "./component/pairlist";
 import {Shares} from './component/shares'
 import Swap from './component/swap'
 import './i18n'
+import './style/style.css'
 class App extends Component{
 
     render() {

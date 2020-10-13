@@ -1,14 +1,15 @@
 import * as React from 'react';
-import {Flex, Modal, Tag, TabBar, WingBlank, WhiteSpace} from "antd-mobile";
-import {Select} from "./select";
+import {Flex, Modal, Tag, TabBar, WingBlank, WhiteSpace, Button,Toast} from "antd-mobile";
 import abi from './abi'
 import BigNumber from "bignumber.js";
 import i18n from '../i18n'
+import copy from 'copy-text-to-clipboard'
 class Layout extends React.Component{
     constructor(props){
         super(props)
         this.state={
             modal1:false,
+            modal2:false,
             account: {balances: new Map()},
         }
     }
@@ -43,7 +44,12 @@ class Layout extends React.Component{
 
     showModal(){
         this.setState({
-          modal1: true,
+            modal1: true,
+        });
+    }
+    showModal2(){
+        this.setState({
+            modal2: true,
         });
     }
     onClose = key => () => {
@@ -108,7 +114,7 @@ class Layout extends React.Component{
                     <Flex.Item style={{flex:1}}>
                         <div className="text-right shares">
                             {/*{this.props.selectedTab == "3"?<div style={{color:"#f75552"}} >初始化资金池</div>:""}*/}
-                            <img onClick={()=>this.goPage("https://twitter.com/CoralDEX")} width="16%" src={require("../images/icon2.png")}/>
+                            <img width="16%" src={require("../images/icon2.png")} onClick={()=>this.showModal2()}/>
                             <img width="16%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
                         </div>
                     </Flex.Item>
@@ -142,17 +148,36 @@ class Layout extends React.Component{
                     {/*}*/}
 
                     <Modal
-                    visible={this.state.modal1}
-                    transparent
-                    maskClosable={false}
-                    onClose={this.onClose('modal1')}
-                    title=""
-                    footer={[{ text: 'OK', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
-                >
-                    <div style={{ minHeight: 150, width:"auto",textAlign:"center"}}>
-                        <img width="40%" src={require('../images/wx.jpg')}/>
-                    </div>
+                        visible={this.state.modal1}
+                        transparent
+                        maskClosable={false}
+                        onClose={this.onClose('modal1')}
+                        title=""
+                        footer={[{ text: 'OK', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
+                    >
+                        <div style={{ minHeight: 150, width:"auto",textAlign:"center"}}>
+                            <img width="40%" src={require('../images/wx.jpg')}/>
+                        </div>
                     </Modal>
+
+                    <Modal
+                        visible={this.state.modal2}
+                        transparent
+                        maskClosable={false}
+                        onClose={()=>{
+                            this.onClose('modal2')}}
+                        title=""
+                        footer={[{ text: 'COPY', onPress: () => {
+                                copy('https://twitter.com/CoralDEX');
+                                Toast.info(i18n.t('Copied!'),1.5)
+                                this.onClose('modal2')(); } }]
+                        }
+                    >
+                        <div style={{ textAlign:"center"}}>
+                            <p>https://twitter.com/CoralDEX </p>
+                        </div>
+                    </Modal>
+
 
                 </WingBlank>
 

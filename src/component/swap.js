@@ -23,6 +23,7 @@ class Swap extends React.Component{
         showSelectTokenTo:"",
 
         estimate:"",
+        initValue:""
     }
 
     async init (pkey) {
@@ -66,6 +67,9 @@ class Swap extends React.Component{
             abi.pairList(account.mainPKr,token,function (datas) {
                 const tokensTmp = [];
                 for(let pair of datas){
+                    if(pair.reserveA*1 == 0 || pair.reserveB*1 == 0 ){
+                        continue
+                    }
                     // console.log(datas,"datas");
                     abi.getDecimal(pair.tokenA)
                     abi.getDecimal(pair.tokenB)
@@ -150,6 +154,8 @@ class Swap extends React.Component{
             })
         }
 
+
+
     }
 
     setTokenFrom = (v)=>{
@@ -179,12 +185,25 @@ class Swap extends React.Component{
     }
 
     setTokenTo = (v)=>{
-        const {tokenFromValue} = this.state;
+        const {tokenFromValue,account,tokenFrom} = this.state;
         this.setState({
             tokenTo:v,
             showSelectTokenTo:false
         })
         this.setTokenFromValue(tokenFromValue,v)
+
+        this.setInitValue(tokenFrom,v);
+
+    }
+
+    setInitValue = (tFrom,tTo)=>{
+        const that = this;
+        const {account} = this.state;
+        abi.estimateSwap(account.mainPKr,tFrom,tTo,tFrom,"0x"+toValue(1,abi.getDecimalLocal(tTo)).toString(16),function (rest) {
+            that.setState({
+                initValue:rest?fromValue(rest,abi.getDecimalLocal(tTo)).toFixed(6):""
+            })
+        })
     }
 
     setShowSelectTokenTo = (f) =>{
@@ -214,6 +233,8 @@ class Swap extends React.Component{
                 estimate:estimate?(estimate=="from"?"to":"from"):""
             })
         }
+
+        this.setInitValue(tokenTo,tokenFrom);
     }
 
     swap = ()=>{
@@ -263,7 +284,7 @@ class Swap extends React.Component{
     }
 
     render() {
-        const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate} = this.state;
+        const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate,initValue} = this.state;
         return (
             <Layout selectedTab="1" doUpdate={()=>this.init()}>
                 <div style={{padding:"10px"}} className="flex-center fontSize am-center">
@@ -334,7 +355,7 @@ class Swap extends React.Component{
                             </div>
                         </div>
                         <div style={{padding:"12px"}} className="color">
-                            {tokenToValue && tokenFromValue &&`1 ${tokenFrom} = ${(tokenToValue/tokenFromValue).toFixed(6)} ${tokenTo}` }
+                            {tokenToValue && tokenFromValue ?`1 ${tokenFrom} = ${(tokenToValue/tokenFromValue).toFixed(6)} ${tokenTo}`:initValue && `1 ${tokenFrom} = ${initValue} ${tokenTo}` }
                         </div>
 
                         <div className="text-center">
