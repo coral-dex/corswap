@@ -227,12 +227,8 @@ contract SwapExchange is SeroInterface, Ownable {
         }
 
         uint256 _nowIndex = Constants.toUTC(now) / Constants.ONEDAY;
-        if(lastIndex == _nowIndex) {
+        if (lastIndex == _nowIndex) {
             return 0;
-        }
-
-        if (_nowIndex.sub(lastIndex) > 300) {
-            lastIndex = _nowIndex - 300;
         }
 
         LiquidityList.List storage wholeLiquidityList = pairs[key].wholeLiquidity;
@@ -240,6 +236,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
         uint256 selfIndex = selfLiquidityList.lastIndex;
         uint256 wholeIndex = wholeLiquidityList.lastIndex;
+
         if (selfIndex == _nowIndex) {
             selfIndex = selfLiquidityList.list[selfIndex].prevIndex;
         }
@@ -274,6 +271,10 @@ contract SwapExchange is SeroInterface, Ownable {
                     if (i == lastIndex) {
                         return reward;
                     }
+                }
+            } else {
+                if (lastIndex > selfIndex) {
+                    return reward;
                 }
             }
 
@@ -524,6 +525,12 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
 }
+
+
+
+
+
+
 
 
 
