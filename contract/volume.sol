@@ -14,7 +14,7 @@ library VolumeList {
     }
 
     function add(List storage self, uint256 value) internal {
-        uint256 index = now / Constants.ONEDAY;
+        uint256 index = Constants.toUTC(now) / Constants.ONEDAY;
         if (self.list[index].value == 0) {
             self.list[index] = Volume({value : value, index : self.lastIndex});
             self.lastIndex = index;

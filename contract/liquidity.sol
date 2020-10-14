@@ -6,7 +6,6 @@ import "./constants.sol";
 import "./types.sol";
 
 library LiquidityList {
-    //TODO
     using SafeMath for uint256;
 
     struct List {
@@ -15,38 +14,35 @@ library LiquidityList {
     }
 
     function add(List storage self, uint256 value) internal {
-        uint256 index = now / Constants.ONEDAY;
+        uint256 _now = Constants.toUTC(now);
+        uint256 index = _now / Constants.ONEDAY;
         if (!self.list[index].flag) {
             self.list[index] = Liquidity({
-                value : self.list[self.lastIndex].nextValue.add(value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY)),
+                value : self.list[self.lastIndex].nextValue.add(value.mul(Constants.ONEDAY - _now % Constants.ONEDAY).div(Constants.ONEDAY)),
 
                 nextValue : self.list[self.lastIndex].nextValue.add(value),
                 prevIndex : self.lastIndex,
-                nextIndex : 0,
                 flag : true});
-
-            self.list[self.lastIndex].nextIndex = index;
             self.lastIndex = index;
         } else {
-            self.list[index].value = self.list[index].value.add(value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY));
+            self.list[index].value = self.list[index].value.add(value.mul(Constants.ONEDAY - _now % Constants.ONEDAY).div(Constants.ONEDAY));
             self.list[index].nextValue = self.list[self.lastIndex].nextValue.add(value);
         }
     }
 
     function sub(List storage self, uint256 value) internal {
-        uint256 index = now / Constants.ONEDAY;
+        uint256 _now = Constants.toUTC(now);
+        uint256 index = _now / Constants.ONEDAY;
         if (!self.list[index].flag) {
             self.list[index] = Liquidity({value : self.list[self.lastIndex].nextValue.sub(
-                value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY)
+                value.mul(Constants.ONEDAY - _now % Constants.ONEDAY).div(Constants.ONEDAY)
             ),
                 nextValue : self.list[self.lastIndex].nextValue.sub(value),
                 prevIndex : self.lastIndex,
-                nextIndex : 0,
                 flag : true});
-            self.list[self.lastIndex].nextIndex = index;
             self.lastIndex = index;
         } else {
-            self.list[index].value = self.list[index].value.sub(value.mul(Constants.ONEDAY - now % Constants.ONEDAY).div(Constants.ONEDAY));
+            self.list[index].value = self.list[index].value.sub(value.mul(Constants.ONEDAY - _now % Constants.ONEDAY).div(Constants.ONEDAY));
             self.list[index].nextValue = self.list[self.lastIndex].nextValue.sub(value);
         }
     }
@@ -81,7 +77,6 @@ library LiquidityList {
         uint256 len;
         while (self.list[_index].value != 0) {
             rets[len] = self.list[_index];
-            // _index = rets[len].prevIndex;
             (_index, rets[len].prevIndex) = (rets[len].prevIndex, _index);
             len++;
         }

@@ -27,7 +27,7 @@ uint256 value;
 struct Liquidity {
 uint256 value;
 uint256 nextValue;
-uint256 nextIndex;
 uint256 prevIndex;
 bool flag;
 }
+    
