@@ -11,6 +11,7 @@ import "./volume.sol";
 import "./liquidity.sol";
 import "./constants.sol";
 import "./types.sol";
+import "./output.sol";
 
 library InitValueList {
     using SafeMath for uint256;
@@ -62,10 +63,9 @@ contract SwapExchange is SeroInterface, Ownable {
 
     TokenPool private tokenPool;
     mapping(bytes32 => uint256) public feeRateMap;
-    mapping(bytes32 => uint256) public rateMap;
+    mapping(bytes32 => uint256) public weightsMap;
 
     uint256 public startDay;
-    uint256[7000] public outputs;
     uint256 public mintDayIndex;
 
 
@@ -78,13 +78,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function start() public onlyOwner {
         require(startDay == 0);
-        startDay = now / Constants.ONEDAY;
-    }
-
-    function setOutputs(uint256 _start, uint256[] memory _outputs) public onlyOwner {
-        for (uint256 i = 0; i < _outputs.length; i++) {
-            outputs[_start + i] = _outputs[i];
-        }
+        startDay = Constants.toUTC(now) / Constants.ONEDAY;
     }
 
     function setFeeRate(string memory tokenA, string memory tokenB, uint256 _feeRate) public onlyOwner {
@@ -98,21 +92,29 @@ contract SwapExchange is SeroInterface, Ownable {
         feeRateMap[key] = _feeRate;
     }
 
-    function setTokenBase(string memory tokenA, string memory tokenB, string memory _baseToken, uint256 _rate) public onlyOwner {
-        require(_rate <= 100);
+    function setTokenBase(string memory tokenA, string memory tokenB, uint256 _weight) public onlyOwner {
+        require(_weight <= 100);
         bytes32 _tokenA = strings._stringToBytes32(tokenA);
         bytes32 _tokenB = strings._stringToBytes32(tokenB);
         bytes32 key = hashKey(_tokenA, _tokenB);
 
         require(pairs[key].tokenA != bytes32(0) && pairs[key].tokenB != bytes32(0), "exchange not initialized");
 
-        bytes32 baseToken = strings._stringToBytes32(_baseToken);
-        pairs[key].baseToken = baseToken;
-        if (baseToken != Constants.SEROBYTES) {
-            bytes32 _key = hashKey(baseToken, Constants.SEROBYTES);
+        pairs[key].baseToken = _tokenB;
+        if (_tokenB != Constants.SEROBYTES) {
+            bytes32 _key = hashKey(_tokenB, Constants.SEROBYTES);
             require(_key != key && pairs[_key].reserveA != 0 && pairs[_key].reserveB != 0);
         }
-        rateMap[key] = _rate;
+        weightsMap[key] = _weight;
+    }
+
+    function clearTokenBase(string memory tokenA, string memory tokenB) public onlyOwner {
+        bytes32 _tokenA = strings._stringToBytes32(tokenA);
+        bytes32 _tokenB = strings._stringToBytes32(tokenB);
+        bytes32 key = hashKey(_tokenA, _tokenB);
+
+        require(pairs[key].tokenA != bytes32(0) && pairs[key].tokenB != bytes32(0), "exchange not initialized");
+        pairs[key].baseToken = bytes32(0);
     }
 
     function getGroupTokens(bytes32[] memory tokens) public view returns (bytes32[][] memory rets) {
@@ -185,7 +187,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function volumeDayOfPair(string memory tokenA, string memory tokenB, uint256 time) public view returns (uint256, uint256) {
         bytes32 key = hashKey(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
-        uint256 index = time / Constants.ONEDAY;
+        uint256 index = Constants.toUTC(time) / Constants.ONEDAY;
         return (wholeVolume.volumeOfDay(index), volumes[key].volumeOfDay(index));
     }
 
@@ -201,6 +203,10 @@ contract SwapExchange is SeroInterface, Ownable {
 
 
     function caleReward(bytes32 key, uint256 dayIndex, uint256 selfLiquidity, uint256 totalLiquidity) private view returns (uint256) {
+        if (selfLiquidity == 0 || totalLiquidity == 0) {
+            return 0;
+        }
+
         uint256 totalVolume = wholeVolume.volumeOfDay(dayIndex);
         uint256 selfVolume = volumes[key].volumeOfDay(dayIndex);
 
@@ -215,91 +221,79 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
     function shareReward(bytes32 key) public view returns (uint256 reward) {
-        uint256 dayIndex = lastIndexsMap[msg.sender][key];
-        if (dayIndex == 0) {
-            dayIndex = startDay;
+        uint256 lastIndex = lastIndexsMap[msg.sender][key];
+        if (lastIndex == 0) {
+            return 0;
+        }
+
+        uint256 _nowIndex = Constants.toUTC(now) / Constants.ONEDAY;
+        if (_nowIndex.sub(lastIndex) > 300) {
+            lastIndex = _nowIndex - 300;
         }
 
         LiquidityList.List storage wholeLiquidityList = pairs[key].wholeLiquidity;
         LiquidityList.List storage selfLiquidityList = pairs[key].liquiditys[msg.sender];
 
-        uint256 index;
-        Liquidity storage selfNode;
-        Liquidity storage wholeNode;
-
-        uint256 selfLiquidity;
-        uint256 wholeLiquidity;
-        uint256 endIndex;
-        while (dayIndex < now / Constants.ONEDAY) {
-            (index, selfNode) = selfLiquidityList.index(dayIndex);
-            (, wholeNode) = wholeLiquidityList.index(dayIndex);
-
-            if (index == dayIndex) {
-                if (selfNode.value != 0) {
-                    reward = reward.add(caleReward(key, index, selfNode.value, wholeNode.value));
-                }
-                dayIndex++;
-            }
-
-            endIndex = selfNode.nextIndex;
-            if (endIndex == 0) {
-                endIndex = now / Constants.ONEDAY;
-            }
-
-            selfLiquidity = selfNode.nextValue;
-            if (selfLiquidity != 0) {
-                while (dayIndex < endIndex) {
-                    if (wholeNode.nextIndex == 0 || dayIndex < wholeNode.nextIndex) {
-                        wholeLiquidity = wholeNode.nextValue;
-                    } else {
-                        wholeNode = wholeLiquidityList.list[wholeNode.nextIndex];
-                        wholeLiquidity = wholeNode.value;
-                    }
-                    reward = reward.add(caleReward(key, dayIndex, selfLiquidity, wholeLiquidity));
-                    dayIndex++;
-                }
-            } else {
-                dayIndex = endIndex;
-            }
+        uint256 selfIndex = selfLiquidityList.lastIndex;
+        uint256 wholeIndex = wholeLiquidityList.lastIndex;
+        if (selfIndex == _nowIndex) {
+            selfIndex = selfLiquidityList.list[selfIndex].prevIndex;
         }
 
-        // for (uint256 i = lastIndex; i < (now / Constants.ONEDAY); i++) {
+        if (wholeIndex == _nowIndex) {
+            wholeIndex = wholeLiquidityList.list[wholeIndex].prevIndex;
+        }
 
-        //     (selfLiquidity, totalLiquidity) = pairs[key].liquidity(msg.sender, i);
+        uint256 startIndex = _nowIndex - 1;
+        while (true) {
+            if (selfIndex == 0) {
+                return reward;
+            }
 
-        //     if (selfLiquidity == 0 || totalLiquidity == 0) {
-        //         continue;
-        //     }
+            Liquidity storage selfNode = selfLiquidityList.list[selfIndex];
+            uint256 selfLiquidity = selfNode.nextValue;
 
-        //     totalVolume = wholeVolume.volumeOfDay(i);
-        //     selfVolume = volumes[key].volumeOfDay(i);
+            if (selfLiquidity != 0) {
+                uint256 wholeLiquidity;
+                Liquidity storage wholeNode = wholeLiquidityList.list[wholeIndex];
+                for (uint256 i = startIndex; i > selfIndex; i--) {
+                    if (i == wholeIndex) {
+                        wholeLiquidity = wholeNode.value;
+                        wholeIndex = wholeNode.prevIndex;
+                        wholeNode = wholeLiquidityList.list[wholeIndex];
+                    } else {
+                        wholeLiquidity = wholeNode.nextValue;
+                    }
 
-        //     if (selfVolume == 0 || totalVolume == 0) {
-        //         continue;
-        //     }
+                    reward = reward.add(caleReward(key, i, selfLiquidity, wholeLiquidity));
 
-        //     value = output(i);
-        //     value = value.sub(value/10);
+                    if (i == lastIndex) {
+                        return reward;
+                    }
+                }
+            }
 
-        //     reward = reward.add(value.mul(selfVolume).mul(selfLiquidity).div(totalVolume).div(totalLiquidity));
-        // }
+            reward = reward.add(caleReward(key, selfIndex, selfNode.value, wholeLiquidityList.list[selfIndex].value));
+
+            if (selfIndex == lastIndex) {
+                return reward;
+            }
+
+            startIndex = selfIndex - 1;
+            wholeIndex = wholeLiquidityList.list[selfIndex].prevIndex;
+            selfIndex = selfNode.prevIndex;
+        }
     }
 
     function output(uint256 index) public view returns (uint256) {
         if (startDay == 0) {
             return 0;
         }
-
         if (index < startDay) {
             return 0;
         }
-
-        if (index - startDay >= outputs.length) {
-            return 1e21;
-        } else {
-            return 1e22;
-            // return outputs[index-startDay]
-        }
+        return 1e22;
+        // return Output.calc(index - startDay);
     }
 
     function investAmount() public view returns (bytes32 token, uint256 value){
@@ -324,7 +318,7 @@ contract SwapExchange is SeroInterface, Ownable {
 
     function withdrawShareReward(bytes32 key) external {
         uint256 value = shareReward(key);
-        lastIndexsMap[msg.sender][key] = now / Constants.ONEDAY;
+        lastIndexsMap[msg.sender][key] = Constants.toUTC(now) / Constants.ONEDAY;
         if (value > 0) {
             require(sero_send_token(msg.sender, Constants.CORAL, value));
         }
@@ -374,7 +368,7 @@ contract SwapExchange is SeroInterface, Ownable {
         }
 
         if (lastIndexsMap[sender][key] == 0) {
-            lastIndexsMap[sender][key] = now / Constants.ONEDAY;
+            lastIndexsMap[sender][key] = Constants.toUTC(now) / Constants.ONEDAY;
         }
 
         initValues[sender].clear();
@@ -457,15 +451,6 @@ contract SwapExchange is SeroInterface, Ownable {
         }
     }
 
-    function mint() internal {
-        require(mintDayIndex < now / Constants.ONEDAY);
-        mintDayIndex = now / Constants.ONEDAY;
-        uint256 value = output(mintDayIndex);
-
-        require(tokenPool.transfer(address(this), value));
-        require(sero_send_token(owner, Constants.CORAL, value / 10));
-    }
-
     function swap(bytes32 key, uint256 _minTokensReceived, uint256 _timeout, address _recipient) public payable returns (uint256) {
         require(startDay > 0);
         require(pairs[key].reserveA != 0 && pairs[key].reserveB != 0, "exchange not initialized");
@@ -494,13 +479,18 @@ contract SwapExchange is SeroInterface, Ownable {
 
         if (fee > 0) {
             require(sero_send_token(address(tokenPool), "SERO", fee));
-            fee = fee.mul(rateMap[key]).div(100);
+            fee = fee.mul(weightsMap[key]).div(100);
 
             wholeVolume.add(fee);
             volumes[key].add(fee);
 
-            if (mintDayIndex != now / Constants.ONEDAY) {
-                mint();
+            uint256 _now = Constants.toUTC(now);
+            if (mintDayIndex != _now / Constants.ONEDAY) {
+                mintDayIndex = _now / Constants.ONEDAY;
+                uint256 value = output(mintDayIndex);
+
+                require(tokenPool.transfer(address(this), value));
+                require(sero_send_token(owner, Constants.CORAL, value / 10));
             }
         }
         return tokenOutValue;
@@ -530,7 +520,6 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
 }
-
 
 
 
