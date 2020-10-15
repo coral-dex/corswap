@@ -281,7 +281,7 @@ class Abi {
         // flag false sero->[a,b,c]
         // flag true  a ->[sero,susd], b->[sero], c->[susd]
        
-        abi.pairList(from,"",function(pairArray){
+        abi.pairList(from,"").then(pairArray=>{
             let tokens = [];
             let restMap = new Map();
             for(let pair of pairArray){
@@ -305,7 +305,6 @@ class Abi {
                 }
             }
             callback(tokens,restMap)
-            // console.log(tokens,restMap,"tokens---restMap");
         })
     }
 
@@ -338,28 +337,30 @@ class Abi {
         });
     }
 
-    pairList(from, token, callback) {
+    async pairList(from, token) {
         let self = this;
-        if (token) {
-            this.callMethod(contract, 'pairListByToken', from, [tokenToBytes(token), 0, 1000], function (ret) {
-                let pairs = [];
-                ret.rets.forEach((pair) => {
-                    pairs.push(self.convertToPair(pair));
-                })
-                callback(pairs);
-            });
-        } else {
-            this.callMethod(contract, 'pairList', from, [0, 1000], function (ret) {
+        return new Promise((resolve,reject)=>{
+            if (token) {
+                this.callMethod(contract, 'pairListByToken', from, [tokenToBytes(token), 0, 1000], function (ret) {
+                    let pairs = [];
+                    ret.rets.forEach((pair) => {
+                        pairs.push(self.convertToPair(pair));
+                    })
+                    resolve(pairs);
+                });
+            } else {
+                this.callMethod(contract, 'pairList', from, [0, 1000], function (ret) {
 
-                let pairs = [];
-                
-                ret.rets.forEach((pair) => {
-                    pairs.push(self.convertToPair(pair));
-                })
-                console.log("pairList>>> ",pairs);
-                callback(pairs);
-            });
-        }
+                    let pairs = [];
+
+                    ret.rets.forEach((pair) => {
+                        pairs.push(self.convertToPair(pair));
+                    })
+                    console.log("pairList>>> ",pairs);
+                    resolve(pairs);
+                });
+            }
+        })
     }
 
     pairInfoWithOrders(from, tokenA, tokenB, callback) {
