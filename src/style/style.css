@@ -566,3 +566,8 @@ body {
 .am-center{
     margin-top:2em;
 }
+
+.popup-list{
+    max-height: 300px;
+    overflow-y: scroll;
+}
