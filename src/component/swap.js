@@ -63,38 +63,35 @@ class Swap extends React.Component{
     async initPairs (token){
         // const swapBase = ["SERO","SUSD"];
         let { account}= this.state;
-        return new Promise((resolve)=>{
-            abi.pairList(account.mainPKr,token,function (datas) {
-                const tokensTmp = [];
-                for(let pair of datas){
-                    if(pair.reserveA*1 == 0 || pair.reserveB*1 == 0 ){
-                        continue
+        const datas = await abi.pairList(account.mainPKr,token)
+        const tokensTmp = [];
+        for(let pair of datas){
+            if(pair.reserveA*1 == 0 || pair.reserveB*1 == 0 ){
+                continue
+            }
+            // console.log(datas,"datas");
+            await abi.getDecimalAsync(pair.tokenA)
+            await abi.getDecimalAsync(pair.tokenB)
+            if(!token){
+                if(tokensTmp.indexOf(pair.tokenB) == -1){
+                    tokensTmp.push(pair.tokenB)
+                }
+                if(tokensTmp.indexOf(pair.tokenA) == -1){
+                    tokensTmp.push(pair.tokenA)
+                }
+            }else{
+                if(token === pair.tokenA){
+                    if(tokensTmp.indexOf(pair.tokenB) == -1){
+                        tokensTmp.push(pair.tokenB)
                     }
-                    // console.log(datas,"datas");
-                    abi.getDecimal(pair.tokenA)
-                    abi.getDecimal(pair.tokenB)
-                    if(!token){
-                        if(tokensTmp.indexOf(pair.tokenB) == -1){
-                            tokensTmp.push(pair.tokenB)
-                        }
-                        if(tokensTmp.indexOf(pair.tokenA) == -1){
-                            tokensTmp.push(pair.tokenA)
-                        }
-                    }else{
-                        if(token === pair.tokenA){
-                            if(tokensTmp.indexOf(pair.tokenB) == -1){
-                                tokensTmp.push(pair.tokenB)
-                            }
-                        }else{
-                            if(tokensTmp.indexOf(pair.tokenA) == -1){
-                                tokensTmp.push(pair.tokenA)
-                            }
-                        }
+                }else{
+                    if(tokensTmp.indexOf(pair.tokenA) == -1){
+                        tokensTmp.push(pair.tokenA)
                     }
                 }
-                resolve(tokensTmp)
-            })
-        })
+            }
+        }
+        return tokensTmp
     }
 
     setTokenFromValue = (v,tTo)=>{

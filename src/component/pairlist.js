@@ -77,11 +77,10 @@ export class PairList extends Component {
             search = this.state.search;
         }
 
-        abi.pairList(account.mainPKr, search, function (pairs) {
+        abi.pairList(account.mainPKr).then(pairs=>{
             abi.investAmount(account.mainPKr).then(data=>{
                 self.setState({pairs: pairs,pairsOrigin:pairs,investAmount:data});
             })
-
         });
     }
 
