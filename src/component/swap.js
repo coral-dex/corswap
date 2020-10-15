@@ -280,6 +280,13 @@ class Swap extends React.Component{
         })
     }
 
+    setMaxFromValue = ()=>{
+        const {account,tokenFrom} = this.state;
+        if(account && account.balances && account.balances.has(tokenFrom)){
+            this.setTokenFromValue(fromValue(account.balances.get(tokenFrom),abi.getDecimalLocal(tokenFrom)).toFixed(3,1))
+        }
+    }
+
     render() {
         const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate,initValue} = this.state;
         return (
@@ -303,7 +310,9 @@ class Swap extends React.Component{
                                         <div>
                                             <InputItem type="digit" placeholder="0.0" value={tokenFromValue} onChange={(v)=>{
                                                 this.setTokenFromValue(v)
-                                            }} clear/>
+                                            }} clear extra={<div className="max" onClick={()=>{
+                                                this.setMaxFromValue()
+                                            }}>MAX</div>}/>
                                         </div>
                                     </Flex.Item>
                                     <Flex.Item style={{flex:1}} onClick={()=>{
