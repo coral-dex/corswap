@@ -91,3 +91,5 @@ export function fromValue(value,decimal) {
 export function toValue(value,decimal) {
     return new BigNumber(value).multipliedBy(10**decimal)
 }
+
+export const risklist = ["USDT"];

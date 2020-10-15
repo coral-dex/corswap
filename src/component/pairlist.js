@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import {Button, Steps,Checkbox, Flex, Modal, Toast, WhiteSpace, WingBlank} from "antd-mobile";
 import abi from "./abi";
 import BigNumber from 'bignumber.js'
-import {showValue} from "./utils/common";
+import {showValue,risklist} from "./utils/common";
 import Layout from "./layout";
 import SelectToken from './selectToken'
 import i18n from '../i18n'
 const Step = Steps.Step;
 
-const risklist = ["USDT"];
+
 
 export class PairList extends Component {
     constructor(props) {
