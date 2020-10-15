@@ -31,23 +31,23 @@ library ExchangePair {
         uint256 divestedA;
         uint256 sharesPurchased;
         uint256 totalShares = self.wholeLiquidity.currentLiquidity();
-        if(totalShares == 0) {
+        if (totalShares == 0) {
             sharesPurchased = 1000;
             divestedB = valueB;
             divestedA = valueA;
         } else {
-            uint256 perShareB= self.reserveB.div(totalShares);
-            uint256 perShareA= self.reserveA.div(totalShares);
+            uint256 perShareB = self.reserveB.div(totalShares);
+            uint256 perShareA = self.reserveA.div(totalShares);
 
             require(valueB >= perShareB && valueA >= perShareA);
 
             sharesPurchased = valueB.div(perShareB);
-            if(valueA.div(perShareA) < sharesPurchased) {
+            if (valueA.div(perShareA) < sharesPurchased) {
                 sharesPurchased = valueA.div(perShareA);
             }
 
-            divestedA =  sharesPurchased.mul(perShareA);
-            divestedB =  sharesPurchased.mul(perShareB);
+            divestedA = sharesPurchased.mul(perShareA);
+            divestedB = sharesPurchased.mul(perShareB);
         }
 
         require(_minShares <= sharesPurchased);
@@ -65,12 +65,12 @@ library ExchangePair {
         uint256 divestedB;
         uint256 divestedA;
         uint256 totalShares = self.wholeLiquidity.currentLiquidity();
-        if(_sharesBurned == totalShares) {
+        if (_sharesBurned == totalShares) {
             divestedB = self.reserveB;
             divestedA = self.reserveA;
         } else {
-            uint256 perShareB= self.reserveB.div(totalShares);
-            uint256 perShareA= self.reserveA.div(totalShares);
+            uint256 perShareB = self.reserveB.div(totalShares);
+            uint256 perShareA = self.reserveA.div(totalShares);
             divestedB = perShareB.mul(_sharesBurned);
             divestedA = perShareA.mul(_sharesBurned);
         }
@@ -84,16 +84,16 @@ library ExchangePair {
         return (divestedA, divestedB);
     }
 
-    function caleSwap(Pair storage self, bytes32 tokenIn, uint256 amountIn, uint256 feeRate) internal view returns(uint256, uint256) {
+    function caleSwap(Pair storage self, bytes32 tokenIn, uint256 amountIn, uint256 feeRate) internal view returns (uint256, uint256) {
         uint256 invariant = self.reserveA.mul(self.reserveB);
         uint256 fee;
         uint256 amountOut;
 
-        if(feeRate == 0) {
+        if (feeRate == 0) {
             feeRate = 20;
         }
 
-        if(self.baseToken == bytes32(0)) {
+        if (self.baseToken == bytes32(0)) {
             fee = amountIn.mul(feeRate).div(10000);
             if (tokenIn == self.tokenA) {
                 amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn.sub(fee))));
@@ -102,7 +102,7 @@ library ExchangePair {
             }
             return (amountOut, 0);
         } else {
-            if(self.baseToken == tokenIn) {
+            if (self.baseToken == tokenIn) {
                 fee = amountIn.mul(feeRate).div(10000);
                 if (tokenIn == self.tokenA) {
                     amountOut = self.reserveB.sub(invariant.div(self.reserveA.add(amountIn.sub(fee))));
@@ -125,8 +125,8 @@ library ExchangePair {
     function swap(Pair storage self, bytes32 tokenIn, uint256 amountIn, uint256 feeRate) internal returns (uint256, bytes32, uint256) {
         (uint256 amountOut, uint256 fee) = caleSwap(self, tokenIn, amountIn, feeRate);
 
-        if(self.baseToken == bytes32(0)) {
-            if (tokenIn == self.tokenA)  {
+        if (self.baseToken == bytes32(0)) {
+            if (tokenIn == self.tokenA) {
                 self.reserveA = self.reserveA.add(amountIn);
                 self.reserveB = self.reserveB.sub(amountOut);
                 emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut);
@@ -136,8 +136,8 @@ library ExchangePair {
                 emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut);
             }
         } else {
-            if(self.baseToken == tokenIn) {
-                if (tokenIn == self.tokenA)  {
+            if (self.baseToken == tokenIn) {
+                if (tokenIn == self.tokenA) {
                     self.reserveA = self.reserveA.add(amountIn.sub(fee));
                     self.reserveB = self.reserveB.sub(amountOut);
                     emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut);
@@ -147,7 +147,7 @@ library ExchangePair {
                     emit OrderLog(self.tokenB, self.tokenA, amountIn, amountOut);
                 }
             } else {
-                if (tokenIn == self.tokenA)  {
+                if (tokenIn == self.tokenA) {
                     self.reserveA = self.reserveA.add(amountIn);
                     self.reserveB = self.reserveB.sub(amountOut.add(fee));
                     emit OrderLog(self.tokenA, self.tokenB, amountIn, amountOut);
@@ -160,8 +160,8 @@ library ExchangePair {
         }
 
         uint256 totalShares = self.wholeLiquidity.currentLiquidity();
-        uint256 perShareB= self.reserveB.div(totalShares);
-        uint256 perShareA= self.reserveA.div(totalShares);
+        uint256 perShareB = self.reserveB.div(totalShares);
+        uint256 perShareA = self.reserveA.div(totalShares);
         require(perShareB != 0 && perShareA != 0);
 
         return (amountOut, self.baseToken, fee);
@@ -172,7 +172,7 @@ library ExchangePair {
         return (self.wholeLiquidity.currentLiquidity(), self.liquiditys[owner].currentLiquidity());
     }
 
-    function liquidityList(Pair storage self, address owner) internal view returns(Liquidity[] memory, Liquidity[] memory) {
+    function liquidityList(Pair storage self, address owner) internal view returns (Liquidity[] memory, Liquidity[] memory) {
         return (self.wholeLiquidity.listLiquidity(), self.liquiditys[owner].listLiquidity());
     }
 }
