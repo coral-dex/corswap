@@ -9,7 +9,7 @@ import i18n from "../i18n";
 
 const config = {
     name: "Coral Swap",
-    contractAddress: "38qaVPVMCNpoKMhubqJPCSK86uMoaGwzUhyjnawoUwhejgtQVoEsQWz9JfiDkexjF7EYvxDrXQXtc9B9FQyAYZ5f",
+    contractAddress: "5bYB1DSe18ad7oFiJSnt861ett8fT5GFSva3BBrdYvyU8SK6CJoyDrMyijZWiGmkT1ZDaQt2AMZr5yxu23n62YnQ",
     github: "https://github.com/coswap",
     author: "coswap",
     url: window.location.origin+window.location.pathname,
@@ -23,16 +23,16 @@ const config = {
 
 const abiJson = [{"inputs":[{"internalType":"address","name":"_tokenPool","type":"address"}],"stateMutability":"payable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[],"name":"cancelInvest","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"uint256","name":"_sharesBurned","type":"uint256"},{"internalType":"uint256","name":"_minTokenA","type":"uint256"},{"internalType":"uint256","name":"_minTokenB","type":"uint256"}],"name":"divestLiquidity","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"bytes32","name":"tokenIn","type":"bytes32"},{"internalType":"uint256","name":"amountIn","type":"uint256"}],"name":"estimateSwap","outputs":[{"internalType":"uint256","name":"value","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"bytes32","name":"tokenOut","type":"bytes32"},{"internalType":"uint256","name":"amountOut","type":"uint256"}],"name":"estimateSwapBuy","outputs":[{"internalType":"uint256","name":"amountIn","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"feeRateMap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32[]","name":"tokens","type":"bytes32[]"}],"name":"getGroupTokens","outputs":[{"internalType":"bytes32[][]","name":"rets","type":"bytes32[][]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"token","type":"bytes32"}],"name":"getTokens","outputs":[{"internalType":"bytes32[]","name":"rets","type":"bytes32[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"_key","type":"bytes32"}],"name":"hasPair","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"}],"name":"hashKey","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"investAmount","outputs":[{"internalType":"bytes32","name":"token","type":"bytes32"},{"internalType":"uint256","name":"value","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_minShares","type":"uint256"}],"name":"investLiquidity","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"lastIndexsMap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"tokenA","type":"string"},{"internalType":"string","name":"tokenB","type":"string"}],"name":"liquidityOfPair","outputs":[{"components":[{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"nextValue","type":"uint256"},{"internalType":"uint256","name":"nextIndex","type":"uint256"},{"internalType":"uint256","name":"prevIndex","type":"uint256"},{"internalType":"bool","name":"flag","type":"bool"}],"internalType":"struct Liquidity[]","name":"","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"nextValue","type":"uint256"},{"internalType":"uint256","name":"nextIndex","type":"uint256"},{"internalType":"uint256","name":"prevIndex","type":"uint256"},{"internalType":"bool","name":"flag","type":"bool"}],"internalType":"struct Liquidity[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"mintDayIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"output","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"pairInfo","outputs":[{"components":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"},{"internalType":"uint256","name":"totalShares","type":"uint256"},{"internalType":"uint256","name":"myShare","type":"uint256"},{"internalType":"uint256","name":"shareRreward","type":"uint256"},{"internalType":"bool","name":"mining","type":"bool"}],"internalType":"struct Pair","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"pairKeys","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_start","type":"uint256"},{"internalType":"uint256","name":"_end","type":"uint256"}],"name":"pairList","outputs":[{"components":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"},{"internalType":"uint256","name":"totalShares","type":"uint256"},{"internalType":"uint256","name":"myShare","type":"uint256"},{"internalType":"uint256","name":"shareRreward","type":"uint256"},{"internalType":"bool","name":"mining","type":"bool"}],"internalType":"struct Pair[]","name":"rets","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"token","type":"bytes32"},{"internalType":"uint256","name":"_start","type":"uint256"},{"internalType":"uint256","name":"_end","type":"uint256"}],"name":"pairListByToken","outputs":[{"components":[{"internalType":"bytes32","name":"tokenA","type":"bytes32"},{"internalType":"bytes32","name":"tokenB","type":"bytes32"},{"internalType":"uint256","name":"reserveA","type":"uint256"},{"internalType":"uint256","name":"reserveB","type":"uint256"},{"internalType":"uint256","name":"totalShares","type":"uint256"},{"internalType":"uint256","name":"myShare","type":"uint256"},{"internalType":"uint256","name":"shareRreward","type":"uint256"},{"internalType":"bool","name":"mining","type":"bool"}],"internalType":"struct Pair[]","name":"rets","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"rateMap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"tokenA","type":"string"},{"internalType":"string","name":"tokenB","type":"string"},{"internalType":"uint256","name":"_feeRate","type":"uint256"}],"name":"setFeeRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"tokenA","type":"string"},{"internalType":"string","name":"tokenB","type":"string"},{"internalType":"string","name":"_baseToken","type":"string"},{"internalType":"uint256","name":"_rate","type":"uint256"}],"name":"setTokenBase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"shareReward","outputs":[{"internalType":"uint256","name":"reward","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"start","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"startDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"},{"internalType":"uint256","name":"_minTokensReceived","type":"uint256"},{"internalType":"uint256","name":"_timeout","type":"uint256"},{"internalType":"address","name":"_recipient","type":"address"}],"name":"swap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"tokenA","type":"string"},{"internalType":"string","name":"tokenB","type":"string"},{"internalType":"uint256","name":"time","type":"uint256"}],"name":"volumeDayOfPair","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"tokenA","type":"string"},{"internalType":"string","name":"tokenB","type":"string"}],"name":"volumesOfPair","outputs":[{"components":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"}],"internalType":"struct Volume[]","name":"","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"value","type":"uint256"}],"internalType":"struct Volume[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"key","type":"bytes32"}],"name":"withdrawShareReward","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 
-const contract = serojs.callContract(abiJson, "38qaVPVMCNpoKMhubqJPCSK86uMoaGwzUhyjnawoUwhejgtQVoEsQWz9JfiDkexjF7EYvxDrXQXtc9B9FQyAYZ5f");
+const contract = serojs.callContract(abiJson, "5bYB1DSe18ad7oFiJSnt861ett8fT5GFSva3BBrdYvyU8SK6CJoyDrMyijZWiGmkT1ZDaQt2AMZr5yxu23n62YnQ");
 
 const poolContract = serojs.callContract([{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"tokenList","type":"bytes32[]"},{"name":"balances","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"amount","type":"uint256"}],"name":"showExchange","outputs":[{"name":"tokenList","type":"bytes32[]"},{"name":"amounts","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"}],"name":"exchange","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"}],
-    "Xxoz6SCNcZQdjruMiB49gzM7L3JvfiWawN2Wr1SnpRSXSyphjCgEdf8cmvs6d9bXaMFi47XEWuhRcQjiYusxzbj");
+    "eX4rXhV94QMsMftenDiiJQCKckHvpvoLA8MoRtFXhmeMaLRb7ggM1UjG49BLviKHU1mjnTjQgJTLLc2dQQuiY1J");
 
 const rpc = new JsonRpc();
 
 class Abi {
 
-    coral = "CORALA"
+    coral = "CORAL"
 
     constructor() {
         let self = this;
@@ -123,9 +123,19 @@ class Abi {
             // console.log(item,"itemss");
             let balances = new Map();
             if (item.Balance) {
-                item.Balance.forEach((value, key) => {
-                    balances.set(key, value);
-                })
+                const balance = item.Balance
+                if(balance && !(balance instanceof Map)){
+                    const keys = Object.keys(balance);
+                    const tmp = new Map();
+                    for(let key of keys){
+                        tmp.set(key,balance[key])
+                    }
+                    balances = tmp;
+                }else{
+                    item.Balance.forEach((value, key) => {
+                        balances.set(key, value);
+                    })
+                }
             }
             callback({pk: item.PK, mainPKr: item.MainPKr, name: item.Name, balances: balances})
         });
@@ -137,9 +147,19 @@ class Abi {
             data.forEach(function (item, index) {
                 let balances = new Map();
                 if (item.Balance) {
-                    item.Balance.forEach((value, key) => {
-                        balances.set(key, value);
-                    })
+                    const balance = item.Balance
+                    if(balance && !(balance instanceof Map)){
+                        const keys = Object.keys(balance);
+                        const tmp = new Map();
+                        for(let key of keys){
+                            tmp.set(key,balance[key])
+                        }
+                        balances = tmp;
+                    }else{
+                        item.Balance.forEach((value, key) => {
+                            balances.set(key, value);
+                        })
+                    }
                 }
                 accounts.push({
                     pk: item.PK,
@@ -380,8 +400,16 @@ class Abi {
 
     }
 
-    cancelInvest(pk, mainPKr, callback) {
-        this.executeMethod(contract, 'cancelInvest', pk, mainPKr, [], "SERO", 0, callback);
+    async cancelInvest(pk, mainPKr) {
+        return new Promise((resolve,reject)=>{
+            this.executeMethod(contract, 'cancelInvest', pk, mainPKr, [], "SERO", 0, function (rest,err) {
+                if(err){
+                    reject(err)
+                }else{
+                    resolve(rest)
+                }
+            });
+        })
     }
 
     async investLiquidity(pk, mainPKr, currency, value) {

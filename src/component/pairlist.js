@@ -322,20 +322,20 @@ export class PairList extends Component {
     revert = ()=>{
         const that = this;
         const {account} = this.state;
-        abi.cancelInvest(account.pk,account.mainPKr,function (rest) {
+        abi.cancelInvest(account.pk,account.mainPKr).then(rest=>{
             Toast.loading(i18n.t("pending"),60)
             that.setShowInitModal(false).catch()
             that.setShowInvestModal(false).catch()
             that.startGetTxReceipt(rest,()=>{
                 Toast.success(i18n.t("success"))
             });
+        }).catch(e=>{
+            Toast.fail(e)
         })
     }
 
     render() {
         let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
-
-        console.log("investAmount>>>",investAmount);
         let tokensB = [];
         let tokensA = [];
 
