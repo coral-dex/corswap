@@ -35,5 +35,6 @@
   "tx1": "Transaction 1",
   "tx2": "Transaction 2",
   "maxShares": "Max Shares",
-  "insufficientBalance": "Insufficient Balance"
+  "insufficientBalance": "Insufficient Balance",
+  "risk": "The currency may be counterfeit risk"
 }

@@ -7,6 +7,9 @@ import Layout from "./layout";
 import SelectToken from './selectToken'
 import i18n from '../i18n'
 const Step = Steps.Step;
+
+const risklist = ["USDT"];
+
 export class PairList extends Component {
     constructor(props) {
         super(props);
@@ -428,7 +431,7 @@ export class PairList extends Component {
                                                 </div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB}</div>
+                                                <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB} {(risklist.indexOf(pair.tokenA)>-1||risklist.indexOf(pair.tokenB)>-1) && <div style={{fontSize:"10px",color:"red"}}>{i18n.t("risk")}</div>}</div>
                                                 <div>
                                                     {
                                                         pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}

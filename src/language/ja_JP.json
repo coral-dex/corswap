@@ -35,5 +35,6 @@
     "tx1": "取引1",
     "tx2": "交易二",
     "maxShares": "最大シェア",
-    "insufficientBalance": "残高不足"
+    "insufficientBalance": "残高不足",
+    "risk": "通貨は偽造リスクである可能性があります"
 }
