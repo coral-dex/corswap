@@ -571,3 +571,11 @@ body {
     max-height: 300px;
     overflow-y: scroll;
 }
+
+.max{
+    background: #00456e;
+    border: 1px solid;
+    padding: 2px 5px;
+    border-radius: 15px;
+    color: #fff;
+}

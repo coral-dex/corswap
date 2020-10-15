@@ -24,6 +24,7 @@ export class PairList extends Component {
             showType: props.showType,
             pictures:['./images/coral_sero.png','./images/coral_susd.png','./images/coral_aces.png'],
             inputValue:"",
+            inputValue2:"",
 
             investAmount:["",0],
 
@@ -316,9 +317,36 @@ export class PairList extends Component {
     }
 
     setInputValue = (v)=>{
-        this.setState({
-            inputValue:v
-        })
+        if(!v){
+            this.setState({
+                inputValue:v,
+                inputValue2:v,
+            })
+            return
+        }
+        const {selectPair} = this.state;
+        if(selectPair){
+            this.setState({
+                inputValue:v,
+                inputValue2:new BigNumber(selectPair.reserveA).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1),
+            })
+        }else {
+            this.setState({
+                inputValue:v,
+            })
+        }
+
+    }
+
+    setInputValue2 = (v)=>{
+        const {selectPair} = this.state;
+        if(selectPair){
+            this.setState({
+                inputValue: new BigNumber(selectPair.reserveB).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveA)).toFixed(3,1),
+                inputValue2:v
+            })
+        }
+
     }
 
     revert = ()=>{
@@ -337,7 +365,7 @@ export class PairList extends Component {
     }
 
     render() {
-        let {account,pictures,showDivestModal,showInvestModal,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
+        let {account,pictures,showDivestModal,showInvestModal,inputValue2,showInitModal,investAmount,showSelectTokenA,pairs,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
         let tokensB = [];
         let tokensA = [];
 
@@ -362,7 +390,7 @@ export class PairList extends Component {
             investShares = 1000;
         }else{
             if(!investAmount[0]){
-                investTokenValue = selectPair && inputValue &&selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(inputValue).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
+                // investTokenValue = selectPair && inputValue &&selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(inputValue).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
                 investShares = selectPair && inputValue && selectPair.reserveB&&selectPair.reserveB*1>0 ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
                 console.log("investShares>>>",investShares,selectPair && inputValue && selectPair.reserveB&&selectPair.reserveB*1>0,selectPair);
             }else{
@@ -479,6 +507,7 @@ export class PairList extends Component {
                             {
                                 text: i18n.t("cancel"),
                                 onPress:()=>{
+                                    this.setInputValue("")
                                     this.setShowInitModal(false).catch()
                                 }
                             },
@@ -572,6 +601,10 @@ export class PairList extends Component {
                                {
                                    text:i18n.t("ok"),
                                    onPress:()=>{
+                                       if(investShares*1 == 0 && selectPair.totalShares *1>0){
+                                           Toast.fail("最少提供1份",2)
+                                           return
+                                       }
                                        this.invest(investTokenValue).catch()
                                    }
                                }
@@ -602,7 +635,7 @@ export class PairList extends Component {
                                                 </Flex.Item>
                                                 <Flex.Item style={{flex: 2}}>
                                                     {
-                                                        investAmount[0]?showValue(investAmount[1],abi.getDecimalLocal(investAmount[0]),3): <input style={{width: '95%', height: '25px'}} onChange={(e) => {
+                                                        investAmount[0]?showValue(investAmount[1],abi.getDecimalLocal(investAmount[0]),3): <input style={{width: '95%', height: '25px'}} value={inputValue} onChange={(e) => {
                                                             this.setInputValue(e.target.value)
                                                         }}/>
                                                     }
@@ -620,9 +653,9 @@ export class PairList extends Component {
                                                     {selectPair&&selectPair.tokenA}
                                                 </Flex.Item>
                                                 <Flex.Item style={{flex: 2}}>
-                                                    <input style={{width: '95%', height: '25px'}} disabled={!investAmount[0]} onChange={(e) => {
-                                                        this.setInputValue(e.target.value)
-                                                    }} placeholder={investTokenValue}/>
+                                                    <input style={{width: '95%', height: '25px'}} onChange={(e) => {
+                                                        this.setInputValue2(e.target.value)
+                                                    }} value={inputValue2} placeholder={investTokenValue}/>
                                                 </Flex.Item>
                                             </Flex>
                                         </div>
@@ -643,8 +676,8 @@ export class PairList extends Component {
                                {
                                    text:i18n.t("cancel"),
                                    onPress:()=>{
-                                       this.setShowDivestModal(false)
-                                    //    this.setInputValue("")
+                                       this.setShowDivestModal(false).catch()
+                                       this.setInputValue("")
                                    }
                                },
                                {
