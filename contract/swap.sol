@@ -191,17 +191,6 @@ contract SwapExchange is SeroInterface, Ownable {
         return (wholeVolume.volumeOfDay(index), volumes[key].volumeOfDay(index));
     }
 
-    function volumesOfPair(string memory tokenA, string memory tokenB) public view returns (Volume[] memory, Volume[] memory) {
-        bytes32 key = hashKey(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
-        return (wholeVolume.listVolume(), volumes[key].listVolume());
-    }
-
-    function liquidityOfPair(string memory tokenA, string memory tokenB) public view returns (Liquidity[] memory, Liquidity[] memory) {
-        bytes32 key = hashKey(strings._stringToBytes32(tokenA), strings._stringToBytes32(tokenB));
-        return pairs[key].liquidityList(msg.sender);
-    }
-
-
     function caleReward(bytes32 key, uint256 dayIndex, uint256 selfLiquidity, uint256 totalLiquidity) private view returns (uint256) {
         if (selfLiquidity == 0 || totalLiquidity == 0) {
             return 0;
@@ -297,8 +286,7 @@ contract SwapExchange is SeroInterface, Ownable {
         if (index < startDay) {
             return 0;
         }
-        return 1e22;
-        // return Output.calc(index - startDay);
+        return Output.calc(index - startDay);
     }
 
     function investAmount() public view returns (bytes32 token, uint256 value){
@@ -423,7 +411,6 @@ contract SwapExchange is SeroInterface, Ownable {
                 amountIn = invariant.div(pair.reserveB.sub(amountOut)).sub(pair.reserveA);
             }
             amountIn = amountIn.mul(10000).div(10000 - feeRate);
-            // return (amountOut, 0);
         } else {
             if (pair.baseToken == tokenOut) {
                 amountOut = amountOut.mul(10000).div(10000 - feeRate);
@@ -525,12 +512,6 @@ contract SwapExchange is SeroInterface, Ownable {
     }
 
 }
-
-
-
-
-
-
 
 
 
