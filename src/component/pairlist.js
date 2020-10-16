@@ -131,14 +131,17 @@ export class PairList extends Component {
 
     async invest(investTokenValue) {
 
-        let {account,inputValue,selectPair} = this.state;
+        let {account,inputValue,inputValue2,selectPair} = this.state;
         const investAmount = await abi.investAmount(account.mainPKr);
+        if(!inputValue && inputValue2){
+            inputValue = inputValue2;
+        }
         if(!inputValue ){
             if(investTokenValue){
                 inputValue = investTokenValue;
             }
             if(!inputValue){
-                Toast.fail(i18n.t("inputAmount"),1.5)
+                Toast.fail(i18n.t("input"),1.5)
                 return
             }
         }
@@ -175,7 +178,7 @@ export class PairList extends Component {
         let self = this;
         const {selectPair,account,inputValue} = this.state;
         if(!inputValue){
-            Toast.info(i18n.t("inputShares"),1.5)
+            Toast.info(i18n.t("input"),1.5)
             return
         }
         abi.divestLiquidity(account.pk, account.mainPKr, selectPair.tokenA, selectPair.tokenB, inputValue).then(rest=>{
@@ -184,6 +187,7 @@ export class PairList extends Component {
                 self.setState({
                     // selectPair:{},
                     inputValue:"",
+                    inputValue2:"",
                     showDivestModal:false
                 })
             });
@@ -328,7 +332,7 @@ export class PairList extends Component {
         if(selectPair){
             this.setState({
                 inputValue:v,
-                inputValue2:new BigNumber(selectPair.reserveA).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1),
+                inputValue2:selectPair.reserveA*1>0 && selectPair.reserveB*1>0 ?new BigNumber(selectPair.reserveA).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):"",
             })
         }else {
             this.setState({
@@ -339,10 +343,10 @@ export class PairList extends Component {
     }
 
     setInputValue2 = (v)=>{
-        const {selectPair} = this.state;
+        const {selectPair,investAmount} = this.state;
         if(selectPair){
             this.setState({
-                inputValue: new BigNumber(selectPair.reserveB).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveA)).toFixed(3,1),
+                inputValue: selectPair.reserveA*1>0 && selectPair.reserveB*1>0 ? investAmount[0]?"":new BigNumber(selectPair.reserveB).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveA)).toFixed(3,1):"",
                 inputValue2:v
             })
         }
@@ -655,7 +659,7 @@ export class PairList extends Component {
                                                 <Flex.Item style={{flex: 2}}>
                                                     <input style={{width: '95%', height: '25px'}} onChange={(e) => {
                                                         this.setInputValue2(e.target.value)
-                                                    }} value={inputValue2} placeholder={investTokenValue}/>
+                                                    }} value={inputValue2} placeholder={investTokenValue}  disabled={!investAmount[0] && selectPair && selectPair.reserveA *1 ==0} />
                                                 </Flex.Item>
                                             </Flex>
                                         </div>
