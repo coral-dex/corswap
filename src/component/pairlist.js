@@ -462,10 +462,9 @@ export class PairList extends Component {
                                                 </div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenA}-{pair.tokenB} {(risklist.indexOf(pair.tokenA)>-1||risklist.indexOf(pair.tokenB)>-1) && <div style={{fontSize:"10px",color:"red"}}>{i18n.t("risk")}</div>}</div>
+                                                <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenB}-{pair.tokenA} {(risklist.indexOf(pair.tokenA)>-1||risklist.indexOf(pair.tokenB)>-1) && <div style={{fontSize:"10px",color:"red"}}>{i18n.t("risk")}</div>}</div>
                                                 <div>
-                                                    {
-                                                        pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA))}{pair.tokenA} = {showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))}{pair.tokenB}
+                                                    {pair && showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))} {pair.tokenB} = {pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA))}{pair.tokenA}
                                                 </div>
                                                 <WhiteSpace/>
                                                 <div>
@@ -606,7 +605,7 @@ export class PairList extends Component {
                                    text:i18n.t("ok"),
                                    onPress:()=>{
                                        if(investShares*1 == 0 && selectPair.totalShares *1>0){
-                                           Toast.fail("最少提供1份",2)
+                                           Toast.fail(i18n.t("leastOne"),2)
                                            return
                                        }
                                        this.invest(investTokenValue).catch()

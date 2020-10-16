@@ -283,7 +283,7 @@ class Swap extends React.Component{
     setMaxFromValue = ()=>{
         const {account,tokenFrom} = this.state;
         if(account && account.balances && account.balances.has(tokenFrom)){
-            this.setTokenFromValue(fromValue(account.balances.get(tokenFrom),abi.getDecimalLocal(tokenFrom)).toFixed(3,1))
+            this.setTokenFromValue(fromValue(account.balances.get(tokenFrom),abi.getDecimalLocal(tokenFrom)).toString(10))
         }
     }
 

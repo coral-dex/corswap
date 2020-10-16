@@ -36,5 +36,6 @@
   "tx2": "Transaction 2",
   "maxShares": "Max Shares",
   "insufficientBalance": "Insufficient Balance",
-  "risk": "The token may be counterfeit risk"
+  "risk": "The token may be counterfeit risk",
+  "leastOne": "Provide at least 1"
 }

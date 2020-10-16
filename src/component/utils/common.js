@@ -92,4 +92,11 @@ export function toValue(value,decimal) {
     return new BigNumber(value).multipliedBy(10**decimal)
 }
 
-export const risklist = ["USDT"];
+export const risklist = ["USDT","USDS"];
+
+export const sortToken = {
+    "SERO-SUSD":104,
+    "SEED-SERO":103,
+    "PFID-SUSD":102,
+    "CORAL-SUSD":101
+}
