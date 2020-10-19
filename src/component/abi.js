@@ -328,7 +328,7 @@ class Abi {
             orders: pair.orderList,
             selfOrders: pair.myOrderList,
             mining : pair.mining,
-            displayOrder: sortToken[bytes32ToToken(pair.tokenA)+"-"+bytes32ToToken(pair.tokenB)] ? sortToken[bytes32ToToken(pair.tokenA)+"-"+bytes32ToToken(pair.tokenB)]:0
+            displayOrder: pair.mining?10:(sortToken[bytes32ToToken(pair.tokenA)+"-"+bytes32ToToken(pair.tokenB)] ? sortToken[bytes32ToToken(pair.tokenA)+"-"+bytes32ToToken(pair.tokenB)]:0)
         }
     }
 
