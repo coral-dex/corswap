@@ -98,5 +98,6 @@ export const sortToken = {
     "SERO-SUSD":104,
     "SEED-SERO":103,
     "PFID-SUSD":102,
-    "CORAL-SUSD":101
+    "CORAL-SUSD":101,
+    "SEED-CORAL":100
 }
