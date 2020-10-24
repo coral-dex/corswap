@@ -37,5 +37,7 @@
     "maxShares": "最大シェア",
     "insufficientBalance": "残高不足",
     "risk": "通貨は偽造リスクである可能性があります",
-    "leastOne": "少なくとも1つ提供する"
+    "leastOne": "少なくとも1つ提供する",
+    "tab1": "ボード",
+    "tab2": "革新"
 }
