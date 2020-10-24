@@ -37,5 +37,7 @@
     "maxShares": "최대 할당액",
     "insufficientBalance": "잔액이 부족하다",
     "risk": "통화는 위조 위험이 있습니다.",
-    "leastOne": "1 개 이상 제공"
+    "leastOne": "1 개 이상 제공",
+    "tab1": "메인보드",
+    "tab2": "창의성"
 }

@@ -37,5 +37,8 @@
     "maxShares": "最大份额",
     "insufficientBalance": "余额不足",
     "risk": "该币种可能存在山寨假冒风险",
-    "leastOne": "最少提供1份"
+    "leastOne": "最少提供1份",
+
+    "tab1": "主板",
+    "tab2": "创新板"
 }

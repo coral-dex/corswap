@@ -187,12 +187,12 @@ body {
 
 }
 
-.am-tabs-tab-bar-wrap {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-}
+/*.am-tabs-tab-bar-wrap {*/
+/*    position: fixed;*/
+/*    bottom: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*}*/
 .color {color: #00456e;}
 .color2 {color: #f75552;}
 /*  */
@@ -502,7 +502,9 @@ body {
     position: fixed !important;
     bottom: 0;
     left: 0;
+    width: 100%;
     overflow: unset !important;
+    height: auto !important;
 }
 
 .am-flexbox-align-center {padding-right: 0;}

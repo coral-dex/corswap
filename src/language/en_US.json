@@ -37,5 +37,7 @@
   "maxShares": "Max Shares",
   "insufficientBalance": "Insufficient Balance",
   "risk": "The token may be counterfeit risk",
-  "leastOne": "Provide at least 1"
+  "leastOne": "Provide at least 1",
+  "tab1": "Main",
+  "tab2": "Innovation"
 }
