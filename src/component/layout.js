@@ -104,7 +104,7 @@ class Layout extends React.Component{
 
     render() {
         return (
-            <div style={{maxHeight:document.documentElement.clientHeight,paddingTop:"80px",overflowY:"scroll"}}>
+            <div style={{maxHeight:document.documentElement.clientHeight,overflowY:"scroll"}}>
                 <Flex className="flex showtais">
                     <Flex.Item style={{flex:1}}>
                         <div>
