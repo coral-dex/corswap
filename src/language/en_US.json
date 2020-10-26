@@ -39,5 +39,6 @@
   "risk": "The token may be counterfeit risk",
   "leastOne": "Provide at least 1",
   "tab1": "Main",
-  "tab2": "Innovation"
+  "tab2": "Innovation",
+  "currentRatio": "Current Ratio of Volume"
 }

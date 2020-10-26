@@ -41,6 +41,8 @@ export class PairList extends Component {
 
             selectPair:{},
 
+            volumeOfDay:{}
+
         }
     }
 
@@ -91,10 +93,23 @@ export class PairList extends Component {
                     }
                 }
                 self.setState({pairsTabA: tA,pairsTabB: tB,pairsOriginTabA:tA,pairsOriginTabB:tB,investAmount:data});
+
+                self.getVolumeOfDay(tA).catch();
             })
         });
     }
 
+
+    async getVolumeOfDay(tA){
+        const {account} = this.state;
+        const volumeOfDay = {};
+        for(let pair of tA){
+            volumeOfDay[pair.tokenA+"_"+pair.tokenB] = await abi.volumeOfDay(account.mainPKr,pair.tokenA,pair.tokenB)
+        }
+        this.setState({
+            volumeOfDay:volumeOfDay
+        })
+    }
 
 
     startGetTxReceipt = (hash,cb) =>{
@@ -399,7 +414,7 @@ export class PairList extends Component {
     }
 
     render() {
-        let {account,pictures,showDivestModal,showInvestModal,inputValue2,showInitModal,investAmount,showSelectTokenA,pairsTabA,pairsTabB,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair} = this.state;
+        let {account,pictures,showDivestModal,showInvestModal,inputValue2,showInitModal,investAmount,showSelectTokenA,pairsTabA,pairsTabB,showSelectTokenB,selectTokenA,selectTokenB,inputValue,selectPair,volumeOfDay} = this.state;
         let tokensB = [];
         let tokensA = [];
 
@@ -512,16 +527,16 @@ export class PairList extends Component {
                                                         <div className="text-center">
                                                             <div className="font-weight" style={{margin:"10px 0",fontSize:"20px"}}>{pair.tokenB}-{pair.tokenA} {(risklist.indexOf(pair.tokenA)>-1||risklist.indexOf(pair.tokenB)>-1) && <div style={{fontSize:"10px",color:"red"}}>{i18n.t("risk")}</div>}</div>
                                                             <div>
-                                                                {pair && showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))} {pair.tokenB} = {pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA))}{pair.tokenA}
+                                                                {pair && showValue(pair.reserveB, abi.getDecimalLocal(pair.tokenB))} {pair.tokenB} = {pair && showValue(pair.reserveA, abi.getDecimalLocal(pair.tokenA))} {pair.tokenA}
                                                             </div>
                                                             <WhiteSpace/>
                                                             <div>
-                                                                {i18n.t("totalShares").replace("$1",pair.totalShares)}
+                                                                {i18n.t("totalShares").replace("$1",pair.totalShares)}, {i18n.t("currentRatio")}: {volumeOfDay[pair.tokenA+"_"+pair.tokenB]}
                                                             </div>
 
                                                             { (pair.mining||pair.shareRreward*1>0)  && <div>
                                                                 <WhiteSpace/>
-                                                                {i18n.t("withdrawAble")}{showValue(pair.shareRreward,18,3)}CORAL
+                                                                {i18n.t("withdrawAble")} {showValue(pair.shareRreward,18,3)} CORAL
                                                             </div>
                                                             }
                                                             <WhiteSpace/>
