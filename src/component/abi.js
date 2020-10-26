@@ -251,6 +251,19 @@ class Abi {
         })
     }
 
+    async volumeOfDay(from,tokenA,tokenB){
+        const that = this;
+        const date = Math.floor(new Date().getTime()/1000);
+        return new Promise((resolve,reject)=>{
+            that.callMethod(contract, 'volumeDayOfPair', from, [tokenA,tokenB,date], function (ret){
+                if(ret && ret != "0x"){
+                    resolve((ret[1]*100/ret[0]).toFixed(2)+"%")
+                }else{
+                    reject()
+                }
+            })
+        })
+    }
     
     // getGroupTokens(from, tokens, callback) {
     //     let tokenBytes = [];
