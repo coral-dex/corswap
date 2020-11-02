@@ -262,6 +262,29 @@ class Layout extends React.Component{
                         }}
                     >
                     </TabBar.Item>
+                    <TabBar.Item
+                        icon={
+                            <div style={{
+                                width: '22px',
+                                height: '22px',
+                                background: 'url(./images/govern.png) center center /  22px 22px no-repeat' }}
+                            />
+                        }
+                        selectedIcon={
+                            <div style={{
+                                width: '22px',
+                                height: '22px',
+                                background: 'url(./images/governsel.png) center center /  22px 22px no-repeat' }}
+                            />
+                        }
+                        title="治理"
+                        key="my"
+                        selected={this.props.selectedTab === '5'}
+                        onPress={() => {
+                            this.goPage("#/vothing")
+                        }}
+                    >
+                    </TabBar.Item>
                 </TabBar>
             </div>
         );
