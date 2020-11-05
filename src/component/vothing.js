@@ -3,14 +3,13 @@ import Layout from './layout';
 import abi from './abi'
 import i18n from "../i18n";
 import { fromValue } from "./utils/common";
-import { Button, TextareaItem, SegmentedControl, Modal, Toast, WhiteSpace, WingBlank  } from "antd-mobile";
-import { Statistic,Select,message} from 'antd'
+import { Button, TextareaItem, SegmentedControl, Modal, Toast, WhiteSpace, WingBlank } from "antd-mobile";
+import { Statistic, Select, message } from 'antd'
 import BigNumber from 'bignumber.js';
 import '../style/style.css'
 import '../style/vote.css'
 const { Countdown } = Statistic;
 const { Option } = Select;
-
 const selectTypeLabel = ['下拉菜单', '为其他交易对提供流动性', '提供流动性提出CORAL', '设置提案信息']
 
 class vothing extends Component {
@@ -47,7 +46,9 @@ class vothing extends Component {
             votBoolean: true,
             time: 300,
             cycletime: 300,
-            loadingmore: false
+            loadingmore: false,
+            creatTypeText: "选择提案类型",
+            creatTypeTextVisible: false,
         };
     }
     componentDidMount() {
@@ -65,7 +66,6 @@ class vothing extends Component {
             this.tabChoose(this.state.selectedIndex)
         });
     }
-
     tabChoose(v) {
         let that = this;
         if (v === 0) {
@@ -82,9 +82,21 @@ class vothing extends Component {
             })
         }
     }
+    opentypebox() {
+        const that = this;
+        that.setState({
+            creatTypeTextVisible: true
+        })
+    }
+    closecreatTypeModal(){
+        const that = this;
+        that.setState({
+            creatTypeTextVisible:false
+        })
 
+    }
     async getAllQuery() {
-        let that = this;
+        const that = this;
         await abi.queryAll(that.state.account.mainPKr, that.state.startPageNum, that.state.endPageNum, function (res) {
             let loadingbool = false;
             if (res[0].length === 10) {
@@ -99,7 +111,6 @@ class vothing extends Component {
     }
 
     async myCreate() {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>myCreate")
         let that = this;
         await abi.myCreate(that.state.account.mainPKr, function (res) {
             that.getdateList(res[0])
@@ -107,7 +118,6 @@ class vothing extends Component {
     }
 
     async myVote() {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>myVote")
         let that = this;
         await abi.myVote(that.state.account.mainPKr, function (res) {
             that.getdateList(res[0])
@@ -133,8 +143,9 @@ class vothing extends Component {
                 pledgeCoralAmount: 0,
                 votIndex: 0,
                 isMy: true,
-                moreThan: 0
-
+                moreThan: 0,
+                pledgeCoralPeriod: 0,
+                period: 0
             }
             obj.title = item[0][0];
             obj.titleText = selectTypeLabel[obj.title];
@@ -145,6 +156,8 @@ class vothing extends Component {
             obj.voteState = item[2][1];
             obj.vaild = item[1][6];
             obj.moreThan = item[1][4];
+            obj.period = item[1][6];
+            obj.pledgeCoralPeriod = item[1][3];
             obj.isMy = item.isMy;
             obj.voteAmount = fromValue(Number(item[2][0]), 18).c[0];
             obj.address = item.slice(item.length - 1, item.length)[0];
@@ -153,7 +166,6 @@ class vothing extends Component {
             obj.votIndex = item.infoIdex
             arrList.push(obj);
         });
-        console.log(arrList);
         that.setState({
             dataList: arrList
         })
@@ -181,6 +193,7 @@ class vothing extends Component {
                     pledgeAmount: 0,
                     pledgeCoralAmount: 0,
                     index: 0,
+
                 }
                 selectobj.value = j;
                 selectobj.cy = selectlist[j][0];
@@ -220,7 +233,6 @@ class vothing extends Component {
     }
     withdrawVote(e, index) {
         const that = this;
-        console.log(index)
         abi.withdrawVote(that.state.account.pk, that.state.account.mainPKr, index, function (hash) {
             if (hash) {
                 Toast.loading(i18n.t("pending"), 60)
@@ -237,7 +249,6 @@ class vothing extends Component {
 
     withdrawPledgeAmount(e, index) {
         const that = this;
-        console.log(index)
         abi.withdrawPledgeAmount(that.state.account.pk, that.state.account.mainPKr, index, function (hash) {
             if (hash) {
                 Toast.loading(i18n.t("pending"), 60)
@@ -289,7 +300,6 @@ class vothing extends Component {
             }
         })
     }
-
     chooseBtn() {
         const that = this;
         that.setState({
@@ -304,8 +314,6 @@ class vothing extends Component {
             storageAmount: e.target.value
         })
     }
-
-
     loadingmore() {
         const that = this;
         that.setState({
@@ -314,10 +322,8 @@ class vothing extends Component {
         })
         that.getAllQuery();
     }
-
     async init(pkey) {
         const that = this;
-        console.log(pkey, "<<<<<<pkey")
         return new Promise((resolve, reject) => {
             abi.init.then(() => {
                 let pk = localStorage.getItem("accountPK")
@@ -340,22 +346,17 @@ class vothing extends Component {
                     }
                     resolve();
                 });
-
             });
-
         })
     }
 
     creatType(e) {
         const that = this;
-        console.log(e)
-        let arr = that.state.selectTypes
-        let obj = arr.find(function (item) {
-            return item.value = e;
-        })
-
+        let arr = that.state.selectTypes;
+        let obj = arr[e.target.dataset.index]
         that.setState({
-            selectIndex: e,
+            creatTypeText:e.target.dataset.label,
+            creatTypeTextVisible:false,
             proposalDescription: obj,
             proposalDescriptionIndex: obj.index,
             spend: new BigNumber(obj.pledgeAmount).plus(obj.pledgeCoralAmount).toNumber()
@@ -365,7 +366,7 @@ class vothing extends Component {
     createProposal() {
         const that = this;
         let { account } = that.state;
-        if(that.state.proposalDescriptionIndex!==-1){
+        if (that.state.proposalDescriptionIndex !== -1) {
             abi.create(account.pk, account.mainPKr, that.state.proposalDescriptionIndex, that.state.desc, that.state.spend, function (hash) {
                 if (hash) {
                     Toast.loading(i18n.t("pending"), 60)
@@ -375,8 +376,8 @@ class vothing extends Component {
                             that.item();
                             that.setState({
                                 endPageNum: that.state.endPageNum + 1,
-                                selectIndex:-1,
-                                proposalDescriptionIndex:-1
+                                proposalDescriptionIndex: -1,
+                                creatTypeText: "选择提案类型",
                             })
                             that.tabChoose(that.state.selectedIndex)
                         }).catch();
@@ -386,7 +387,7 @@ class vothing extends Component {
                     })
                 }
             });
-        }else{
+        } else {
             message.error('请选择提案类型');
         }
     }
@@ -425,7 +426,6 @@ class vothing extends Component {
         }
     }
     render() {
-        console.log(this.state, "state>>>>>");
         return (
             <Layout selectedTab="5" doUpdate={() => this.doUpdate()}>
                 <div className="vote">
@@ -435,6 +435,26 @@ class vothing extends Component {
                             <img src={require('../images/create.png')} alt="" />
                             <span onClick={() => this.showCreatModal()}> 发起提案</span>
                         </Button>
+
+                        <Modal
+                            className="typebox"
+                            visible={this.state.creatTypeTextVisible}
+                            transparent
+                            maskClosable={false}
+                            closable={true}
+                            title="选择提案类型"
+                            onClose={() => this.closecreatTypeModal()}
+                        >
+                                    {
+                                        this.state.selectTypes.map((item)=>{
+                                            return(
+                                            <div className="itemtypebox" data-label={item.label} data-index={item.value} onClick={(e)=>this.creatType(e)}>{item.label}</div>
+                                            )
+                                        })
+                                    }
+                        </Modal>
+
+
                         <Modal
                             className="creatbox"
                             visible={this.state.creatProposalsVisible}
@@ -447,11 +467,14 @@ class vothing extends Component {
                         >
                             <div className="creatbox-content">
                                 <div className="selectbox">
-                                    <Select placeholder="选择提案类型" onChange={(e) => this.creatType(e)}>
-                                        {this.state.selectTypes.map((item, index) => {
-                                            return (<Option value={item.value}>{item.label}</Option>)
-                                        })}
-                                    </Select>
+                                    <div className="creatTypebox">
+                                        <div className="left">
+                                            {this.state.creatTypeText}
+                                        </div>
+                                        <div className="right" onClick={() => this.opentypebox()}>
+                                            <img src={require('../images/bottom.png')} alt="" />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="descbox">
                                     <TextareaItem
@@ -485,8 +508,8 @@ class vothing extends Component {
                         {
                             this.state.dataList.map((item, index) => {
                                 let nowTime = new Date().getTime();
-                                let endTime = item.startime * 1000 + this.state.time * 1000;
-                                let endcycleTime = item.startime * 1000 + this.state.cycletime * 1000;
+                                let endTime = item.startime * 1000 + item.period * 1000;
+                                let endcycleTime = item.startime * 1000 + item.pledgeCoralPeriod * 1000;
                                 let votIndex = item.votIndex;
                                 return (<div className="listbox">
                                     <div className="box">

@@ -218,8 +218,9 @@
                             color: #ffffff;
                             padding: 2px 20px;
                         }
+
                         .btnno {
-                            background-color:gray;
+                            background-color: gray;
                             border-radius: 10px;
                             font-size: 14px;
                             height: 20px;
@@ -230,14 +231,14 @@
                     }
                 }
 
-                .mybox{
-                    div{
+                .mybox {
+                    div {
                         padding-bottom: 5px;
                         display: flex;
-    
+
                         .left {
                             flex: 2;
-    
+
                             p {
                                 font-size: 12px;
                                 color: #00456e;
@@ -245,10 +246,10 @@
                                 margin: 0;
                             }
                         }
-    
+
                         .right {
                             flex: 1;
-    
+
                             .btnyes {
                                 background-color: #00456e;
                                 border-radius: 10px;
@@ -258,8 +259,9 @@
                                 color: #ffffff;
                                 padding: 2px 20px;
                             }
+
                             .btnno {
-                                background-color:gray;
+                                background-color: gray;
                                 border-radius: 10px;
                                 font-size: 14px;
                                 height: 20px;
@@ -267,7 +269,7 @@
                                 color: #ffffff;
                                 padding: 2px 20px;
                             }
-                        }  
+                        }
                     }
                 }
 
@@ -275,10 +277,8 @@
 
         }
 
-        .loadingmore{
-            button{
-
-            }
+        .loadingmore {
+            button {}
         }
     }
 }
@@ -295,10 +295,31 @@
 
     .creatbox-content {
         .selectbox {
+            .creatTypebox {
+                height: 30px;
+                border: 1px solid #888;
+                display: flex;
+
+                .left {
+                    flex: 5 1 0px;
+                }
+
+                .right {
+                    flex: 1;
+                    text-align: center;
+
+                    img {
+                        height: 20px;
+                    }
+                }
+            }
+
             padding-bottom: 10px;
-            .ant-select{
+
+            .ant-select {
                 width: 100%;
             }
+
             select {
                 width: 100%;
 
@@ -416,4 +437,28 @@
             margin: 0px;
         }
     }
+}
+
+.typebox{
+    width: 100% !important;
+    position: absolute;
+    bottom: 0px !important;
+    border-radius: 0px !important;
+    .am-modal-transparent .am-modal-content{
+        border-radius: 0px !important;
+        padding-top: 0px !important;
+
+    }
+    .am-modal-content{
+        width: 100%;
+        border-radius: 0px !important;
+        padding-top: 0px !important;
+    }
+    .am-modal-transparent .am-modal-content{
+        border-radius: 0px !important;
+    }
+    .itemtypebox{
+        padding: 5px 0;
+    }
+    
 }
