@@ -25,13 +25,33 @@ class Abi {
                 this.getPopupInfo();
             }
         )
+	}
+
+	items(mainPkr,callback){
+        this.callMethod(Proaddress,"items",mainPkr,[],function(all){
+            callback(all)
+        })
     }
-    create(pk,mainPkr,index,desc,callback){
-		this.executeMethod(Proaddress,"create",pk,mainPkr,[index,desc],this.coral,toValue(10,18),function(ret){
-			console.log(ret,"<<<<")
+	
+
+    create(pk,mainPkr,index,desc,spend,callback){
+		this.executeMethod(Proaddress,"create",pk,mainPkr,[index,desc],this.coral,spend,function(ret){
 			callback(ret)
 		})
 	}
+
+
+	chooseProposal(pk,mainPkr,index,bool,amount,callback){
+        this.executeMethod(Proaddress,"vot",pk,mainPkr,[index,bool],this.coral,toValue(amount,18),function(ret){
+            if(ret){
+                callback(true)
+            }else{
+                callback(false)
+            }
+        })
+	}
+	
+
     confirmVote(pk,mainPkr,index,bool,amount,callback){
         this.executeMethod(Proaddress,"vot",pk,mainPkr,[index,bool],this.coral,toValue(amount,18),function(ret){
             if(ret){
@@ -40,18 +60,26 @@ class Abi {
                 callback(false)
             }
         })
-    }
-    withDrawCoral(pk,mainPkr,index,callback){
+	}
+	withdrawVote(pk,mainPkr,index,callback){
         this.executeMethod(Proaddress,"withdrawVote",pk,mainPkr,[index],this.coral,0,function(ret){
 			callback(ret);
         })
-    }
-    withDrawCreate(pk,mainPkr,index,callback){
+	}
+	
+
+	withdrawPledgeAmount(pk,mainPkr,index,callback){
         this.executeMethod(Proaddress,"withdrawPledgeAmount",pk,mainPkr,[index],this.coral,0,function(ret){
             callback(ret);
         })
 	}
-
+	withdrawPledgeCoralAmount(pk,mainPkr,index,callback){
+        this.executeMethod(Proaddress,"withdrawPledgeCoralAmount",pk,mainPkr,[index],this.coral,0,function(ret){
+            callback(ret);
+        })
+	}
+ 
+	
 	isRepeatVote(pk,mainPKr,index,callback){
 		this.callMethod(Proaddress,"participated",mainPKr,[index],function(repeat){	
 			console.log(repeat,"is repeat vote!")
@@ -59,16 +87,19 @@ class Abi {
 		})
 	}
     myCreate(mainPkr,callback){
+		console.log("myCreate")
         this.callMethod(Proaddress,"queryMyCreate",mainPkr,[],function(cre){
             callback(cre)
         })
     }
     myVote(mainPkr,callback){
+		console.log("queryMyVote")
         this.callMethod(Proaddress,"queryMyVote",mainPkr,[],function(vote){
             callback(vote)
         })
     }
     queryAll(mainPkr,start,end,callback){
+		console.log("queryAll")
         this.callMethod(Proaddress,"query",mainPkr,[start,end],function(all){
             callback(all)
         })
@@ -157,13 +188,11 @@ class Abi {
     }
 
     accountDetails(pk, callback) {
-        // console.log(callback,"callback");
         if (!pk) {
             return;
         }
         let self = this;
         seropp.getAccountDetail(pk, function (item) {
-            // console.log(item,"itemss");
             let balances = new Map();
             if (item.Balance) {
                 const balance = item.Balance
@@ -216,9 +245,7 @@ class Abi {
     }
 
     callMethod(contract, _method, from, _args, callback) {
-        let that = this;
-        let packData = contract.packData(_method, _args, true);
-        // console.log(contract.packData,"contract.packData");
+		let packData = contract.packData(_method, _args, true);
         let callParams = {
             from: from,
             to: contract.address,
@@ -276,7 +303,6 @@ class Abi {
 
 
     estimateSwap(from, tokenA, tokenB, tokenIn, amountIn, callback) {
-        // console.log("estimateSwap>>>> ",tokenA, tokenB, tokenIn);
         let key = hashKey(tokenA, tokenB);
         this.callMethod(contract, 'estimateSwap', from, [key, tokenToBytes(tokenIn), amountIn], function (ret) {
             callback(ret[0]);
@@ -289,38 +315,8 @@ class Abi {
         })
     }
 
-    
-    // getGroupTokens(from, tokens, callback) {
-    //     let tokenBytes = [];
-    //     tokens.forEach(each => {
-    //         tokenBytes.push(tokenToBytes(each));
-    //     });
-    //     // console.log(tokenBytes,"tokenbytes,");
-    //     this.callMethod(contract, 'getGroupTokens', from, [tokenBytes],function (ret) {
-    //         let _tokens = [];
-    //         let _tokensList = new Map();
-    //         // console.log(ret,"ret------------");
-    //         ret[0].forEach((each, index) => {
-    //             // console.log(index,"index+each"); 
-    //             if (each.length > 0) {
-    //                 // console.log(each,"eacheacheach");
-    //                 _tokens.push(tokens[index]);
-    //                 let list = [];
-    //                 each.forEach(item => {
-    //                     list.push(bytes32ToToken(item));
-    //                 })
-    //                 _tokensList.set(tokens[index], list);
-    //                 // console.log(_tokensList,"tokenlist");
-    //             }
-    //         });
-    //         callback(_tokens, _tokensList);
-    //     });
-    // }
+   
     getGroupTokensEx(from, flag, callback) {
-
-        // flag false sero->[a,b,c]
-        // flag true  a ->[sero,susd], b->[sero], c->[susd]
-       
         abi.pairList(from,"").then(pairArray=>{
             let tokens = [];
             let restMap = new Map();
@@ -355,7 +351,6 @@ class Abi {
     }
 
     convertToPair(pair){
-        // console.log(pair,"pair");
         return {
             tokenA: bytes32ToToken(pair.tokenA),
             tokenB: bytes32ToToken(pair.tokenB),
@@ -418,9 +413,7 @@ class Abi {
         let self = this;
         let key = hashKey(tokenA, tokenB);
         this.callMethod(contract, 'pairInfoWithOrders', from, [key], function (ret) {
-            // console.log([key],ret,"key");
             let pair = ret[0];
-            // console.log(pair,"pairinfowithorders");
             self.orderList(from, tokenA, tokenB, function (ret) {
 
             })
@@ -583,7 +576,9 @@ const contract = serojs.callContract(abiJson, "38qaVPVMCNpoKMhubqJPCSK86uMoaGwzU
 
 const poolContract = serojs.callContract([{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"tokenList","type":"bytes32[]"},{"name":"balances","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"amount","type":"uint256"}],"name":"showExchange","outputs":[{"name":"tokenList","type":"bytes32[]"},{"name":"amounts","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"}],"name":"exchange","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"}],
 	"eX4rXhV94QMsMftenDiiJQCKckHvpvoLA8MoRtFXhmeMaLRb7ggM1UjG49BLviKHU1mjnTjQgJTLLc2dQQuiY1J");
-const proposal = [
+
+
+const proposal=[
 	{
 		"constant": false,
 		"inputs": [
@@ -706,6 +701,10 @@ const proposal = [
 					{
 						"name": "isMy",
 						"type": "bool"
+					},
+					{
+						"name": "infoIdex",
+						"type": "uint256"
 					}
 				],
 				"name": "details",
@@ -839,6 +838,10 @@ const proposal = [
 					{
 						"name": "isMy",
 						"type": "bool"
+					},
+					{
+						"name": "infoIdex",
+						"type": "uint256"
 					}
 				],
 				"name": "details",
@@ -1145,6 +1148,10 @@ const proposal = [
 					{
 						"name": "isMy",
 						"type": "bool"
+					},
+					{
+						"name": "infoIdex",
+						"type": "uint256"
 					}
 				],
 				"name": "details",
@@ -1330,6 +1337,10 @@ const proposal = [
 					{
 						"name": "isMy",
 						"type": "bool"
+					},
+					{
+						"name": "infoIdex",
+						"type": "uint256"
 					}
 				],
 				"name": "",
@@ -1373,10 +1384,10 @@ const proposal = [
 		"type": "function"
 	}
 ]
-
 const rpc = new JsonRpc();
-
-const Proaddress = serojs.callContract(proposal,"4VU7KaZBA51Qik7N7Hnfz4ZMiViisp9L2LBTCAWgdRK96vHjLridwhN75TuLKakNdNL8iTWcJCKJbzSwGxW5gvv5")
+ 
+// const Proaddress = serojs.callContract(proposal,"4VU7KaZBA51Qik7N7Hnfz4ZMiViisp9L2LBTCAWgdRK96vHjLridwhN75TuLKakNdNL8iTWcJCKJbzSwGxW5gvv5")
+const Proaddress = serojs.callContract(proposal,"3Rp53THdkEXrSy7HSCjqnXs8o4smcJeWoU2k7oXCZptZ3GeQGdt1Pots1ym88QhBTM27XvTzGb2ikvmhw1gWvadg")
 
 
 const abi = new Abi();

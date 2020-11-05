@@ -1,0 +1,323 @@
+.vote {
+  width: 94%;
+  margin: 0 3%;
+  padding-bottom: 70px;
+}
+.vote .votesend {
+  width: 100%;
+  display: flex;
+  padding: 10px 0px 5px 0px;
+}
+.vote .votesend img {
+  flex: 1;
+  height: 24px;
+}
+.vote .votesend span {
+  flex: 1;
+  font-size: 16px;
+  color: #ffffff;
+  height: 30px;
+  line-height: 30px;
+}
+.vote .votesend .am-button-warning {
+  width: 95%;
+  margin: 0 auto;
+}
+.vote .votesend .am-button {
+  height: 40px;
+  line-height: 36px;
+}
+.vote .votebtn {
+  width: 100%;
+}
+.vote .votebtn .am-segment-item-selected {
+  background-color: #00456e !important;
+}
+.vote .votebtn .am-segment-item {
+  color: #00456e !important;
+  border-color: #00456e !important;
+}
+.vote .votebtn .am-segment-item-selected {
+  color: #ffffff !important;
+}
+.vote .votelist {
+  width: 100%;
+  padding: 10px 0;
+}
+.vote .votelist .listbox {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+.vote .votelist .listbox .box {
+  padding: 6px 10px;
+  display: flex;
+}
+.vote .votelist .listbox .box .left {
+  flex: 17;
+}
+.vote .votelist .listbox .box .left .title {
+  padding-bottom: 4px;
+}
+.vote .votelist .listbox .box .left .title p {
+  color: #00456e;
+  margin: 0px;
+  font-size: 12px;
+}
+.vote .votelist .listbox .box .left .sendCY {
+  padding-bottom: 4px;
+}
+.vote .votelist .listbox .box .left .sendCY p {
+  max-width: 240px;
+  color: gray;
+  margin: 0px;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vote .votelist .listbox .box .left .timebox {
+  display: flex;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed gray;
+  margin-bottom: 4px;
+}
+.vote .votelist .listbox .box .left .timebox .timebox-left {
+  flex: 1 1 0px;
+  display: flex;
+}
+.vote .votelist .listbox .box .left .timebox .timebox-left img {
+  height: 16px;
+}
+.vote .votelist .listbox .box .left .timebox .timebox-left p {
+  margin: 0px;
+  font-size: 12px;
+}
+.vote .votelist .listbox .box .left .timebox .timebox-right {
+  flex: 1;
+}
+.vote .votelist .listbox .box .left .timebox .timebox-right .ant-statistic-content {
+  font-size: 12px !important;
+}
+.vote .votelist .listbox .box .left .timebox .timebox-right .ant-satistitc {
+  line-height: 12px !important;
+}
+.vote .votelist .listbox .box .left .choosebox {
+  display: flex;
+}
+.vote .votelist .listbox .box .left .choosebox .chooseboxleft {
+  flex: 1;
+}
+.vote .votelist .listbox .box .left .choosebox .chooseboxleft p {
+  margin: 0px;
+  font-size: 12px;
+}
+.vote .votelist .listbox .box .left .choosebox .chooseboxright {
+  flex: 1;
+}
+.vote .votelist .listbox .box .left .choosebox .chooseboxright p {
+  margin: 0px;
+  font-size: 12px;
+}
+.vote .votelist .listbox .box .right {
+  flex: 6;
+}
+.vote .votelist .listbox .box .right .participate {
+  background-color: #00456e;
+  font-size: 14px;
+  line-height: 30px;
+  border-radius: 15px;
+  height: 30px;
+  color: #ffffff;
+  top: -50%;
+  left: -50%;
+  transform: translate(0%, 100%);
+}
+.vote .votelist .listbox .box .right .participateafter {
+  background-color: gray;
+  font-size: 14px;
+  line-height: 30px;
+  border-radius: 15px;
+  height: 30px;
+  color: #ffffff;
+  top: -50%;
+  left: -50%;
+  transform: translate(0%, 100%);
+}
+.vote .votelist .listbox .box .right .imgtype img {
+  height: 60px;
+  top: -50%;
+  left: -50%;
+  transform: translate(50%, 35%);
+}
+.vote .votelist .listbox .withdrawbox {
+  padding: 6px 10px;
+}
+.vote .votelist .listbox .withdrawbox .withdrawvot {
+  padding-bottom: 5px;
+  display: flex;
+}
+.vote .votelist .listbox .withdrawbox .withdrawvot .left {
+  flex: 2;
+}
+.vote .votelist .listbox .withdrawbox .withdrawvot .left p {
+  font-size: 12px;
+  color: #00456e;
+  line-height: 20px;
+  margin: 0;
+}
+.vote .votelist .listbox .withdrawbox .withdrawvot .right {
+  flex: 1;
+}
+.vote .votelist .listbox .withdrawbox .withdrawvot .right .btnyes {
+  background-color: #00456e;
+  border-radius: 10px;
+  font-size: 14px;
+  height: 20px;
+  line-height: 14px;
+  color: #ffffff;
+  padding: 2px 20px;
+}
+.vote .votelist .listbox .withdrawbox .withdrawvot .right .btnno {
+  background-color: gray;
+  border-radius: 10px;
+  font-size: 14px;
+  height: 20px;
+  line-height: 14px;
+  color: #ffffff;
+  padding: 2px 20px;
+}
+.vote .votelist .listbox .withdrawbox .mybox div {
+  padding-bottom: 5px;
+  display: flex;
+}
+.vote .votelist .listbox .withdrawbox .mybox div .left {
+  flex: 2;
+}
+.vote .votelist .listbox .withdrawbox .mybox div .left p {
+  font-size: 12px;
+  color: #00456e;
+  line-height: 20px;
+  margin: 0;
+}
+.vote .votelist .listbox .withdrawbox .mybox div .right {
+  flex: 1;
+}
+.vote .votelist .listbox .withdrawbox .mybox div .right .btnyes {
+  background-color: #00456e;
+  border-radius: 10px;
+  font-size: 14px;
+  height: 20px;
+  line-height: 14px;
+  color: #ffffff;
+  padding: 2px 20px;
+}
+.vote .votelist .listbox .withdrawbox .mybox div .right .btnno {
+  background-color: gray;
+  border-radius: 10px;
+  font-size: 14px;
+  height: 20px;
+  line-height: 14px;
+  color: #ffffff;
+  padding: 2px 20px;
+}
+.creatbox .am-modal-title {
+  text-align: left;
+  color: #00456e;
+}
+.creatbox .am-modal-content {
+  text-align: left;
+}
+.creatbox .creatbox-content .selectbox {
+  padding-bottom: 10px;
+}
+.creatbox .creatbox-content .selectbox .ant-select {
+  width: 100%;
+}
+.creatbox .creatbox-content .selectbox select {
+  width: 100%;
+}
+.creatbox .creatbox-content .descbox {
+  border: 1px solid #888;
+}
+.creatbox .creatbox-content .descbox .am-textarea-control textarea {
+  font-size: 12px;
+  line-height: 14px;
+}
+.creatbox .creatbox-content .btnbox {
+  width: 100%;
+  padding: 10px 0;
+}
+.creatbox .creatbox-content .btnbox .creatbtn {
+  margin: 0 auto;
+  width: 60%;
+  background-color: #00456e;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 30px;
+  border-radius: 15px;
+  height: 30px !important;
+}
+.creatbox .creatbox-content .messagebox p {
+  color: #00456e;
+  font-size: 12px;
+  margin: 0px;
+}
+.choosebox .am-modal-title {
+  text-align: left;
+  color: #00456e;
+}
+.choosebox .am-modal-content {
+  text-align: left;
+}
+.choosebox .choosebtnList {
+  display: flex;
+  width: 60%;
+  margin: 0 auto;
+}
+.choosebox .choosebtnList div {
+  flex: 1;
+  display: flex;
+}
+.choosebox .choosebtnList div .img {
+  flex: 1;
+}
+.choosebox .choosebtnList div .img img {
+  height: 20px;
+  text-align: right;
+}
+.choosebox .choosebtnList div .title {
+  flex: 2;
+  text-align: center;
+}
+.choosebox .choosebtnList div .title p {
+  color: #00456e;
+  margin: 0px;
+}
+.choosebox .sendnum {
+  padding: 10px 0;
+  width: 60%;
+  margin: 0 auto;
+}
+.choosebox .sendnum input {
+  width: 100%;
+}
+.choosebox .btnbox {
+  width: 100%;
+  padding-bottom: 10px;
+}
+.choosebox .btnbox .choosebtn {
+  margin: 0 auto;
+  width: 60%;
+  background-color: #00456e;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 30px;
+  border-radius: 15px;
+  height: 30px !important;
+}
+.choosebox .messagebox p {
+  color: #00456e;
+  font-size: 12px;
+  margin: 0px;
+}

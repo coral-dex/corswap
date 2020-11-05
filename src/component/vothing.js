@@ -1,427 +1,642 @@
-import React, {useState,Context, Component } from 'react'
+import React, { Component } from 'react'
 import Layout from './layout';
 import abi from './abi'
-import {showValue,toValue,fromValue} from "./utils/common";
-import {Button,Radio, Flex,InputItem,TextareaItem,DatePicker,Picker,SegmentedControl,ListView,List, Modal, SearchBar, Toast, WhiteSpace, WingBlank} from "antd-mobile";
+import i18n from "../i18n";
+import { fromValue } from "./utils/common";
+import { Button, TextareaItem, SegmentedControl, Modal, Toast, WhiteSpace, WingBlank  } from "antd-mobile";
+import { Statistic,Select,message} from 'antd'
 import BigNumber from 'bignumber.js';
 import '../style/style.css'
-// import { Statistic,Tabs,BackTop,Anchor} from 'antd';
-// import { StickyContainer, Sticky } from 'react-sticky';
-// import Item from 'antd/lib/list/Item';
-// const {TabPane} = Tabs;
-// const { Countdown } = Statistic;
+import '../style/vote.css'
+const { Countdown } = Statistic;
+const { Option } = Select;
+
+const selectTypeLabel = ['下拉菜单', '为其他交易对提供流动性', '提供流动性提出CORAL', '设置提案信息']
+
 class vothing extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
-            account:{},
-            title:'',
-            desc:'',
-            proposals:[],
-            modal1:false,  
-            modal2:false,
-            amount:0, //storage CORAL amount
-            selectItem:null, // current proposal
-            selectType:false, //select proposal type
-            value:0,
-            type:"请选择提案类型",
-            typeIndex:0,
-            types:[
-                {index:0,text:"新增流动性挖坑交易对"},
-                {index:1,text:"为其他交易对提供流动性"},
-                {index:2,text:"提供流动性提出CORAL"},
+        this.state = {
+            startPageNum: 0,
+            endPageNum: 10,
+            dataList: [],
+            creatProposalsVisible: false,
+            chooseProposalsVisible: false,
+            account: {},
+            desc: '',
+            chooseImg: true,
+            successNum: 0,
+            failNum: 0,
+            selectList: [],
+            selectTypes: [
             ],
-            selectedIndex:0,
-            detail:false,
-            index:0,//点了哪个提案
-            loading:0,
-            loadingPage:true,
-            show:false,
+            proposalDescription: {
+                value: 0,
+                cy: "CORAL",
+                label: "",
+                moreThan: 0,
+                fee: 0,
+                pledgeAmount: 0,
+                pledgeCoralAmount: 0
+            },
+            proposalDescriptionIndex: -1,
+            spend: 0,
+            selectedIndex: 0,
+            storageAmount: 0,
+            votIndex: 0,
+            votBoolean: true,
+            time: 300,
+            cycletime: 300,
+            loadingmore: false
         };
     }
-    async init (pkey) {
-        let self = this;
+    componentDidMount() {
+        this.doUpdate()
+    }
+    doUpdate = () => {
+        this.setState({
+            dataList: []
+        })
+        this.init().then(() => {
+            this.item();
+            this.setState({
+                endPageNum: 10
+            })
+            this.tabChoose(this.state.selectedIndex)
+        });
+    }
+
+    tabChoose(v) {
+        let that = this;
+        if (v === 0) {
+            that.getAllQuery();
+        } else if (v === 1) {
+            that.myVote();
+            that.setState({
+                loadingmore: false
+            })
+        } else {
+            that.myCreate();
+            that.setState({
+                loadingmore: false
+            })
+        }
+    }
+
+    async getAllQuery() {
+        let that = this;
+        await abi.queryAll(that.state.account.mainPKr, that.state.startPageNum, that.state.endPageNum, function (res) {
+            let loadingbool = false;
+            if (res[0].length === 10) {
+                loadingbool = true;
+            }
+            that.setState({
+                endPageNum: that.state.endPageNum + res[0].length,
+                loadingmore: loadingbool
+            })
+            that.getdateList(res[0])
+        })
+    }
+
+    async myCreate() {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>myCreate")
+        let that = this;
+        await abi.myCreate(that.state.account.mainPKr, function (res) {
+            that.getdateList(res[0])
+        })
+    }
+
+    async myVote() {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>myVote")
+        let that = this;
+        await abi.myVote(that.state.account.mainPKr, function (res) {
+            that.getdateList(res[0])
+        })
+    }
+
+    getdateList(v) {
+        const that = this;
+        let arrList = [];
+        v.forEach((item, index) => {
+            let obj = {
+                title: 0,
+                titleText: '',
+                desc: '',
+                startime: 0,
+                success: 0,
+                fail: 0,
+                state: 0,
+                vaild: 0,
+                voteAmount: 0,
+                address: false,
+                pledgeAmount: 0,
+                pledgeCoralAmount: 0,
+                votIndex: 0,
+                isMy: true,
+                moreThan: 0
+
+            }
+            obj.title = item[0][0];
+            obj.titleText = selectTypeLabel[obj.title];
+            obj.desc = item[0][1];
+            obj.startime = item[0][2];
+            obj.success = item[0][3];
+            obj.fail = item[0][4];
+            obj.voteState = item[2][1];
+            obj.vaild = item[1][6];
+            obj.moreThan = item[1][4];
+            obj.isMy = item.isMy;
+            obj.voteAmount = fromValue(Number(item[2][0]), 18).c[0];
+            obj.address = item.slice(item.length - 1, item.length)[0];
+            obj.pledgeAmount = fromValue(Number(item[0][7]), 18).c[0];
+            obj.pledgeCoralAmount = fromValue(Number(item[0][8]), 18).c[0];
+            obj.votIndex = item.infoIdex
+            arrList.push(obj);
+        });
+        console.log(arrList);
+        that.setState({
+            dataList: arrList
+        })
+    }
+
+    item() {
+        const that = this;
+        const { account } = this.state;
+        abi.items(account.mainPKr, function (res) {
+            let selectlist = [];
+            for (let i = 0; i < res[0].length; i++) {
+                if (res[0][i][7] === "1") {
+                    res[0][i][8] = i;
+                    selectlist.push(res[0][i]);
+                }
+            }
+            let selecttype = [];
+            for (let j = 0; j < selectlist.length; j++) {
+                let selectobj = {
+                    value: 0,
+                    cy: "",
+                    label: "",
+                    moreThan: 0,
+                    fee: 0,
+                    pledgeAmount: 0,
+                    pledgeCoralAmount: 0,
+                    index: 0,
+                }
+                selectobj.value = j;
+                selectobj.cy = selectlist[j][0];
+                selectobj.index = selectlist[j][8];
+                selectobj.label = selectTypeLabel[j];
+                selectobj.moreThan = selectlist[j][4];
+                selectobj.fee = selectlist[j][5];
+                selectobj.pledgeAmount = selectlist[j][1];
+                selectobj.pledgeCoralAmount = selectlist[j][2];
+                selecttype.push(selectobj);
+            }
+            that.setState({
+                selectList: selectlist,
+                selectTypes: selecttype
+            })
+
+        })
+    }
+    showCreatModal() {
+        const that = this;
+        that.setState({
+            creatProposalsVisible: true
+        })
+    }
+    closeCreatModal() {
+        const that = this;
+        that.setState({
+            creatProposalsVisible: false
+        })
+    }
+    showChooseModal(e, index) {
+        const that = this;
+        that.setState({
+            chooseProposalsVisible: true,
+            votIndex: index
+        })
+    }
+    withdrawVote(e, index) {
+        const that = this;
+        console.log(index)
+        abi.withdrawVote(that.state.account.pk, that.state.account.mainPKr, index, function (hash) {
+            if (hash) {
+                Toast.loading(i18n.t("pending"), 60)
+                that.startGetTxReceipt(hash, () => {
+                    Toast.success(i18n.t("success"))
+                    that.init().then(() => {
+                        that.item();
+                        that.tabChoose(that.state.selectedIndex)
+                    }).catch();
+                })
+            }
+        })
+    }
+
+    withdrawPledgeAmount(e, index) {
+        const that = this;
+        console.log(index)
+        abi.withdrawPledgeAmount(that.state.account.pk, that.state.account.mainPKr, index, function (hash) {
+            if (hash) {
+                Toast.loading(i18n.t("pending"), 60)
+                that.startGetTxReceipt(hash, () => {
+                    Toast.success(i18n.t("success"))
+                    that.init().then(() => {
+                        that.item();
+                        that.tabChoose(that.state.selectedIndex)
+                    }).catch();
+                })
+            }
+        })
+    }
+
+    withdrawPledgeCoralAmount(e, index) {
+        const that = this;
+        abi.withdrawPledgeCoralAmount(that.state.account.pk, that.state.account.mainPKr, index, function (hash) {
+            if (hash) {
+                Toast.loading(i18n.t("pending"), 60)
+                that.startGetTxReceipt(hash, () => {
+                    Toast.success(i18n.t("success"))
+                    that.init().then(() => {
+                        that.item();
+                        that.tabChoose(that.state.selectedIndex)
+                    }).catch();
+                })
+            }
+        })
+    }
+
+    closeChooseModal() {
+        const that = this;
+        that.setState({
+            chooseProposalsVisible: false
+        })
+    }
+    chooseProposal() {
+        const that = this;
+        abi.chooseProposal(that.state.account.pk, that.state.account.mainPKr, that.state.votIndex, that.state.votBoolean, that.state.storageAmount, function (hash) {
+            if (hash) {
+                Toast.loading(i18n.t("pending"), 60)
+                that.startGetTxReceipt(hash, () => {
+                    Toast.success(i18n.t("success"))
+                    that.tabChoose(that.state.selectedIndex)
+                })
+                that.setState({
+                    chooseProposalsVisible: false,
+                })
+            }
+        })
+    }
+
+    chooseBtn() {
+        const that = this;
+        that.setState({
+            chooseImg: !that.state.chooseImg,
+            votBoolean: !that.state.votBoolean
+        })
+    }
+    storeDesc(e) { this.setState({ desc: e }) }
+    sendCoralNum(e) {
+        let that = this;
+        that.setState({
+            storageAmount: e.target.value
+        })
+    }
+
+
+    loadingmore() {
+        const that = this;
+        that.setState({
+            dataList: [],
+            endPageNum: that.state.endPageNum + 10
+        })
+        that.getAllQuery();
+    }
+
+    async init(pkey) {
+        const that = this;
+        console.log(pkey, "<<<<<<pkey")
         return new Promise((resolve, reject) => {
             abi.init.then(() => {
                 let pk = localStorage.getItem("accountPK")
-                if(pkey){
+                if (pkey) {
                     pk = pkey;
                 }
                 abi.accountList(function (accounts) {
                     if (pk) {
                         for (let act of accounts) {
                             if (pk === act.pk) {
-                                self.setState({account: act});
+                                that.setState({ account: act });
                                 break;
                             }
                         }
                     } else {
                         pk = accounts[0].pk;
-                        localStorage.setItem("accountPK",pk);
-                        self.setState({account: accounts[0]});
+                        localStorage.setItem("accountPK", pk);
+
+                        that.setState({ account: accounts[0] });
                     }
                     resolve();
                 });
+
             });
 
         })
     }
-    componentDidMount(){
-        this.init().then(()=>{})
-        this.switch(0);
-    }
-    createProposal(){
-        let {account,type,desc,types,typeIndex,proposals,} = this.state;
-        let self = this;
-        console.log(typeIndex,"indexing");
-        if(type!=="请选择提案类型"){
-                // let propos = this.state.proposals;
-            abi.create(account.pk,account.mainPKr,typeIndex,desc,function(hash){
-                Toast.loading("loading....")
-                console.log(hash,"hash");
-                abi.getTransactionReceipt(hash).then((res)=>{
-                    if(res){
-                        Toast.hide();
-                        self.setState({modal1:false,desc:"",type:"请选择提案类型"})
-                    }
-                    console.log("cuccess")
-                })
-            });
-        }else{ 
-            Toast.fail("请选择提案类型",1)
-        }
-    }   
-    storeDesc(e){  this.setState({ desc:e }) }
-    showFlag(n){
-        if(!n){
-            this.setState({ modal1:true })
-        }
-            else{this.setState({ modal1:false })
-        }
-    }
-    storeCoral(e){console.log("您准备质押",e.target.value,"CORAL"); this.setState({ amount:e.target.value }) }
-    loadingProposal(){ //
-        let {account,loading,proposals,loadingPage} = this.state;
-        let self = this;
-        let arr = [];
-        abi.queryAll(account.mainPKr,loading,loading+10,function(all){
-            Toast.loading('Loading...',1, () => {
-                if(all){
-                    if(all[0].length<10){
-                        loadingPage = false;
-                    }
-                    loading= loading+10;
-                    all[0].forEach(item=>{
-                        console.log(fromValue(item[0][7],18),"FromValue")
-                        arr.push({
-                            desc:item[0][1],
-                            title:item[0][0],
-                            success:item[0][3],
-                            fail:item[0][4],
-                            pledgeAmount:item[0][7],
-                        })
-                    })
-                    proposals = proposals.concat(arr);
-                    self.setState({proposals:proposals,loading:loading,loadingPage:loadingPage})
 
-                }
-            });       
+    creatType(e) {
+        const that = this;
+        console.log(e)
+        let arr = that.state.selectTypes
+        let obj = arr.find(function (item) {
+            return item.value = e;
+        })
+
+        that.setState({
+            selectIndex: e,
+            proposalDescription: obj,
+            proposalDescriptionIndex: obj.index,
+            spend: new BigNumber(obj.pledgeAmount).plus(obj.pledgeCoralAmount).toNumber()
         })
     }
-    switch(v){  // all myvote mycreate
-        let {account,type,loading} = this.state;
-        let self = this;
-        let arr = [];
-        if(loading === 0){
-            loading = 10;
-        }
-        if(v==0){
-            abi.queryAll(account.mainPKr,0,loading,function(all){
-                if(all){
-                    all[0].forEach(item=>{
-                        console.log(item)
-                        arr.push({
-                            desc:item[0][1],
-                            title:item[0][0],
-                            success:item[0][3],
-                            startTime:item[0][2],
-                            fail:item[0][4],
-                            state:item[2][1],
-                            vaild:item[1][6],
-                            voteAmount:fromValue(Number(item[2][0]),18).c[0],
-                            address:item.slice(item.length-1,item.length)[0],
-                            pledgeAmount:fromValue(Number(item[0][7]),18).c[0],
-                            title:"为其他交易对提供流动性"
-                        })
+
+    createProposal() {
+        const that = this;
+        let { account } = that.state;
+        if(that.state.proposalDescriptionIndex!==-1){
+            abi.create(account.pk, account.mainPKr, that.state.proposalDescriptionIndex, that.state.desc, that.state.spend, function (hash) {
+                if (hash) {
+                    Toast.loading(i18n.t("pending"), 60)
+                    that.startGetTxReceipt(hash, () => {
+                        Toast.success(i18n.t("success"))
+                        that.init().then(() => {
+                            that.item();
+                            that.setState({
+                                endPageNum: that.state.endPageNum + 1,
+                                selectIndex:-1,
+                                proposalDescriptionIndex:-1
+                            })
+                            that.tabChoose(that.state.selectedIndex)
+                        }).catch();
+                    })
+                    that.setState({
+                        creatProposalsVisible: false
                     })
                 }
-                self.setState({proposals:arr,selectedIndex:v,loading:loading})
-                console.log(self.state.loading,"更新后")
-            })
-        }else if(v==1){
-            abi.myVote(account.mainPKr,function(vote){
-                vote[0].forEach(item=>{
-                    console.log(item[0].slice(item.length-1,item.length),"MyVote")
-                    arr.push({
-                        desc:item[0][1],
-                        title:item[0][0],
-                        success:item[0][3],
-                        startTime:item[0][2],
-                        fail:item[0][4],
-                        state:item[2][1],
-                        vaild:item[1][6],
-                        voteAmount:fromValue(Number(item[2][0]),18).c[0],
-                        address:item.slice(item.length-1,item.length)[0],
-                        pledgeAmount:fromValue(Number(item[0][7]),18).c[0],
-                        title:"为其他交易对提供流动性"
-                    })
-                })
-                // console.log(vote,"VOTE")
-                self.setState({proposals:arr,selectedIndex:v})
-            })
-        }else if(v==2){
-            abi.myCreate(account.mainPKr,function(create){
-                create[0].forEach(item=>{
-                    // console.log(item,"MyCreate")
-                    arr.push({
-                        desc:item[0][1],
-                        title:item[0][0],
-                        success:item[0][3],
-                        startTime:item[0][2],
-                        fail:item[0][4],
-                        state:item[2][1],
-                        vaild:item[1][6],
-                        voteAmount:fromValue(Number(item[2][0]),18).c[0],
-                        address:item.slice(item.length-1,item.length)[0],
-                        pledgeAmount:fromValue(Number(item[0][7]),18).c[0],
-                        title:"为其他交易对提供流动性"
-                    })
-                    console.log(item)
-                })
-                // console.log(create,"CREATE")
-                self.setState({proposals:arr,selectedIndex:v})
-            })
+            });
+        }else{
+            message.error('请选择提案类型');
         }
     }
-    over(){}
-    close(){ this.setState({modal2:false}) }
-    onChange(e){
-        if(e==1){
-            this.setState({ value: 1 });
-        }else if(e==2){
-            this.setState({ value:2 });
-        }
-      };
-    selectType(){ this.setState({selectType:true}) }
-    select(e,index){
-        console.log(index,"选择了",e.target.dataset.text)
-        this.setState({
-            type:e.target.dataset.text,
-            selectType:false,
-            typeIndex:index,
-        })
-    }
-    userVote(v,index){ //参与投票
-        let {account} = this.state;
-        let self = this;
-        console.log("点击了第",index,"个")
-        abi.isRepeatVote(account.pk,account.mainPKr,index,function(res){
-            if(res){
-                if(!res[0]){
-                    self.setState({
-                        modal2:true,
-                        selectItem:v,
-                        index:index
-                    })
-                }else{
-                    Toast.fail("请勿重复参加提案",1)
+
+
+    startGetTxReceipt = (hash, cb) => {
+        const that = this;
+        abi.getTransactionReceipt(hash).then(res => {
+            if (res && res.result) {
+                if (cb) {
+                    cb();
                 }
+            } else {
+                setTimeout(function () {
+                    that.startGetTxReceipt(hash, cb)
+                }, 2000)
             }
         })
-        
     }
-    confirmVote(){
-        let {account,selectItem,amount,value,proposals,index} = this.state;
-        let self = this;
-        let boolean = false;
-        if(value==1){ boolean = true; }
-        abi.confirmVote(account.pk,account.mainPKr,index,boolean,amount,function(res){
-            if(res){ self.setState({modal2:false,value:3}) }
-        })        
+
+    selectedIndex(e) {
+        const that = this;
+        that.setState({
+            dataList: [],
+            selectedIndex: e.nativeEvent.selectedSegmentIndex
+        })
+        that.tabChoose(e.nativeEvent.selectedSegmentIndex)
     }
-    withDrawCoral(index){
-        let {account} = this.state;
-        abi.withDrawCoral(account.pk,account.mainPKr,index,function(res){ })
-    }
-    withDrawCreate(index){
-        let {account} = this.state;
-        abi.withDrawCreate(account.pk,account.mainPKr,index,function(res){ })
+
+    showFlag(n) {
+        if (!n) {
+            this.setState({ modal1: true })
+        }
+        else {
+            this.setState({ modal1: false })
+        }
     }
     render() {
-        let {selectItem,selectedIndex,proposals,value,account,show} = this.state;
-        const style = {
-            height: 40,
-            width: 40,
-            lineHeight: '40px',
-            borderRadius: 4,
-            backgroundColor: '#1088e9',
-            color: '#fff',
-            textAlign: 'center',
-            fontSize: 14,
-        };
+        console.log(this.state, "state>>>>>");
         return (
-            <Layout selectedTab="5" doUpdate={()=>this.init()}>       
-                <div style={{padding:"0 16px",marginBottom:"70px"}}>
-                    {/* <BackTop visibilityHeight="70">
-                        <div style={style} type="primary">UP</div>
-                    </BackTop>    */}
-                    <WhiteSpace/>
-                        <Button className="flex-center" type="warning" onClick={()=>this.showFlag()}>
-                            <img width="7%" src={require("../images/create.png")}/>
-                            &ensp;
-                            发起提案
+            <Layout selectedTab="5" doUpdate={() => this.doUpdate()}>
+                <div className="vote">
+                    <div className="votesend">
+                        <WhiteSpace />
+                        <Button className="sendbtn" type="warning" >
+                            <img src={require('../images/create.png')} alt="" />
+                            <span onClick={() => this.showCreatModal()}> 发起提案</span>
                         </Button>
-                    <WhiteSpace/>
-                    <div className="divs">
-                        <SegmentedControl id="control" tintColor="#00456e" selectedIndex={selectedIndex} onChange={(e)=>this.switch(e.nativeEvent.selectedSegmentIndex)} values={['全部', '我参与的', '我创建的']} />
-                    </div>
-                    <WhiteSpace/>
-                    <div>
                         <Modal
-                        style={{height:"300px",backgroundColor:"#fff",borderRadius:"7px",position:"relative"}}
-                        visible={this.state.modal1}
-                        transparent
-                        maskClosable={false}
-                        closable={true}
-                        onClose={()=>{this.showFlag(1)}}
-                        title="提案类型"
+                            className="creatbox"
+                            visible={this.state.creatProposalsVisible}
+                            transparent
+                            closable={true}
+                            maskClosable={false}
+                            onClose={() => this.closeCreatModal()}
+                            title="提案类型"
+                            wrapProps={{ onTouchStart: this.onWrapTouchStart }}
                         >
-                            <div style={{}}>
-                                <Flex style={{border:"1px solid #ccc",height:"30px"}} onClick={()=>this.selectType()}>
-                                    <Flex.Item>
-                                        <div>{this.state.type}</div>
-                                    </Flex.Item>
-                                    <Flex.Item style={{textAlign:"right"}}>
-                                        <img width="16px" src={require("../images/bottom.png")}/>
-                                    </Flex.Item>
-                                </Flex>
-                                    <Modal
-                                    style={{height:"300px"}}
-                                    popup
-                                    title="选择提案类型"
-                                    maskClosable={true}
-                                    visible={this.state.selectType}
-                                    animationType="slide-up"
-                                    >
-                                        {this.state.types.map((item,index)=>{
-                                            return(<div data-text={item.text} onClick={(e)=>this.select(e,index)}>
-                                                    {item.text}
-                                                <WhiteSpace/>
-                                            </div>)
+                            <div className="creatbox-content">
+                                <div className="selectbox">
+                                    <Select placeholder="选择提案类型" onChange={(e) => this.creatType(e)}>
+                                        {this.state.selectTypes.map((item, index) => {
+                                            return (<Option value={item.value}>{item.label}</Option>)
                                         })}
-                                    </Modal>
-                                <List>
+                                    </Select>
+                                </div>
+                                <div className="descbox">
                                     <TextareaItem
-                                        style={{border:"1px solid #ccc"}}
-                                        rows={3}
-                                        onChange={(e)=>this.storeDesc(e)}
                                         placeholder="输入提案具体内容，如增加流动性挖矿交易对"
+                                        data-seed="logId"
+                                        autoHeight
+                                        rows="4"
+                                        onChange={(e) => this.storeDesc(e)}
+                                        ref={el => this.customFocusInst = el}
                                     />
-                                </List>
-                                <Button type="primary" onClick={()=>this.createProposal()}>确认发起</Button>
+                                </div>
+                                <div className="btnbox">
+                                    <Button className="creatbtn" onClick={() => this.createProposal()}>确认发起</Button>
+                                </div>
+                                <div className="messagebox">
+                                    <p>提案发起规则：</p>
+                                    <p>1.发起提案需要只要{new BigNumber(this.state.proposalDescription.pledgeAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}(从当前账户扣除);</p>
+                                    <p>2.提案成功后，需其中{this.state.proposalDescription.fee}%的CORAL 、DAO具体执行提案的成本费用，其余在提案发起后即时退还，提案失败将全部返还。</p>
+                                    <p>3.挖矿系提供{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}</p>
+                                </div>
                             </div>
                         </Modal>
+                        <WhiteSpace />
                     </div>
-                    <div>
-                        {this.state.proposals.map((v,index)=>{
-                            let time = Number(v.startTime)*1000 + Number(v.vaild*1000);
-                            let endTime = Number(v.startTime) + Number(v.vaild);
-                          return (<div className="flex" style={{backgroundColor:"#f6fbfc",padding:"14px",marginBottom:"10px"}}>
-                                <div style={{width:"60%"}}>
-                                    <div>{v.title}</div>
-                                    <WhiteSpace/>
-                                    <div>{v.desc}</div>
-                                    <p style={{borderBottom:"1px solid #ccc"}}></p>
-                                    <Flex>
-                                        <Flex.Item><img src={require("../images/countDown.png")} width="14px"/>&ensp;剩余投票时间:</Flex.Item>
-                                        <Flex.Item style={{textAlign:"center"}}>
-                                            {/*{*/}
-                                            {/*    Date.now()/1000 > v.startTime && Date.now()/1000 < endTime*/}
-                                            {/*    ?*/}
-                                            {/*    <Countdown title="" value={time} format="D天H时m分s秒"/> : <div>0 天</div>*/}
-                                            {/*}*/}
-                                            
-                                        </Flex.Item>
-                                    </Flex>
-                                    <WhiteSpace/>
-                                    <Flex>
-                                        <Flex.Item>同意:{v.success}票</Flex.Item>
-                                        <Flex.Item style={{textAlign:"right"}}>反对:{v.fail}票</Flex.Item>
-                                    </Flex> 
-                                    <WhiteSpace/>
-                                        {
-                                            Date.now()/1000 - v.startTime > v.vaild && v.voteAmount>0 && v.state!=2?<Flex style={{width:"100%"}}>
-                                                <Flex.Item>投票质押{v.voteAmount}CORAL</Flex.Item>
-                                                <Flex.Item><Button onClick={()=>this.withDrawCoral(index)} className="withdraw" type="primary">提现</Button></Flex.Item>
-                                            </Flex>:""
-                                            //<Button style={{height:"22px",lineHeight:"22px"}} type="primary" disabled>提现</Button>
-                                        }
-                                    <WhiteSpace/>
-                                        {
-                                            Date.now()/1000 - v.startTime > v.vaild && v.pledgeAmount>0 &&v.state!=2? <Flex style={{width:"100%"}}>
-                                                <Flex.Item>创建提案质押{v.pledgeAmount}CORAL</Flex.Item>
-                                                <Flex.Item><Button onClick={()=>this.withDrawCreate(index)} className="withdraw" type="primary">提现</Button></Flex.Item>
-                                            </Flex>:""
-                                            //<Button style={{height:"22px",lineHeight:"22px"}} type="primary" disabled>提现</Button>
-                                        }
-                                    <WhiteSpace/>
-                                </div>
-                                <Flex style={{width:"38%",textAlign:"right"}}>
-                                    <Flex.Item>
-                                        {
-                                            Date.now()/1000 > v.startTime && Date.now()/1000 < endTime ?
-                                            <Button type="primary" style={{borderRadius:"30px",height:"35px",lineHeight:"35px"}} onClick={()=>this.userVote(v,index)}>参与投票</Button>
-                                            : 
-                                            v.success !== v.fail && v.success - v.fail >= 2? <img src={require("../images/success.png")} width="60px"/>
-                                            : <img src={require("../images/fail.png")} width="60px"/>
-                                        }
-                                    </Flex.Item>
-                                </Flex>
-                          </div>)
-                        })}
-                        <WhiteSpace/>
+                    <div className="votebtn">
+                        <WingBlank size="lg" className="sc-example">
+                            <SegmentedControl selectedIndex={this.state.selectedIndex} onChange={(e) => this.selectedIndex(e)} values={['全部', '我参与的', '我创建的']} />
+                        </WingBlank>
+                    </div>
+                    <div className="votelist">
                         {
-                            this.state.loadingPage?<Button onClick={()=>this.loadingProposal()} type="primary">加载更多</Button>
-                            : " "
+                            this.state.dataList.map((item, index) => {
+                                let nowTime = new Date().getTime();
+                                let endTime = item.startime * 1000 + this.state.time * 1000;
+                                let endcycleTime = item.startime * 1000 + this.state.cycletime * 1000;
+                                let votIndex = item.votIndex;
+                                return (<div className="listbox">
+                                    <div className="box">
+                                        <div className="left">
+                                            <div className="title">
+                                                <p>
+                                                    {item.titleText}
+                                                </p>
+                                            </div>
+                                            <div className="sendCY">
+                                                <p>{item.desc}</p>
+                                            </div>
+                                            <div className="timebox">
+                                                <div className="timebox-left">
+                                                    <img src={require('../images/countDown.png')} alt="" />
+                                                    <p>剩余投票时间： </p>
+                                                </div>
+                                                <div className="timebox-right">
+                                                    <Countdown value={endTime} format="D 天 H 时 m 分 s 秒" />
+                                                </div>
+                                            </div>
+                                            <div className="choosebox">
+                                                <div className="chooseboxleft">
+                                                    <p>同意：{item.success}票</p>
+                                                </div>
+                                                <div className="chooseboxright">
+                                                    <p>不同意：{item.fail}票</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="right">
+                                            {
+                                                nowTime < endTime ?
+                                                    <div>
+                                                        {
+                                                            item.voteState === '0' ? <Button className="participate" onClick={(e) => this.showChooseModal(e, votIndex)}>参与投票</Button> : <Button className="participateafter">已经投票</Button>
+                                                        }
+
+                                                    </div> : <div className="imgtype">
+                                                        {
+                                                            item.success - item.moreThan > item.fail ? <img src={require("../images/success.png")} alt="" /> : <img src={require("../images/fail.png")} alt="" />
+                                                        }
+                                                    </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    {
+                                        nowTime > endTime ?
+                                            <div className="withdrawbox">
+                                                {
+                                                    item.voteAmount !== 0 ? <div className="withdrawvot">
+                                                        <div className="left">
+                                                            <p>提现投票质押CORAL：{item.voteAmount}</p>
+                                                        </div>
+                                                        <div className="right">
+                                                            {
+                                                                item.voteState === '1' ? <button className="btnyes" onClick={(e) => this.withdrawVote(e, votIndex)}>提现</button> : <button className="btnno">已提现</button>
+                                                            }
+                                                        </div>
+                                                    </div> : <div></div>
+                                                }
+                                                {
+                                                    item.isMy ? <div className="mybox">
+                                                        <div className="withdrawpledge">
+                                                            <div className="left">
+                                                                <p>提现创建提案质押CORAL：{item.pledgeAmount}</p>
+                                                            </div>
+                                                            <div className="right">
+                                                                {
+                                                                    item.pledgeAmount !== 0 ? <button className="btnyes" onClick={(e) => this.withdrawPledgeAmount(e, votIndex)}>提现</button> : <button className="btnno">已提现</button>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        {
+                                                            nowTime > endcycleTime ? <div className="withdrawpledgecoral">
+                                                                <div className="left">
+                                                                    <p>提现创建提案挖矿CORAL：{item.pledgeCoralAmount}</p>
+                                                                </div>
+                                                                <div className="right">
+                                                                    {
+                                                                        item.pledgeCoralAmount !== 0 ? <button className="btnyes" onClick={(e) => this.withdrawPledgeCoralAmount(e, votIndex)}>提现</button> : <button className="btnno">已提现</button>
+                                                                    }
+                                                                </div>
+                                                            </div> : <div></div>
+                                                        }
+                                                    </div> : <div></div>
+                                                }
+                                            </div> : <div></div>
+                                    }
+                                </div>
+                                )
+                            })
                         }
+
+                        <Modal
+                            className="choosebox"
+                            visible={this.state.chooseProposalsVisible}
+                            transparent
+                            closable={true}
+                            maskClosable={false}
+                            onClose={() => this.closeChooseModal()}
+                            title="选择投票结果"
+                            wrapProps={{ onTouchStart: this.onWrapTouchStart }}
+                        >
+                            <div className="choosebox">
+                                <div className="choosebtnList">
+                                    <div>
+                                        <div className="img" onClick={() => this.chooseBtn()}>
+                                            {
+                                                this.state.chooseImg ? <img src={require("../images/redhook.png")} alt="" /> : <img src={require("../images/grayhook.png")} alt="" />
+                                            }
+                                        </div>
+                                        <div className="title">
+                                            <p>同意</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="img" onClick={() => this.chooseBtn()}>
+                                            {
+                                                this.state.chooseImg ? <img src={require("../images/grayhook.png")} alt="" /> : <img src={require("../images/redhook.png")} alt="" />
+                                            }
+                                        </div>
+                                        <div className="title">
+                                            <p>不同意</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="sendnum">
+                                    <input placeholder="请输入质押CORAL数量" type="text" onChange={(e) => this.sendCoralNum(e)} />
+                                </div>
+                                <div className="btnbox">
+                                    <Button className="choosebtn" onClick={() => this.chooseProposal()}>确认投票</Button>
+                                </div>
+                                <div className="messagebox">
+                                    <p>投票规则：</p>
+                                    <p>1.投票需要质押对应的CORAL数量;</p>
+                                    <p>2.票数计算方式为投入CORAL数量的平方根，投票结束返还到投票账户。</p>
+                                </div>
+                            </div>
+                        </Modal>
+
+                        {
+                            this.state.loadingmore ? <div className="loadingmore">
+                                <Button onClick={() => this.loadingmore()}>加载更多.....</Button>
+                            </div> : <div></div>
+
+                        }
+
                     </div>
                 </div>
-
-                <Modal
-                visible={this.state.modal2}
-                maskClosable={false}
-                transparent
-                style={{padding:"16px"}}
-                animationType="slide-up"
-                >
-                <List renderHeader={() => <div>参加提案</div>} className="popup-list">
-                    <div>
-                        <input className="input" placeholder={"请输入您要质押的CORAL数量"}  onChange={(e)=>this.storeCoral(e)}/>
-                        <WhiteSpace/>
-                        <Flex>
-                            <Flex.Item>
-                                <Button className={value==1?'selectRadio':''} disabled={value==1} onClick={()=>this.onChange(1)} type="primary">同意</Button>
-                            </Flex.Item>
-                            <Flex.Item>
-                                <Button className={value==2?'selectRadio':''} disabled={value==2} onClick={()=>this.onChange(2)} type="warning">否决</Button>
-                            </Flex.Item>
-                        </Flex>
-                        <WhiteSpace/>
-                        <Button type="primary" onClick={()=>this.confirmVote()}>确认</Button>
-                        <Button type="warning" onClick={()=>this.close()}>取消</Button>
-                    </div>
-                </List>
-                </Modal>
             </Layout>
         );
     }
