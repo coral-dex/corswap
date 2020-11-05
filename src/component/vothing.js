@@ -10,7 +10,9 @@ import '../style/style.css'
 import '../style/vote.css'
 const { Countdown } = Statistic;
 const { Option } = Select;
-const selectTypeLabel = ['下拉菜单', '为其他交易对提供流动性', '提供流动性提出CORAL', '设置提案信息']
+const selectTypeLabel = ['提供流动性挖矿']
+
+const oneDay = 10 * 60;
 
 class vothing extends Component {
     constructor(props) {
@@ -36,7 +38,8 @@ class vothing extends Component {
                 moreThan: 0,
                 fee: 0,
                 pledgeAmount: 0,
-                pledgeCoralAmount: 0
+                pledgeCoralAmount: 0,
+                moreThanPercent:0,
             },
             proposalDescriptionIndex: -1,
             spend: 0,
@@ -49,6 +52,7 @@ class vothing extends Component {
             loadingmore: false,
             creatTypeText: "选择提案类型",
             creatTypeTextVisible: false,
+            selectItem:null
         };
     }
     componentDidMount() {
@@ -156,6 +160,7 @@ class vothing extends Component {
             obj.voteState = item[2][1];
             obj.vaild = item[1][6];
             obj.moreThan = item[1][4];
+            obj.moreThanPercent = item[1][8];
             obj.period = item[1][6];
             obj.pledgeCoralPeriod = item[1][3];
             obj.isMy = item.isMy;
@@ -178,7 +183,7 @@ class vothing extends Component {
             let selectlist = [];
             for (let i = 0; i < res[0].length; i++) {
                 if (res[0][i][7] === "1") {
-                    res[0][i][8] = i;
+                    res[0][i][9] = i;
                     selectlist.push(res[0][i]);
                 }
             }
@@ -193,16 +198,21 @@ class vothing extends Component {
                     pledgeAmount: 0,
                     pledgeCoralAmount: 0,
                     index: 0,
+                    period:0,
+                    pledgeCoralPeriod:0
 
                 }
                 selectobj.value = j;
                 selectobj.cy = selectlist[j][0];
-                selectobj.index = selectlist[j][8];
+                selectobj.index = selectlist[j][9];
                 selectobj.label = selectTypeLabel[j];
                 selectobj.moreThan = selectlist[j][4];
                 selectobj.fee = selectlist[j][5];
                 selectobj.pledgeAmount = selectlist[j][1];
                 selectobj.pledgeCoralAmount = selectlist[j][2];
+                selectobj.moreThanPercent = selectlist[j][8];
+                selectobj.pledgeCoralPeriod = selectlist[j][3];
+                selectobj.period = selectlist[j][6];
                 selecttype.push(selectobj);
             }
             that.setState({
@@ -224,11 +234,12 @@ class vothing extends Component {
             creatProposalsVisible: false
         })
     }
-    showChooseModal(e, index) {
+    showChooseModal(e, item) {
         const that = this;
         that.setState({
             chooseProposalsVisible: true,
-            votIndex: index
+            votIndex: item.votIndex,
+            selectItem: item
         })
     }
     withdrawVote(e, index) {
@@ -426,6 +437,7 @@ class vothing extends Component {
         }
     }
     render() {
+        console.log("proposalDescription>>>",this.state.proposalDescription);
         return (
             <Layout selectedTab="5" doUpdate={() => this.doUpdate()}>
                 <div className="vote">
@@ -491,9 +503,10 @@ class vothing extends Component {
                                 </div>
                                 <div className="messagebox">
                                     <p>提案发起规则：</p>
-                                    <p>1.发起提案需要只要{new BigNumber(this.state.proposalDescription.pledgeAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}(从当前账户扣除);</p>
-                                    <p>2.提案成功后，需其中{this.state.proposalDescription.fee}%的CORAL 、DAO具体执行提案的成本费用，其余在提案发起后即时退还，提案失败将全部返还。</p>
-                                    <p>3.挖矿系提供{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}</p>
+                                    <p>1.发起提案需要质押{new BigNumber(this.state.proposalDescription.pledgeAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}(从当前账户扣除)，质押周期: {this.state.proposalDescription.period/oneDay} 天</p>
+                                    <p>2.提案成功后，需要抽取其中{this.state.proposalDescription.fee}%的CORAL作为CORAL DAO具体执行提案的成本费用，提案失败将全部返还。</p>
+                                    <p>3.挖矿需要另外质押{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}，质押周期: {this.state.proposalDescription.pledgeCoralPeriod/oneDay} 天</p>
+                                    <p>4.成功提案标准: {this.state.proposalDescription.moreThan}, 成功票数超过: {this.state.proposalDescription.moreThanPercent}%</p>
                                 </div>
                             </div>
                         </Modal>
@@ -545,12 +558,12 @@ class vothing extends Component {
                                                 nowTime < endTime ?
                                                     <div>
                                                         {
-                                                            item.voteState === '0' ? <Button className="participate" onClick={(e) => this.showChooseModal(e, votIndex)}>参与投票</Button> : <Button className="participateafter">已经投票</Button>
+                                                            item.voteState === '0' ? <Button className="participate" onClick={(e) => this.showChooseModal(e, item)}>参与投票</Button> : <Button className="participateafter">已经投票</Button>
                                                         }
 
                                                     </div> : <div className="imgtype">
                                                         {
-                                                            item.success - item.moreThan > item.fail ? <img src={require("../images/success.png")} alt="" /> : <img src={require("../images/fail.png")} alt="" />
+                                                            (item.success + item.fail >= item.moreThan) && item.success*100/(item.success + item.fail)>=item.moreThanPercent ? <img src={require("../images/success.png")} alt="" /> : <img src={require("../images/fail.png")} alt="" />
                                                         }
                                                     </div>
                                             }
@@ -647,6 +660,7 @@ class vothing extends Component {
                                     <p>投票规则：</p>
                                     <p>1.投票需要质押对应的CORAL数量;</p>
                                     <p>2.票数计算方式为投入CORAL数量的平方根，投票结束返还到投票账户。</p>
+                                    <p>3.成功提案标准: {this.state.selectItem && this.state.selectItem.moreThan} 票, 成功票数超过: {this.state.selectItem && this.state.selectItem.moreThanPercent}%</p>
                                 </div>
                             </div>
                         </Modal>

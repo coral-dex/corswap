@@ -577,814 +577,839 @@ const poolContract = serojs.callContract([{"constant":true,"inputs":[],"name":"g
 
 
 const proposal=[
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "itemIndex",
-				"type": "uint256"
-			},
-			{
-				"name": "desc",
-				"type": "string"
-			}
-		],
-		"name": "create",
-		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "queryMyVote",
-		"outputs": [
-			{
-				"components": [
-					{
-						"components": [
-							{
-								"name": "itemIndex",
-								"type": "uint256"
-							},
-							{
-								"name": "desc",
-								"type": "string"
-							},
-							{
-								"name": "startTime",
-								"type": "uint256"
-							},
-							{
-								"name": "support",
-								"type": "uint256"
-							},
-							{
-								"name": "oppose",
-								"type": "uint256"
-							},
-							{
-								"name": "owner",
-								"type": "address"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							}
-						],
-						"name": "info",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeCurrency",
-								"type": "string"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralPeriod",
-								"type": "uint256"
-							},
-							{
-								"name": "moreThan",
-								"type": "uint256"
-							},
-							{
-								"name": "fee",
-								"type": "uint256"
-							},
-							{
-								"name": "period",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "item",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "voteInfo",
-						"type": "tuple"
-					},
-					{
-						"name": "isMy",
-						"type": "bool"
-					},
-					{
-						"name": "infoIdex",
-						"type": "uint256"
-					}
-				],
-				"name": "details",
-				"type": "tuple[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawPledgeCoralAmount",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "queryMyCreate",
-		"outputs": [
-			{
-				"components": [
-					{
-						"components": [
-							{
-								"name": "itemIndex",
-								"type": "uint256"
-							},
-							{
-								"name": "desc",
-								"type": "string"
-							},
-							{
-								"name": "startTime",
-								"type": "uint256"
-							},
-							{
-								"name": "support",
-								"type": "uint256"
-							},
-							{
-								"name": "oppose",
-								"type": "uint256"
-							},
-							{
-								"name": "owner",
-								"type": "address"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							}
-						],
-						"name": "info",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeCurrency",
-								"type": "string"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralPeriod",
-								"type": "uint256"
-							},
-							{
-								"name": "moreThan",
-								"type": "uint256"
-							},
-							{
-								"name": "fee",
-								"type": "uint256"
-							},
-							{
-								"name": "period",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "item",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "voteInfo",
-						"type": "tuple"
-					},
-					{
-						"name": "isMy",
-						"type": "bool"
-					},
-					{
-						"name": "infoIdex",
-						"type": "uint256"
-					}
-				],
-				"name": "details",
-				"type": "tuple[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "pledgeCurrency",
-				"type": "string"
-			},
-			{
-				"name": "pledgeAmount",
-				"type": "uint256"
-			},
-			{
-				"name": "pledgeCoralAmount",
-				"type": "uint256"
-			},
-			{
-				"name": "pledgeCoralPeriod",
-				"type": "uint256"
-			},
-			{
-				"name": "moreThan",
-				"type": "uint256"
-			},
-			{
-				"name": "fee",
-				"type": "uint256"
-			},
-			{
-				"name": "period",
-				"type": "uint256"
-			}
-		],
-		"name": "createItem",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"name": "state",
-				"type": "uint8"
-			}
-		],
-		"name": "updateItem",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "infoIndex",
-				"type": "uint256"
-			}
-		],
-		"name": "participated",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "x",
-				"type": "uint256"
-			}
-		],
-		"name": "_sqrt",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "pure",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawVote",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "x",
-				"type": "bytes32"
-			}
-		],
-		"name": "bytes32ToString",
-		"outputs": [
-			{
-				"name": "",
-				"type": "string"
-			}
-		],
-		"payable": false,
-		"stateMutability": "pure",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"name": "state",
-				"type": "uint8"
-			}
-		],
-		"name": "updateInfoState",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawPledgeAmount",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "start",
-				"type": "uint256"
-			},
-			{
-				"name": "limit",
-				"type": "uint256"
-			}
-		],
-		"name": "query",
-		"outputs": [
-			{
-				"components": [
-					{
-						"components": [
-							{
-								"name": "itemIndex",
-								"type": "uint256"
-							},
-							{
-								"name": "desc",
-								"type": "string"
-							},
-							{
-								"name": "startTime",
-								"type": "uint256"
-							},
-							{
-								"name": "support",
-								"type": "uint256"
-							},
-							{
-								"name": "oppose",
-								"type": "uint256"
-							},
-							{
-								"name": "owner",
-								"type": "address"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							}
-						],
-						"name": "info",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeCurrency",
-								"type": "string"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralPeriod",
-								"type": "uint256"
-							},
-							{
-								"name": "moreThan",
-								"type": "uint256"
-							},
-							{
-								"name": "fee",
-								"type": "uint256"
-							},
-							{
-								"name": "period",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "item",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "voteInfo",
-						"type": "tuple"
-					},
-					{
-						"name": "isMy",
-						"type": "bool"
-					},
-					{
-						"name": "infoIdex",
-						"type": "uint256"
-					}
-				],
-				"name": "details",
-				"type": "tuple[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "items",
-		"outputs": [
-			{
-				"components": [
-					{
-						"name": "pledgeCurrency",
-						"type": "string"
-					},
-					{
-						"name": "pledgeAmount",
-						"type": "uint256"
-					},
-					{
-						"name": "pledgeCoralAmount",
-						"type": "uint256"
-					},
-					{
-						"name": "pledgeCoralPeriod",
-						"type": "uint256"
-					},
-					{
-						"name": "moreThan",
-						"type": "uint256"
-					},
-					{
-						"name": "fee",
-						"type": "uint256"
-					},
-					{
-						"name": "period",
-						"type": "uint256"
-					},
-					{
-						"name": "state",
-						"type": "uint8"
-					}
-				],
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "infoIndex",
-				"type": "uint256"
-			},
-			{
-				"name": "support",
-				"type": "bool"
-			}
-		],
-		"name": "vot",
-		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "detail",
-		"outputs": [
-			{
-				"components": [
-					{
-						"components": [
-							{
-								"name": "itemIndex",
-								"type": "uint256"
-							},
-							{
-								"name": "desc",
-								"type": "string"
-							},
-							{
-								"name": "startTime",
-								"type": "uint256"
-							},
-							{
-								"name": "support",
-								"type": "uint256"
-							},
-							{
-								"name": "oppose",
-								"type": "uint256"
-							},
-							{
-								"name": "owner",
-								"type": "address"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							}
-						],
-						"name": "info",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeCurrency",
-								"type": "string"
-							},
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "pledgeCoralPeriod",
-								"type": "uint256"
-							},
-							{
-								"name": "moreThan",
-								"type": "uint256"
-							},
-							{
-								"name": "fee",
-								"type": "uint256"
-							},
-							{
-								"name": "period",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "item",
-						"type": "tuple"
-					},
-					{
-						"components": [
-							{
-								"name": "pledgeAmount",
-								"type": "uint256"
-							},
-							{
-								"name": "state",
-								"type": "uint8"
-							}
-						],
-						"name": "voteInfo",
-						"type": "tuple"
-					},
-					{
-						"name": "isMy",
-						"type": "bool"
-					},
-					{
-						"name": "infoIdex",
-						"type": "uint256"
-					}
-				],
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"name": "cy",
-				"type": "string"
-			}
-		],
-		"name": "withdrawFee",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
-]
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "itemIndex",
+                "type": "uint256"
+            },
+            {
+                "name": "desc",
+                "type": "string"
+            }
+        ],
+        "name": "create",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "queryMyVote",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "components": [
+                            {
+                                "name": "itemIndex",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "desc",
+                                "type": "string"
+                            },
+                            {
+                                "name": "startTime",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "support",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "oppose",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "owner",
+                                "type": "address"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "info",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeCurrency",
+                                "type": "string"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralPeriod",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "moreThan",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "fee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "period",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "moreThanPercent",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "item",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            }
+                        ],
+                        "name": "voteInfo",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "isMy",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "infoIdex",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "details",
+                "type": "tuple[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdrawPledgeCoralAmount",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "queryMyCreate",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "components": [
+                            {
+                                "name": "itemIndex",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "desc",
+                                "type": "string"
+                            },
+                            {
+                                "name": "startTime",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "support",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "oppose",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "owner",
+                                "type": "address"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "info",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeCurrency",
+                                "type": "string"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralPeriod",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "moreThan",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "fee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "period",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "moreThanPercent",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "item",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            }
+                        ],
+                        "name": "voteInfo",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "isMy",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "infoIdex",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "details",
+                "type": "tuple[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint256"
+            },
+            {
+                "name": "state",
+                "type": "uint8"
+            }
+        ],
+        "name": "updateItem",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "infoIndex",
+                "type": "uint256"
+            }
+        ],
+        "name": "participated",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "pledgeCurrency",
+                "type": "string"
+            },
+            {
+                "name": "pledgeAmount",
+                "type": "uint256"
+            },
+            {
+                "name": "pledgeCoralAmount",
+                "type": "uint256"
+            },
+            {
+                "name": "pledgeCoralPeriod",
+                "type": "uint256"
+            },
+            {
+                "name": "moreThan",
+                "type": "uint256"
+            },
+            {
+                "name": "fee",
+                "type": "uint256"
+            },
+            {
+                "name": "period",
+                "type": "uint256"
+            },
+            {
+                "name": "moreThanPercent",
+                "type": "uint256"
+            }
+        ],
+        "name": "createItem",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "x",
+                "type": "uint256"
+            }
+        ],
+        "name": "_sqrt",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "pure",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdrawVote",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "x",
+                "type": "bytes32"
+            }
+        ],
+        "name": "bytes32ToString",
+        "outputs": [
+            {
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "pure",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint256"
+            },
+            {
+                "name": "state",
+                "type": "uint8"
+            }
+        ],
+        "name": "updateInfoState",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdrawPledgeAmount",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "start",
+                "type": "uint256"
+            },
+            {
+                "name": "limit",
+                "type": "uint256"
+            }
+        ],
+        "name": "query",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "components": [
+                            {
+                                "name": "itemIndex",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "desc",
+                                "type": "string"
+                            },
+                            {
+                                "name": "startTime",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "support",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "oppose",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "owner",
+                                "type": "address"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "info",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeCurrency",
+                                "type": "string"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralPeriod",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "moreThan",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "fee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "period",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "moreThanPercent",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "item",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            }
+                        ],
+                        "name": "voteInfo",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "isMy",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "infoIdex",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "details",
+                "type": "tuple[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "items",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "name": "pledgeCurrency",
+                        "type": "string"
+                    },
+                    {
+                        "name": "pledgeAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "pledgeCoralAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "pledgeCoralPeriod",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "moreThan",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "fee",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "period",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "state",
+                        "type": "uint8"
+                    },
+                    {
+                        "name": "moreThanPercent",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "infoIndex",
+                "type": "uint256"
+            },
+            {
+                "name": "support",
+                "type": "bool"
+            }
+        ],
+        "name": "vot",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "detail",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "components": [
+                            {
+                                "name": "itemIndex",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "desc",
+                                "type": "string"
+                            },
+                            {
+                                "name": "startTime",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "support",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "oppose",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "owner",
+                                "type": "address"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "info",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeCurrency",
+                                "type": "string"
+                            },
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "pledgeCoralPeriod",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "moreThan",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "fee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "period",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "moreThanPercent",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "item",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "pledgeAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "state",
+                                "type": "uint8"
+                            }
+                        ],
+                        "name": "voteInfo",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "isMy",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "infoIdex",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "name": "cy",
+                "type": "string"
+            }
+        ],
+        "name": "withdrawFee",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+];
+
 const rpc = new JsonRpc();
  
-const Proaddress = serojs.callContract(proposal,"429Xa2QVAxwTSMqof7DAwWmWjkgqp4fLF3bWqvzb7FdqyKZoN826Zs82Vh9zrcBvVYWeYrwSqqnqCAcGSQB74xw4")
+const Proaddress = serojs.callContract(proposal,"3iq9iJLr3PhjmjD3GeKnhy4pYPFRGUu1cEmnYJ62QaVjjezLP3yREuVb8BT5EsJNMsdMQPDBMBQJdvVrd5hcFjUe")
 
 
 const abi = new Abi();
