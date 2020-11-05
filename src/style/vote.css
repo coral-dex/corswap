@@ -231,6 +231,21 @@
 .creatbox .creatbox-content .selectbox {
   padding-bottom: 10px;
 }
+.creatbox .creatbox-content .selectbox .creatTypebox {
+  height: 30px;
+  border: 1px solid #888;
+  display: flex;
+}
+.creatbox .creatbox-content .selectbox .creatTypebox .left {
+  flex: 5 1 0px;
+}
+.creatbox .creatbox-content .selectbox .creatTypebox .right {
+  flex: 1;
+  text-align: center;
+}
+.creatbox .creatbox-content .selectbox .creatTypebox .right img {
+  height: 20px;
+}
 .creatbox .creatbox-content .selectbox .ant-select {
   width: 100%;
 }
@@ -320,4 +335,25 @@
   color: #00456e;
   font-size: 12px;
   margin: 0px;
+}
+.typebox {
+  width: 100% !important;
+  position: absolute;
+  bottom: 0px !important;
+  border-radius: 0px !important;
+}
+.typebox .am-modal-transparent .am-modal-content {
+  border-radius: 0px !important;
+  padding-top: 0px !important;
+}
+.typebox .am-modal-content {
+  width: 100%;
+  border-radius: 0px !important;
+  padding-top: 0px !important;
+}
+.typebox .am-modal-transparent .am-modal-content {
+  border-radius: 0px !important;
+}
+.typebox .itemtypebox {
+  padding: 5px 0;
 }

@@ -387,7 +387,6 @@ class Abi {
                 });
             } else {
                 this.callMethod(contract, 'pairList', from, [0, 1000], function (ret) {
-
                     let pairs = [];
                     if(ret && ret.rets){
 						ret.rets.forEach((pair) => {
@@ -395,7 +394,6 @@ class Abi {
 						})
 						pairs.sort(self.compare)
 					}
-                    console.log("pairList>>> ",pairs);
                     resolve(pairs);
                 });
             }
@@ -1386,8 +1384,7 @@ const proposal=[
 ]
 const rpc = new JsonRpc();
  
-// const Proaddress = serojs.callContract(proposal,"4VU7KaZBA51Qik7N7Hnfz4ZMiViisp9L2LBTCAWgdRK96vHjLridwhN75TuLKakNdNL8iTWcJCKJbzSwGxW5gvv5")
-const Proaddress = serojs.callContract(proposal,"3Rp53THdkEXrSy7HSCjqnXs8o4smcJeWoU2k7oXCZptZ3GeQGdt1Pots1ym88QhBTM27XvTzGb2ikvmhw1gWvadg")
+const Proaddress = serojs.callContract(proposal,"429Xa2QVAxwTSMqof7DAwWmWjkgqp4fLF3bWqvzb7FdqyKZoN826Zs82Vh9zrcBvVYWeYrwSqqnqCAcGSQB74xw4")
 
 
 const abi = new Abi();
