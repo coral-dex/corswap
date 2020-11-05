@@ -64,15 +64,6 @@ export function showValue(val, decimals, decimalPlaces) {
     }
     let num = new BigNumber(val).dividedBy(new BigNumber(10).pow(decimals));
     
-    // if (num.comparedTo(1000000) >= 0) {
-    //     let text = num.dividedBy(1000000).toFixed(decimalPlaces, 1);
-    //     return text + "M";
-    // } else if (num.comparedTo(1000) >= 0) {
-    //     let text = num.dividedBy(1000).toFixed(decimalPlaces, 1);
-    //     return text + "K";
-    // } else {
-    //
-    // }
     return num.toFixed(decimalPlaces, 1);
 }
 
