@@ -506,7 +506,7 @@ class vothing extends Component {
                                     <p>1.发起提案需要质押{new BigNumber(this.state.proposalDescription.pledgeAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}(从当前账户扣除)，质押周期: {this.state.proposalDescription.period/oneDay} 天</p>
                                     <p>2.提案成功后，需要抽取其中{this.state.proposalDescription.fee}%的CORAL作为CORAL DAO具体执行提案的成本费用，提案失败将全部返还。</p>
                                     <p>3.挖矿需要另外质押{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}，质押周期: {this.state.proposalDescription.pledgeCoralPeriod/oneDay} 天</p>
-                                    <p>4.成功提案标准: {this.state.proposalDescription.moreThan}, 成功票数超过: {this.state.proposalDescription.moreThanPercent}%</p>
+                                    <p>4.成功提案标准: 超过{this.state.proposalDescription.moreThan}票, 成功票数超过{this.state.proposalDescription.moreThanPercent}%</p>
                                 </div>
                             </div>
                         </Modal>
@@ -524,6 +524,14 @@ class vothing extends Component {
                                 let endTime = item.startime * 1000 + item.period * 1000;
                                 let endcycleTime = item.startime * 1000 + item.pledgeCoralPeriod * 1000;
                                 let votIndex = item.votIndex;
+                                console.log(item.success)
+
+
+                                let success=item.success*1;
+                                let fail=item.fail*1;
+                                let moreThan=item.moreThan*1;
+                                let moreThanPercent=item.moreThanPercent*1;
+                                console.log(success*100/(success + fail)>=moreThanPercent,">>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<")
                                 return (<div className="listbox">
                                     <div className="box">
                                         <div className="left">
@@ -562,8 +570,9 @@ class vothing extends Component {
                                                         }
 
                                                     </div> : <div className="imgtype">
+                                                        
                                                         {
-                                                            (item.success + item.fail >= item.moreThan) && item.success*100/(item.success + item.fail)>=item.moreThanPercent ? <img src={require("../images/success.png")} alt="" /> : <img src={require("../images/fail.png")} alt="" />
+                                                            (success + fail >= moreThan) && success*100/(success + fail)>=moreThanPercent ? <img src={require("../images/success.png")} alt="" /> : <img src={require("../images/fail.png")} alt="" />
                                                         }
                                                     </div>
                                             }
