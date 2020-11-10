@@ -126,23 +126,23 @@
   background-color: #00456e;
   font-size: 14px;
   line-height: 30px;
-  border-radius: 15px;
+  border-radius: 15px  !important;
   height: 30px;
   color: #ffffff;
   top: -50%;
   left: -50%;
-  transform: translate(0%, 100%);
+  transform: translate(5%, 100%);
 }
 .vote .votelist .listbox .box .right .participateafter {
   background-color: gray;
   font-size: 14px;
-  line-height: 30px;
-  border-radius: 15px;
+  line-height: 26px;
+  border-radius: 15px !important;
   height: 30px;
   color: #ffffff;
   top: -50%;
   left: -50%;
-  transform: translate(0%, 100%);
+  transform: translate(5%, 100%);
 }
 .vote .votelist .listbox .box .right .imgtype img {
   height: 60px;
@@ -235,9 +235,13 @@
   height: 30px;
   border: 1px solid #888;
   display: flex;
+  color: #000000;
 }
 .creatbox .creatbox-content .selectbox .creatTypebox .left {
   flex: 5 1 0px;
+  font-size: 14px;
+  line-height: 28px;
+  text-indent: 24px;
 }
 .creatbox .creatbox-content .selectbox .creatTypebox .right {
   flex: 1;
@@ -256,6 +260,7 @@
   border: 1px solid #888;
 }
 .creatbox .creatbox-content .descbox .am-textarea-control textarea {
+  text-indent: 24px;
   font-size: 12px;
   line-height: 14px;
 }

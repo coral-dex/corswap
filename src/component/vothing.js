@@ -39,7 +39,7 @@ class vothing extends Component {
                 fee: 0,
                 pledgeAmount: 0,
                 pledgeCoralAmount: 0,
-                moreThanPercent:0,
+                moreThanPercent: 0,
             },
             proposalDescriptionIndex: -1,
             spend: 0,
@@ -52,7 +52,7 @@ class vothing extends Component {
             loadingmore: false,
             creatTypeText: "选择提案类型",
             creatTypeTextVisible: false,
-            selectItem:null
+            selectItem: null
         };
     }
     componentDidMount() {
@@ -71,6 +71,7 @@ class vothing extends Component {
         });
     }
     tabChoose(v) {
+        console.log("1111>>>>>>>>>>>")
         let that = this;
         if (v === 0) {
             that.getAllQuery();
@@ -92,10 +93,10 @@ class vothing extends Component {
             creatTypeTextVisible: true
         })
     }
-    closecreatTypeModal(){
+    closecreatTypeModal() {
         const that = this;
         that.setState({
-            creatTypeTextVisible:false
+            creatTypeTextVisible: false
         })
 
     }
@@ -174,6 +175,8 @@ class vothing extends Component {
         that.setState({
             dataList: arrList
         })
+
+        console.log("arrList>>>>>>>>>>>>>>>>>>", arrList)
     }
 
     item() {
@@ -198,8 +201,8 @@ class vothing extends Component {
                     pledgeAmount: 0,
                     pledgeCoralAmount: 0,
                     index: 0,
-                    period:0,
-                    pledgeCoralPeriod:0
+                    period: 0,
+                    pledgeCoralPeriod: 0
 
                 }
                 selectobj.value = j;
@@ -296,6 +299,7 @@ class vothing extends Component {
             chooseProposalsVisible: false
         })
     }
+
     chooseProposal() {
         const that = this;
         abi.chooseProposal(that.state.account.pk, that.state.account.mainPKr, that.state.votIndex, that.state.votBoolean, that.state.storageAmount, function (hash) {
@@ -304,9 +308,9 @@ class vothing extends Component {
                 that.startGetTxReceipt(hash, () => {
                     Toast.success(i18n.t("success"))
                     that.tabChoose(that.state.selectedIndex)
-                })
-                that.setState({
-                    chooseProposalsVisible: false,
+                    that.setState({
+                        chooseProposalsVisible: false,
+                    })
                 })
             }
         })
@@ -366,8 +370,8 @@ class vothing extends Component {
         let arr = that.state.selectTypes;
         let obj = arr[e.target.dataset.index]
         that.setState({
-            creatTypeText:e.target.dataset.label,
-            creatTypeTextVisible:false,
+            creatTypeText: e.target.dataset.label,
+            creatTypeTextVisible: false,
             proposalDescription: obj,
             proposalDescriptionIndex: obj.index,
             spend: new BigNumber(obj.pledgeAmount).plus(obj.pledgeCoralAmount).toNumber()
@@ -386,6 +390,7 @@ class vothing extends Component {
                         that.init().then(() => {
                             that.item();
                             that.setState({
+                                creatProposalsVisible: false,
                                 endPageNum: that.state.endPageNum + 1,
                                 proposalDescriptionIndex: -1,
                                 creatTypeText: "选择提案类型",
@@ -393,9 +398,7 @@ class vothing extends Component {
                             that.tabChoose(that.state.selectedIndex)
                         }).catch();
                     })
-                    that.setState({
-                        creatProposalsVisible: false
-                    })
+
                 }
             });
         } else {
@@ -437,7 +440,6 @@ class vothing extends Component {
         }
     }
     render() {
-        console.log("proposalDescription>>>",this.state.proposalDescription);
         return (
             <Layout selectedTab="5" doUpdate={() => this.doUpdate()}>
                 <div className="vote">
@@ -447,7 +449,6 @@ class vothing extends Component {
                             <img src={require('../images/create.png')} alt="" />
                             <span onClick={() => this.showCreatModal()}> 发起提案</span>
                         </Button>
-
                         <Modal
                             className="typebox"
                             visible={this.state.creatTypeTextVisible}
@@ -457,16 +458,14 @@ class vothing extends Component {
                             title="选择提案类型"
                             onClose={() => this.closecreatTypeModal()}
                         >
-                                    {
-                                        this.state.selectTypes.map((item)=>{
-                                            return(
-                                            <div className="itemtypebox" data-label={item.label} data-index={item.value} onClick={(e)=>this.creatType(e)}>{item.label}</div>
-                                            )
-                                        })
-                                    }
+                            {
+                                this.state.selectTypes.map((item) => {
+                                    return (
+                                        <div className="itemtypebox" data-label={item.label} data-index={item.value} onClick={(e) => this.creatType(e)}>{item.label}</div>
+                                    )
+                                })
+                            }
                         </Modal>
-
-
                         <Modal
                             className="creatbox"
                             visible={this.state.creatProposalsVisible}
@@ -503,10 +502,17 @@ class vothing extends Component {
                                 </div>
                                 <div className="messagebox">
                                     <p>提案发起规则：</p>
-                                    <p>1.发起提案需要质押{new BigNumber(this.state.proposalDescription.pledgeAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}(从当前账户扣除)，质押周期: {this.state.proposalDescription.period/oneDay} 天</p>
+                                    <p>
+                                        1.发起提案需要质押发起提案需要质押{new BigNumber(this.state.proposalDescription.pledgeAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}(从当前账户扣除)，提案成功后，需要抽取其中{this.state.proposalDescription.fee}%的CORAL作为CORAL DAO具体执行提案的成本费用，提案失败将全部返还。
+                                    </p>
+                                    <p>2.成功提案标准: 超过{this.state.proposalDescription.moreThan}票, 成功票数超过{this.state.proposalDescription.moreThanPercent}%</p>
+
+                                    <p>3.挖矿需要另外质押{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}，质押周期: {this.state.proposalDescription.pledgeCoralPeriod / oneDay} 天</p>
+
+                                    {/* <p>1.发起提案需要质押{new BigNumber(this.state.proposalDescription.pledgeAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}(从当前账户扣除)，质押周期: {this.state.proposalDescription.period / oneDay} 天</p>
                                     <p>2.提案成功后，需要抽取其中{this.state.proposalDescription.fee}%的CORAL作为CORAL DAO具体执行提案的成本费用，提案失败将全部返还。</p>
-                                    <p>3.挖矿需要另外质押{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}，质押周期: {this.state.proposalDescription.pledgeCoralPeriod/oneDay} 天</p>
-                                    <p>4.成功提案标准: 超过{this.state.proposalDescription.moreThan}票, 成功票数超过{this.state.proposalDescription.moreThanPercent}%</p>
+                                    <p>3.挖矿需要另外质押{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}，质押周期: {this.state.proposalDescription.pledgeCoralPeriod / oneDay} 天</p>
+                                    <p>4.成功提案标准: 超过{this.state.proposalDescription.moreThan}票, 成功票数超过{this.state.proposalDescription.moreThanPercent}%</p> */}
                                 </div>
                             </div>
                         </Modal>
@@ -527,11 +533,10 @@ class vothing extends Component {
                                 console.log(item.success)
 
 
-                                let success=item.success*1;
-                                let fail=item.fail*1;
-                                let moreThan=item.moreThan*1;
-                                let moreThanPercent=item.moreThanPercent*1;
-                                console.log(success*100/(success + fail)>=moreThanPercent,">>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<")
+                                let success = item.success * 1;
+                                let fail = item.fail * 1;
+                                let moreThan = item.moreThan * 1;
+                                let moreThanPercent = item.moreThanPercent * 1;
                                 return (<div className="listbox">
                                     <div className="box">
                                         <div className="left">
@@ -570,9 +575,9 @@ class vothing extends Component {
                                                         }
 
                                                     </div> : <div className="imgtype">
-                                                        
+
                                                         {
-                                                            (success + fail >= moreThan) && success*100/(success + fail)>=moreThanPercent ? <img src={require("../images/success.png")} alt="" /> : <img src={require("../images/fail.png")} alt="" />
+                                                            (success + fail >= moreThan) && success * 100 / (success + fail) >= moreThanPercent ? <img src={require("../images/success.png")} alt="" /> : <img src={require("../images/fail.png")} alt="" />
                                                         }
                                                     </div>
                                             }
@@ -673,14 +678,11 @@ class vothing extends Component {
                                 </div>
                             </div>
                         </Modal>
-
                         {
                             this.state.loadingmore ? <div className="loadingmore">
                                 <Button onClick={() => this.loadingmore()}>加载更多.....</Button>
                             </div> : <div></div>
-
                         }
-
                     </div>
                 </div>
             </Layout>

@@ -43,8 +43,9 @@ class Abi {
 
 	chooseProposal(pk,mainPkr,index,bool,amount,callback){
         this.executeMethod(Proaddress,"vot",pk,mainPkr,[index,bool],this.coral,toValue(amount,18),function(ret){
+            console.log("chooseProposal>>>>>>>>>>>>>>>>>>>",ret)
             if(ret){
-                callback(true)
+                callback(ret)
             }else{
                 callback(false)
             }
@@ -87,19 +88,16 @@ class Abi {
 		})
 	}
     myCreate(mainPkr,callback){
-		console.log("myCreate")
         this.callMethod(Proaddress,"queryMyCreate",mainPkr,[],function(cre){
             callback(cre)
         })
     }
     myVote(mainPkr,callback){
-		console.log("queryMyVote")
         this.callMethod(Proaddress,"queryMyVote",mainPkr,[],function(vote){
             callback(vote)
         })
     }
     queryAll(mainPkr,start,end,callback){
-		console.log("queryAll")
         this.callMethod(Proaddress,"query",mainPkr,[start,end],function(all){
             callback(all)
         })
