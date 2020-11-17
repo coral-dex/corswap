@@ -10,8 +10,7 @@ import '../style/style.css'
 import '../style/vote.css'
 const { Countdown } = Statistic;
 const { Option } = Select;
-// const selectTypeLabel = [`${i18n.t("tothemainboard")}`, `${i18n.t("governanceproposals")}`, "测试001", "测试002"]
-const selectTypeLabel = ["测试001", "测试002"]
+const selectTypeLabel = [`${i18n.t("tothemainboard")}`, `${i18n.t("governanceproposals")}`]
 
 const oneDay = 5 * 60;
 
@@ -58,7 +57,7 @@ class vothing extends Component {
         };
     }
     componentDidMount() {
-        let that=this;
+        let that = this;
         this.doUpdate()
         let interId = sessionStorage.getItem("interId");
         if (interId) {
@@ -492,16 +491,18 @@ class vothing extends Component {
             this.setState({ modal1: false })
         }
     }
+
     render() {
+        console.log(new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString() === "0", "22222")
         const timeText = "D " + `${i18n.t("day")}` + " H " + `${i18n.t("hour")}` + " m " + `${i18n.t("Minute")}` + " s " + `${i18n.t("second")}`;
         return (
             <Layout selectedTab="5" doUpdate={() => this.doUpdate()}>
                 <div className="vote">
                     <div className="votesend">
                         <WhiteSpace />
-                        <Button className="sendbtn" type="warning" >
+                        <Button className="sendbtn" type="warning" onClick={() => this.showCreatModal()} >
                             <img src={require('../images/create.png')} alt="" />
-                            <span onClick={() => this.showCreatModal()}> {i18n.t("Initiateaproposal")}</span>
+                            <span > {i18n.t("Initiateaproposal")}</span>
                         </Button>
                         <Modal
                             className="typebox"
@@ -562,7 +563,9 @@ class vothing extends Component {
                                         {this.state.proposalDescription.fee}%{i18n.t("Cost")}。
                                     </p>
                                     <p>2.{i18n.t("exceed")}{this.state.proposalDescription.moreThan}{i18n.t("successfulvotesexceeds")}{this.state.proposalDescription.moreThanPercent}%</p>
-                                    <p>3.{i18n.t("defaultvalidityperiodis")}【{this.state.proposalDescription.pledgeCoralPeriod / oneDay}】{i18n.t("currenAdditionalpledgetRatio")}【{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}】 {i18n.t("Willreturn")} 。</p>
+                                    {
+                                        new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString() === "0" ? <p></p> : <p>3.{i18n.t("defaultvalidityperiodis")}【{this.state.proposalDescription.pledgeCoralPeriod / oneDay}】{i18n.t("currenAdditionalpledgetRatio")}【{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}】 {i18n.t("Willreturn")} 。</p>
+                                    }
                                 </div>
                             </div>
                         </Modal>
