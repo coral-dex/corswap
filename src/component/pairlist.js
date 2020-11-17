@@ -38,9 +38,7 @@ export class PairList extends Component {
 
             selectTokenA:"",
             selectTokenB:"",
-
             selectPair:{},
-
             volumeOfDay:{}
 
         }
@@ -384,7 +382,6 @@ export class PairList extends Component {
                 inputValue:v,
             })
         }
-
     }
 
     setInputValue2 = (v)=>{

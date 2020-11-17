@@ -277,7 +277,7 @@ class Layout extends React.Component{
                                 background: 'url(./images/governsel.png) center center /  22px 22px no-repeat' }}
                             />
                         }
-                        title="治理"
+                        title={i18n.t("Governance")}
                         key="my"
                         selected={this.props.selectedTab === '5'}
                         onPress={() => {
