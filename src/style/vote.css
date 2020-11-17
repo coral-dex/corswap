@@ -121,6 +121,7 @@
 }
 .vote .votelist .listbox .box .right {
   flex: 6;
+  text-align: center;
 }
 .vote .votelist .listbox .box .right .participate {
   background-color: #00456e;
@@ -129,9 +130,7 @@
   border-radius: 15px  !important;
   height: 30px;
   color: #ffffff;
-  top: -50%;
-  left: -50%;
-  transform: translate(5%, 100%);
+  margin-top: 30px;
 }
 .vote .votelist .listbox .box .right .participateafter {
   background-color: gray;
@@ -140,15 +139,14 @@
   border-radius: 15px !important;
   height: 30px;
   color: #ffffff;
-  top: -50%;
-  left: -50%;
-  transform: translate(5%, 100%);
+  margin-top: 30px;
 }
 .vote .votelist .listbox .box .right .imgtype img {
+  margin-top: 15px;
   height: 60px;
-  top: -50%;
-  left: -50%;
-  transform: translate(50%, 35%);
+}
+.vote .votelist .listbox .box .right div .am-button {
+  border: none !important;
 }
 .vote .votelist .listbox .withdrawbox {
   padding: 6px 10px;
@@ -239,9 +237,9 @@
 }
 .creatbox .creatbox-content .selectbox .creatTypebox .left {
   flex: 5 1 0px;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 28px;
-  text-indent: 24px;
+  text-indent: 4px;
 }
 .creatbox .creatbox-content .selectbox .creatTypebox .right {
   flex: 1;
