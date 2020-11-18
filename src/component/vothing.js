@@ -119,7 +119,7 @@ class vothing extends Component {
         const that = this;
         await abi.queryAll(that.state.account.mainPKr, that.state.startPageNum, that.state.endPageNum, function (res) {
             let loadingbool = false;
-            console.log(res, "queryAll>>>>>>>>>>>>>>>>>")
+            // console.log(res, "queryAll>>>>>>>>>>>>>>>>>")
             if (res[0].length === 10) {
                 loadingbool = true;
             }
@@ -169,9 +169,10 @@ class vothing extends Component {
                 isMy: true,
                 moreThan: 0,
                 pledgeCoralPeriod: 0,
-                period: 0
+                period: 0,
+                fee:0
             }
-            console.log(item, "item>>>>>>>>>>>>>>>>>")
+            obj.fee=item[1].fee;
             obj.title = item[0][0];
             obj.titleText = selectTypeLabel[obj.title];
             obj.desc = item[0][1];
@@ -203,7 +204,6 @@ class vothing extends Component {
         const that = this;
         const { account } = this.state;
         abi.items(account.mainPKr, function (res) {
-            console.log(res, "items>>>>>>>>>>>>>>>>>")
             let selectlist = [];
             for (let i = 0; i < res[0].length; i++) {
                 if (res[0][i][7]) {
@@ -493,7 +493,6 @@ class vothing extends Component {
     }
 
     render() {
-        console.log(new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString() === "0", "22222")
         const timeText = "D " + `${i18n.t("day")}` + " H " + `${i18n.t("hour")}` + " m " + `${i18n.t("Minute")}` + " s " + `${i18n.t("second")}`;
         return (
             <Layout selectedTab="5" doUpdate={() => this.doUpdate()}>
@@ -653,7 +652,11 @@ class vothing extends Component {
                                                     item.isMy ? <div className="mybox">
                                                         <div className="withdrawpledge">
                                                             <div className="left">
-                                                                <p>{i18n.t("Withdrawandcreate")}CORAL：{item.pledgeAmount}</p>
+                                                                <p>{i18n.t("Withdrawandcreate")}CORAL：
+                                                                    <span>{
+                                                                        (success + fail >= moreThan) && success * 100 / (success + fail) >= moreThanPercent ? <span>{item.pledgeAmount*(100-item.fee)/100}</span>:<span>{item.pledgeAmount}</span>
+                                                                    }</span>
+                                                                </p>
                                                             </div>
                                                             <div className="right">
                                                                 {
