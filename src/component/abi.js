@@ -43,7 +43,6 @@ class Abi {
 
 	chooseProposal(pk,mainPkr,index,bool,amount,callback){
         this.executeMethod(Proaddress,"vot",pk,mainPkr,[index,bool],this.coral,toValue(amount,18),function(ret){
-            console.log("chooseProposal>>>>>>>>>>>>>>>>>>>",ret)
             if(ret){
                 callback(ret)
             }else{
@@ -83,7 +82,6 @@ class Abi {
 	
 	isRepeatVote(pk,mainPKr,index,callback){
 		this.callMethod(Proaddress,"participated",mainPKr,[index],function(repeat){	
-			console.log(repeat,"is repeat vote!")
 			callback(repeat);
 		})
 	}
@@ -153,8 +151,6 @@ class Abi {
     getPopupInfo(){
         seropp.getInfo(function (info) {
             localStorage.setItem("language",info.language)
-            console.log(info,">>>>>>>>>>>>")
-
             i18n.changeLanguage(info.language).catch()
         });
     }
@@ -333,7 +329,6 @@ class Abi {
 
                 if(restMap.has(key)){
                     let value = restMap.get(key);
-                    // console.log(value,"restMap");
                     value.push(val);
                 }else{
                     tokens.push(key);
@@ -422,7 +417,6 @@ class Abi {
     async investAmount(from) {
         return new Promise((resolve,reject)=>{
             this.callMethod(contract, 'investAmount', from, [], function (ret) {
-                console.log("investAmount>>> ",ret,ret[0],ret[1]);
                 resolve([bytes32ToToken(ret[0]), ret[1]]);
             });
         })
@@ -511,7 +505,6 @@ class Abi {
 
     balanceOf(from, callback) {
         this.callMethod(poolContract, 'getBalance', from, [], function (ret) {
-            console.log("balanceOf>>>",ret);
             if(ret && ret !="0x0"){
                 let tokens = [];
                 ret[0].forEach(each => {
@@ -529,7 +522,6 @@ class Abi {
     }
 
     showExchange(from, amount, callback) {
-        // console.log(amount,"abi.amount");
         this.callMethod(poolContract, 'showExchange', from, [amount], function (ret) {
             if(ret){
                 let tokens = [];
