@@ -1415,7 +1415,7 @@ const proposal=[
 
 const rpc = new JsonRpc();
  
-const Proaddress = serojs.callContract(proposal,"5mHnmYr3YVBESEjJCtLbjAMJBPQhZRaB31WXLiLuFtTZ838GyHAs7r27Dy7NpRVGsuXWzWw2WWi6xyAyyyRkdo98")
+const Proaddress = serojs.callContract(proposal,"24tuXu9ay8M2CL1D4RsZF9Z8jgJ6fMd3PMdrpKR9hmhX2jzzePqsgWB5LC8AVahS9ghdq9sfEgTe9vaVQCJQYedW")
 
 
 const abi = new Abi();

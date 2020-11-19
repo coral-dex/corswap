@@ -47,9 +47,9 @@
 
 
     "tothemainboard": "혁신 보드에서 메인 보드로 거래 페어 업그레이드 (유동성 채굴 참여 가능)",
-    "governanceproposals": "기타 플랫폼 거버넌스 제안",
+    "governanceproposals": "기타 플랫폼 거버넌스 예비",
     "Selectproposaltype": "제안 유형 선택",
-    "Pleaseselectproposaltype": "请选择提案类型",
+    "Pleaseselectproposaltype": "제안 유형을 선택하십시오",
     "Initiateaproposal": "제안 유형을 선택하십시오",
     "Proposaltype": "제안 유형",
     "Enterthespecificcontent": "마이닝 거래 쌍에 대한 유동성 증가와 같은 제안의 특정 내용을 입력하십시오.",
