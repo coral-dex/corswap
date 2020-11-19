@@ -67,14 +67,19 @@
 }
 .vote .votelist .listbox .box .left .sendCY {
   padding-bottom: 4px;
+  width: 240px;
 }
 .vote .votelist .listbox .box .left .sendCY p {
   max-width: 240px;
   color: gray;
   margin: 0px;
   font-size: 12px;
+  word-wrap: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 .vote .votelist .listbox .box .left .timebox {
   display: flex;
@@ -127,7 +132,7 @@
   background-color: #00456e;
   font-size: 14px;
   line-height: 30px;
-  border-radius: 15px  !important;
+  border-radius: 15px !important;
   height: 30px;
   color: #ffffff;
   margin-top: 30px;
@@ -209,6 +214,12 @@
   line-height: 14px;
   color: #ffffff;
   padding: 2px 20px;
+}
+.vote .votelist .listbox .withdrawbox .mybox div .right .ant-statistic-content {
+  font-size: 12px !important;
+}
+.vote .votelist .listbox .withdrawbox .mybox div .right .ant-satistitc {
+  line-height: 12px !important;
 }
 .vote .votelist .listbox .withdrawbox .mybox div .right .btnno {
   background-color: gray;
