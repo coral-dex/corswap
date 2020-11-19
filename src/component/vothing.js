@@ -12,7 +12,8 @@ const { Countdown } = Statistic;
 const { Option } = Select;
 const selectTypeLabel = [`${i18n.t("tothemainboard")}`, `${i18n.t("governanceproposals")}`]
 
-const oneDay = 5 * 60;
+const oneDay = 60* 60*24;
+const Delay = 15000;
 
 class vothing extends Component {
     constructor(props) {
@@ -59,12 +60,6 @@ class vothing extends Component {
     componentDidMount() {
         let that = this;
         that.doUpdate()
-        // let interId = sessionStorage.getItem("interId");
-        // if (interId) {
-        //     clearInterval(interId)
-        // }
-        // interId = setInterval(() => that.tabChoose(this.state.selectedIndex), 10 * 10 ** 3);
-        // sessionStorage.setItem("interId", interId)
     }
     doUpdate = () => {
         let that = this;
@@ -107,7 +102,15 @@ class vothing extends Component {
 
     Refresh() {
         const that = this;
-        that.tabChoose(that.state.selectedIndex)
+        setTimeout(() => {
+            that.setState({
+                dataList: []
+            })
+            that.init().then(() => {
+                that.item();
+                that.tabChoose(that.state.selectedIndex)
+            });
+        }, 10000);
     }
     opentypebox() {
         const that = this;
@@ -244,13 +247,10 @@ class vothing extends Component {
                 selectobj.period = selectlist[j][6];
                 selecttype.push(selectobj);
             }
-
-
             that.setState({
                 selectList: selectlist,
                 selectTypes: selecttype
             })
-
         })
     }
     showCreatModal() {
@@ -355,7 +355,6 @@ class vothing extends Component {
 
 
     storeDesc(e) { this.setState({ desc: e }) }
-
 
     isNumber(value) {
         var patrn = /^(-)?\d+(\.\d+)?$/;
@@ -464,7 +463,6 @@ class vothing extends Component {
             message.error(`${i18n.t("Pleaseselectproposaltype")}`);
         }
     }
-
 
     startGetTxReceipt = (hash, cb) => {
         const that = this;
@@ -586,8 +584,8 @@ class vothing extends Component {
                         {
                             this.state.dataList.map((item, index) => {
                                 let nowTime = new Date().getTime();
-                                let endTime = item.startime * 1000 + item.period * 1000;
-                                let endcycleTime = item.startime * 1000 + item.pledgeCoralPeriod * 1000;
+                                let endTime = item.startime * 1000 + item.period * 1000 + Delay;
+                                let endcycleTime = item.startime * 1000 + item.pledgeCoralPeriod * 1000 + Delay;
                                 let votIndex = item.votIndex;
                                 let success = item.success * 1;
                                 let fail = item.fail * 1;
@@ -675,23 +673,22 @@ class vothing extends Component {
                                                                 }
                                                             </div>
                                                         </div>
-
-                                                        <div className="withdrawpledgecoral">
-                                                            <div className="left">
-                                                                <p>{i18n.t("Withdrawalcreate")}：{item.pledgeCoralAmount}&nbsp;CORAL</p>
+                                                        {
+                                                            item.pledgeCoralAmount === 0 ? <span></span> : <div className="withdrawpledgecoral">
+                                                                <div className="left">
+                                                                    <p>{i18n.t("Withdrawalcreate")}：{item.pledgeCoralAmount}&nbsp;CORAL</p>
+                                                                </div>
+                                                                <div className="right">
+                                                                    {
+                                                                        nowTime > endcycleTime ? <div>{
+                                                                            item.pledgeCoralAmountState ? <button className="btnyes" onClick={(e) => this.withdrawPledgeCoralAmount(e, votIndex)}>{i18n.t("withdrawnew")}</button> : <button className="btnno">{i18n.t("Withdrawn")}</button>
+                                                                        }</div> : <Countdown value={endcycleTime}
+                                                                            format={timeText} onFinish={() => this.Refresh()}
+                                                                            />
+                                                                    }
+                                                                </div>
                                                             </div>
-                                                            <div className="right">
-                                                                {
-                                                                    nowTime > endcycleTime ? <div>{
-                                                                        item.pledgeCoralAmountState ? <button className="btnyes" onClick={(e) => this.withdrawPledgeCoralAmount(e, votIndex)}>{i18n.t("withdrawnew")}</button> : <button className="btnno">{i18n.t("Withdrawn")}</button>
-                                                                    }</div> : <Countdown value={endcycleTime}
-                                                                        format={timeText} onFinish={() => this.Refresh()}
-                                                                        />
-                                                                }
-
-                                                            </div>
-                                                        </div>
-
+                                                        }
                                                     </div> : <div></div>
                                                 }
                                             </div> : <div></div>
@@ -747,7 +744,7 @@ class vothing extends Component {
                                     <p>{i18n.t("Votingrules")}：</p>
                                     <p>1.{i18n.t("VotingneedstopledgethecorrespondingamountofCORAL")};</p>
                                     <p>2.{i18n.t("Squareroot")}。</p>
-                                    <p>3.{i18n.t("Successfulproposalcriteria")}: {this.state.selectItem && this.state.selectItem.moreThan} {i18n.t("successfulvotesexceeds")}: {this.state.selectItem && this.state.selectItem.moreThanPercent}%</p>
+                                    <p>3.{i18n.t("exceed")}: {this.state.selectItem && this.state.selectItem.moreThan} {i18n.t("successfulvotesexceeds")}: {this.state.selectItem && this.state.selectItem.moreThanPercent}%</p>
                                 </div>
                             </div>
                         </Modal>
