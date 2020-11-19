@@ -685,6 +685,10 @@ const proposal=[
 							{
 								"name": "state",
 								"type": "bool"
+							},
+							{
+								"name": "support",
+								"type": "bool"
 							}
 						],
 						"name": "voteInfo",
@@ -825,6 +829,10 @@ const proposal=[
 							},
 							{
 								"name": "state",
+								"type": "bool"
+							},
+							{
+								"name": "support",
 								"type": "bool"
 							}
 						],
@@ -1126,6 +1134,10 @@ const proposal=[
 							{
 								"name": "state",
 								"type": "bool"
+							},
+							{
+								"name": "support",
+								"type": "bool"
 							}
 						],
 						"name": "voteInfo",
@@ -1341,6 +1353,10 @@ const proposal=[
 							{
 								"name": "state",
 								"type": "bool"
+							},
+							{
+								"name": "support",
+								"type": "bool"
 							}
 						],
 						"name": "voteInfo",
@@ -1399,7 +1415,7 @@ const proposal=[
 
 const rpc = new JsonRpc();
  
-const Proaddress = serojs.callContract(proposal,"5y1EWZDiSe3bsZytigzZf4uFTX7v3eLfJTFn9m1tTtBzEzgmWztRb3tJa4KumpoFvaY1qhGGM541JQmS5XMpGkNe")
+const Proaddress = serojs.callContract(proposal,"5mHnmYr3YVBESEjJCtLbjAMJBPQhZRaB31WXLiLuFtTZ838GyHAs7r27Dy7NpRVGsuXWzWw2WWi6xyAyyyRkdo98")
 
 
 const abi = new Abi();

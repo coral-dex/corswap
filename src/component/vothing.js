@@ -58,24 +58,26 @@ class vothing extends Component {
     }
     componentDidMount() {
         let that = this;
-        this.doUpdate()
-        let interId = sessionStorage.getItem("interId");
-        if (interId) {
-            clearInterval(interId)
-        }
-        interId = setInterval(() => that.tabChoose(this.state.selectedIndex), 10 * 10 ** 3);
-        sessionStorage.setItem("interId", interId)
+        that.doUpdate()
+        // let interId = sessionStorage.getItem("interId");
+        // if (interId) {
+        //     clearInterval(interId)
+        // }
+        // interId = setInterval(() => that.tabChoose(this.state.selectedIndex), 10 * 10 ** 3);
+        // sessionStorage.setItem("interId", interId)
     }
     doUpdate = () => {
-        this.setState({
+        let that = this;
+
+        that.setState({
             dataList: []
         })
-        this.init().then(() => {
-            this.item();
-            this.setState({
+        that.init().then(() => {
+            that.item();
+            that.setState({
                 endPageNum: 10
             })
-            this.tabChoose(this.state.selectedIndex)
+            that.tabChoose(that.state.selectedIndex)
         });
     }
     tabChoose(v) {
@@ -102,6 +104,11 @@ class vothing extends Component {
             })
         }
     }
+
+    Refresh() {
+        const that = this;
+        that.tabChoose(that.state.selectedIndex)
+    }
     opentypebox() {
         const that = this;
         that.setState({
@@ -113,13 +120,11 @@ class vothing extends Component {
         that.setState({
             creatTypeTextVisible: false
         })
-
     }
     async getAllQuery() {
         const that = this;
         await abi.queryAll(that.state.account.mainPKr, that.state.startPageNum, that.state.endPageNum, function (res) {
             let loadingbool = false;
-            // console.log(res, "queryAll>>>>>>>>>>>>>>>>>")
             if (res[0].length === 10) {
                 loadingbool = true;
             }
@@ -170,9 +175,9 @@ class vothing extends Component {
                 moreThan: 0,
                 pledgeCoralPeriod: 0,
                 period: 0,
-                fee:0
+                fee: 0
             }
-            obj.fee=item[1].fee;
+            obj.fee = item[1].fee;
             obj.title = item[0][0];
             obj.titleText = selectTypeLabel[obj.title];
             obj.desc = item[0][1];
@@ -319,7 +324,9 @@ class vothing extends Component {
     closeChooseModal() {
         const that = this;
         that.setState({
-            chooseProposalsVisible: false
+            chooseProposalsVisible: false,
+            estimatedvotes: 0,
+            storageAmount: 0
         })
     }
 
@@ -563,7 +570,7 @@ class vothing extends Component {
                                     </p>
                                     <p>2.{i18n.t("exceed")}{this.state.proposalDescription.moreThan}{i18n.t("successfulvotesexceeds")}{this.state.proposalDescription.moreThanPercent}%</p>
                                     {
-                                        new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString() === "0" ? <p></p> : <p>3.{i18n.t("defaultvalidityperiodis")}【{this.state.proposalDescription.pledgeCoralPeriod / oneDay}】{i18n.t("currenAdditionalpledgetRatio")}【{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy}】 {i18n.t("Willreturn")} 。</p>
+                                        new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString() === "0" ? <p></p> : <p>3.{i18n.t("defaultvalidityperiodis")}{this.state.proposalDescription.pledgeCoralPeriod / oneDay}{i18n.t("currenAdditionalpledgetRatio")}{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy} {i18n.t("Willreturn")} 。</p>
                                     }
                                 </div>
                             </div>
@@ -595,17 +602,20 @@ class vothing extends Component {
                                                 </p>
                                             </div>
                                             <div className="sendCY">
-                                                <p>{item.desc}</p>
+                                                <p>
+                                                    {item.desc}
+                                                </p>
                                             </div>
                                             <div className="timebox">
                                                 <div className="timebox-left">
                                                     <img src={require('../images/countDown.png')} alt="" />
-                                                    <p>{i18n.t("Remainingvotingtime")}： </p>
+                                                    <p>&nbsp;{i18n.t("Remainingvotingtime")}： </p>
                                                 </div>
 
                                                 <div className="timebox-right">
                                                     <Countdown value={endTime}
                                                         format={timeText}
+                                                        onFinish={() => this.Refresh()}
                                                     />
                                                 </div>
                                             </div>
@@ -639,7 +649,7 @@ class vothing extends Component {
                                                 {
                                                     item.voteAmount ? <div className="withdrawvot">
                                                         <div className="left">
-                                                            <p>{i18n.t("Pledgeofwithdrawalvoting")}CORAL：{item.voteAmount}</p>
+                                                            <p>{i18n.t("Pledgeofwithdrawalvoting")}：{item.voteAmount}&nbsp;CORAL</p>
                                                         </div>
                                                         <div className="right">
                                                             {
@@ -652,10 +662,11 @@ class vothing extends Component {
                                                     item.isMy ? <div className="mybox">
                                                         <div className="withdrawpledge">
                                                             <div className="left">
-                                                                <p>{i18n.t("Withdrawandcreate")}CORAL：
-                                                                    <span>{
-                                                                        (success + fail >= moreThan) && success * 100 / (success + fail) >= moreThanPercent ? <span>{item.pledgeAmount*(100-item.fee)/100}</span>:<span>{item.pledgeAmount}</span>
-                                                                    }</span>
+                                                                <p>{i18n.t("Withdrawandcreate")}
+                                                                ：
+                                                                    {item.pledgeAmount}&nbsp;CORAL，{i18n.t("cost")}：<span>{
+                                                                        (success + fail >= moreThan) && success * 100 / (success + fail) >= moreThanPercent ? <span>{item.pledgeAmount * item.fee / 100}</span> : <span>0</span>
+                                                                    }</span>&nbsp;CORAL
                                                                 </p>
                                                             </div>
                                                             <div className="right">
@@ -664,18 +675,23 @@ class vothing extends Component {
                                                                 }
                                                             </div>
                                                         </div>
-                                                        {
-                                                            nowTime > endcycleTime ? <div className="withdrawpledgecoral">
-                                                                <div className="left">
-                                                                    <p>{i18n.t("Withdrawandcreate")}CORAL：{item.pledgeCoralAmount}</p>
-                                                                </div>
-                                                                <div className="right">
-                                                                    {
+
+                                                        <div className="withdrawpledgecoral">
+                                                            <div className="left">
+                                                                <p>{i18n.t("Withdrawalcreate")}：{item.pledgeCoralAmount}&nbsp;CORAL</p>
+                                                            </div>
+                                                            <div className="right">
+                                                                {
+                                                                    nowTime > endcycleTime ? <div>{
                                                                         item.pledgeCoralAmountState ? <button className="btnyes" onClick={(e) => this.withdrawPledgeCoralAmount(e, votIndex)}>{i18n.t("withdrawnew")}</button> : <button className="btnno">{i18n.t("Withdrawn")}</button>
-                                                                    }
-                                                                </div>
-                                                            </div> : <div></div>
-                                                        }
+                                                                    }</div> : <Countdown value={endcycleTime}
+                                                                        format={timeText} onFinish={() => this.Refresh()}
+                                                                        />
+                                                                }
+
+                                                            </div>
+                                                        </div>
+
                                                     </div> : <div></div>
                                                 }
                                             </div> : <div></div>

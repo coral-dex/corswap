@@ -80,15 +80,23 @@
 
                     .sendCY {
                         padding-bottom: 4px;
+                        width: 240px;
 
                         p {
                             max-width: 240px;
                             color: gray;
                             margin: 0px;
                             font-size: 12px;
+                            word-wrap: break-word;
+                            // overflow: hidden;
+                            // text-overflow: ellipsis;
                             overflow: hidden;
                             text-overflow: ellipsis;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 3;
+                            -webkit-box-orient: vertical;
                         }
+
                     }
 
                     .timebox {
@@ -153,15 +161,16 @@
                 .right {
                     flex: 6;
                     text-align: center;
+
                     .participate {
                         background-color: #00456e;
                         font-size: 14px;
                         line-height: 30px;
-                        border-radius: 15px  !important;
+                        border-radius: 15px !important;
                         height: 30px;
                         color: #ffffff;
                         margin-top: 30px;
-                        
+
                     }
 
                     .participateafter {
@@ -180,10 +189,11 @@
                             height: 60px;
                         }
                     }
-                    div{
-                        .am-button{
+
+                    div {
+                        .am-button {
                             border: none !important;
-                        } 
+                        }
                     }
                 }
             }
@@ -208,6 +218,7 @@
 
                     .right {
                         flex: 1;
+
                         .btnyes {
                             background-color: #00456e;
                             border-radius: 10px;
@@ -248,6 +259,7 @@
 
                         .right {
                             flex: 1;
+
                             .btnyes {
                                 background-color: #00456e;
                                 border-radius: 10px;
@@ -256,6 +268,15 @@
                                 line-height: 14px;
                                 color: #ffffff;
                                 padding: 2px 20px;
+                            }
+
+                            .ant-statistic-content {
+                                font-size: 12px !important;
+                            }
+
+                            .ant-satistitc {
+                                line-height: 12px !important;
+
                             }
 
                             .btnno {
