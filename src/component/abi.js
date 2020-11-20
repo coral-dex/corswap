@@ -1417,6 +1417,5 @@ const rpc = new JsonRpc();
  
 const Proaddress = serojs.callContract(proposal, config.proposalAddress)
 
-
 const abi = new Abi();
 export default abi;
