@@ -12,7 +12,7 @@ const { Countdown } = Statistic;
 const { Option } = Select;
 const selectTypeLabel = [`${i18n.t("tothemainboard")}`, `${i18n.t("governanceproposals")}`]
 
-const oneDay = 60* 60*24;
+const oneDay = 60*60*24;
 const Delay = 15000;
 
 class vothing extends Component {
@@ -566,7 +566,7 @@ class vothing extends Component {
                                         {i18n.t("Deductedfromthecurrentaccount")}
                                         {this.state.proposalDescription.fee}%{i18n.t("Cost")}。
                                     </p>
-                                    <p>2.{i18n.t("exceed")}{this.state.proposalDescription.moreThan}{i18n.t("successfulvotesexceeds")}{this.state.proposalDescription.moreThanPercent}%</p>
+                                    <p>2.{i18n.t("exceed")}{this.state.proposalDescription.moreThan}{i18n.t("successfulvotesexceeds")}{this.state.proposalDescription.moreThanPercent}%。</p>
                                     {
                                         new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString() === "0" ? <p></p> : <p>3.{i18n.t("defaultvalidityperiodis")}{this.state.proposalDescription.pledgeCoralPeriod / oneDay}{i18n.t("currenAdditionalpledgetRatio")}{new BigNumber(this.state.proposalDescription.pledgeCoralAmount).dividedBy(10 ** 18).toString()}{this.state.proposalDescription.cy} {i18n.t("Willreturn")} 。</p>
                                     }
@@ -742,9 +742,9 @@ class vothing extends Component {
                                 </div>
                                 <div className="messagebox">
                                     <p>{i18n.t("Votingrules")}：</p>
-                                    <p>1.{i18n.t("VotingneedstopledgethecorrespondingamountofCORAL")};</p>
+                                    <p>1.{i18n.t("VotingneedstopledgethecorrespondingamountofCORAL")}。</p>
                                     <p>2.{i18n.t("Squareroot")}。</p>
-                                    <p>3.{i18n.t("exceed")}: {this.state.selectItem && this.state.selectItem.moreThan} {i18n.t("successfulvotesexceeds")}: {this.state.selectItem && this.state.selectItem.moreThanPercent}%</p>
+                                    <p>3.{i18n.t("exceed")}{this.state.selectItem && this.state.selectItem.moreThan} {i18n.t("successfulvotesexceeds")}{this.state.selectItem && this.state.selectItem.moreThanPercent}%。</p>
                                 </div>
                             </div>
                         </Modal>
