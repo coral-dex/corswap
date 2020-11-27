@@ -137,7 +137,7 @@ class Layout extends React.Component{
                                 {this.showAccount(this.state.account, 5)}
                             </Flex.Item>
                             <Flex.Item style={{textAlign:"right"}}>
-                                {this.getBalance(["3","4"].indexOf(this.props.selectedTab)>-1?abi.coral:"SERO")} {["3","4"].indexOf(this.props.selectedTab)>-1?abi.coral:"SERO"}
+                                {this.getBalance(["3","4"].indexOf(this.props.selectedTab)>-1?abi.coral:"SERO")} {["3","4"].indexOf(this.props.selectedTab)>-1?abi.coral:"sero"}
                             </Flex.Item>
                         </Flex>
                     </div>

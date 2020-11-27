@@ -548,6 +548,7 @@ const config = {
 	name: "Coral Swap",
 	contractAddress: "5bYB1DSe18ad7oFiJSnt861ett8fT5GFSva3BBrdYvyU8SK6CJoyDrMyijZWiGmkT1ZDaQt2AMZr5yxu23n62YnQ",
 	proposalAddress: "24tuXu9ay8M2CL1D4RsZF9Z8jgJ6fMd3PMdrpKR9hmhX2jzzePqsgWB5LC8AVahS9ghdq9sfEgTe9vaVQCJQYedW",
+	// proposalAddress: "2As9HMQfuMMExxRoPRnc8GnAimdMjC74iYHXFSCVCxZQ4Z5DKpvaHnDYC9kMBxrPxhssw9gktFQ2t8De2ryjgjiu",
 	github: "https://github.com/coswap",
 	author: "coswap",
 	url: window.location.origin+window.location.pathname,
