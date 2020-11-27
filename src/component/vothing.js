@@ -600,12 +600,8 @@ class vothing extends Component {
                                                 </p>
                                             </div>
                                             <div className="sendCY">
-                                                {/* <p>
-                                                    {item.desc}
-                                                </p> */}
-                                                <pre>
-                                                {item.desc}
-                                                </pre>
+                                                {/* <p>{item.desc}</p> */}
+                                                <pre>{item.desc}</pre>
                                             </div>
                                             <div className="timebox">
                                                 <div className="timebox-left">
