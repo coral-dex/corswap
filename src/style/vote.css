@@ -81,6 +81,19 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
 }
+.vote .votelist .listbox .box .left .sendCY pre {
+  white-space: pre-wrap;
+  max-width: 240px;
+  max-height: 100px;
+  color: gray;
+  margin: 0px;
+  font-size: 12px;
+  word-wrap: break-word;
+  overflow-x: scroll;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
 .vote .votelist .listbox .box .left .timebox {
   display: flex;
   padding-bottom: 4px;
