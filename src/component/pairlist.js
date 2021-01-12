@@ -373,9 +373,12 @@ export class PairList extends Component {
         }
         const {selectPair} = this.state;
         if(selectPair){
+            const decimalA =  abi.getDecimalLocal(selectPair.tokenA);
+            const decimalB = abi.getDecimalLocal(selectPair.tokenB);
+
             this.setState({
                 inputValue:v,
-                inputValue2:selectPair.reserveA*1>0 && selectPair.reserveB*1>0 ?new BigNumber(selectPair.reserveA).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):"",
+                inputValue2:selectPair.reserveA*1>0 && selectPair.reserveB*1>0 ?new BigNumber(selectPair.reserveA).multipliedBy(v*1).multipliedBy(10**decimalB).dividedBy(10**decimalA).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):"",
             })
         }else {
             this.setState({
@@ -387,8 +390,11 @@ export class PairList extends Component {
     setInputValue2 = (v)=>{
         const {selectPair,investAmount} = this.state;
         if(selectPair){
+            const decimalA =  abi.getDecimalLocal(selectPair.tokenA);
+            const decimalB = abi.getDecimalLocal(selectPair.tokenB);
+
             this.setState({
-                inputValue: selectPair.reserveA*1>0 && selectPair.reserveB*1>0 ? investAmount[0]?"":new BigNumber(selectPair.reserveB).multipliedBy(v*1).dividedBy(new BigNumber(selectPair.reserveA)).toFixed(3,1):"",
+                inputValue: selectPair.reserveA*1>0 && selectPair.reserveB*1>0 ? investAmount[0]?"":new BigNumber(selectPair.reserveB).multipliedBy(v*1).multipliedBy(10**decimalA).dividedBy(10**decimalB).dividedBy(new BigNumber(selectPair.reserveA)).toFixed(3,1):"",
                 inputValue2:v
             })
         }
