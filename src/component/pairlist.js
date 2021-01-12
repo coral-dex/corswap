@@ -451,7 +451,7 @@ export class PairList extends Component {
                 investShares = selectPair && inputValue && selectPair.reserveB&&selectPair.reserveB*1>0 ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
                 console.log("investShares>>>",investShares,selectPair && inputValue && selectPair.reserveB&&selectPair.reserveB*1>0,selectPair);
             }else{
-                investTokenValue = selectPair && investAmount[0] && selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(investAmount[1]).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(10**abi.getDecimalLocal(investAmount[0])).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
+                investTokenValue = selectPair && investAmount[0] && selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(investAmount[1]).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(10**abi.getDecimalLocal(selectPair.tokenA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
                 investShares = selectPair && investAmount[0]&&selectPair.reserveB&&selectPair.reserveB*1>0 ? new BigNumber(investAmount[1]).dividedBy(new BigNumber(selectPair.reserveB)).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
                 if(inputValue){
                     const tmpShares = selectPair && inputValue &&selectPair.reserveA&&selectPair.reserveA*1>0 ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveA).dividedBy(10**abi.getDecimalLocal(selectPair.tokenA))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
