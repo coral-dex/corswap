@@ -32,13 +32,14 @@ export function dateFormat(fmt, date) {
         ret = new RegExp("(" + k + ")").exec(fmt);
         if (ret) {
             fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
-        };
-    };
+        }
+        ;
+    }
+    ;
     return fmt;
 }
 
 export function hashKey(token1, token2) {
-    console.log(token1,token2,"token1---token2");
     let _token1 = token1, _token2 = token2;
     if (token2 < token1) {
         _token1 = token2;
@@ -48,13 +49,14 @@ export function hashKey(token1, token2) {
     data1.fill(_token1, 0, _token1.length);
     let data2 = Buffer.alloc(32);
     data2.fill(_token2, 0, _token2.length);
+    console.log(token1, token2, "token1---token2>>>> ", "0x" + Buffer.from(keccak256(Buffer.concat([data1, data2]))).toString('hex'));
     return "0x" + Buffer.from(keccak256(Buffer.concat([data1, data2]))).toString('hex')
 }
 
 
 export function showValue(val, decimals, decimalPlaces) {
-    if(!val){
-        val = 0 ;
+    if (!val) {
+        val = 0;
     }
     if (!decimals) {
         decimals = 18;
@@ -63,32 +65,46 @@ export function showValue(val, decimals, decimalPlaces) {
         decimalPlaces = 3;
     }
     let num = new BigNumber(val).dividedBy(new BigNumber(10).pow(decimals));
-    
+
     return num.toFixed(decimalPlaces, 1);
 }
 
-export function bnToHex(value,decimal) {
-    if(value){
-        return "0x"+ new BigNumber(value).multipliedBy(10**decimal).toString(16)
-    }else{
+export function bnToHex(value, decimal) {
+    if (value) {
+        return "0x" + new BigNumber(value).multipliedBy(10 ** decimal).toString(16)
+    } else {
         return "0x0"
     }
 }
 
-export function fromValue(value,decimal) {
+export function fromValue(value, decimal) {
     return new BigNumber(value).dividedBy(10 ** decimal)
 }
 
-export function toValue(value,decimal) {
-    return new BigNumber(value).multipliedBy(10**decimal)
+export function toValue(value, decimal) {
+    return new BigNumber(value).multipliedBy(10 ** decimal)
 }
 
-export const risklist = ["USDT","USDS"];
+export const risklist = ["USDT", "USDS"];
 
 export const sortToken = {
-    "SERO-SUSD":104,
-    "SEED-SERO":103,
-    "PFID-SUSD":102,
-    "CORAL-SUSD":101,
-    "SEED-CORAL":100
+    "SERO-SUSD": 104,
+    "SEED-SERO": 103,
+    "PFID-SUSD": 102,
+    "CORAL-SUSD": 101,
+    "SEED-CORAL": 100
+}
+
+export function getTokenDesc(cy){
+    if(TOKEN_DESC[cy]){
+        return TOKEN_DESC[cy]
+    }
+    return "";
+}
+
+export const TOKEN_DESC = {
+    EUSDT: "ETHEREUM USDT",
+    TUSDT: "TRON USDT",
+    EWBTC: "ETHEREUM WRAPPED BTC",
+    EWETH: "ETHEREUM WRAPPED ETH",
 }

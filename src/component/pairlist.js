@@ -448,7 +448,7 @@ export class PairList extends Component {
         }else{
             if(!investAmount[0]){
                 // investTokenValue = selectPair && inputValue &&selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(inputValue).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
-                investShares = selectPair && inputValue && selectPair.reserveB&&selectPair.reserveB*1>0 ? new BigNumber(inputValue).dividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
+                investShares = selectPair && inputValue && selectPair.reserveB&&selectPair.reserveB*1>0 ? new BigNumber(inputValue).gitkdividedBy(new BigNumber(selectPair.reserveB).dividedBy(10**abi.getDecimalLocal(selectPair.tokenB))).multipliedBy(selectPair.totalShares*1).toFixed(0,1):0
                 console.log("investShares>>>",investShares,selectPair && inputValue && selectPair.reserveB&&selectPair.reserveB*1>0,selectPair);
             }else{
                 investTokenValue = selectPair && investAmount[0] && selectPair.reserveA && selectPair.reserveA*1>0?new BigNumber(investAmount[1]).multipliedBy(new BigNumber(selectPair.reserveA)).dividedBy(10**abi.getDecimalLocal(selectPair.tokenA)).dividedBy(new BigNumber(selectPair.reserveB)).toFixed(3,1):0
