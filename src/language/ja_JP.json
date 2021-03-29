@@ -58,7 +58,7 @@
     "Pledgeisrequiredtoinitiateaproposal": "提案を開始するには誓約が必要です",
     "Deductedfromthecurrentaccount": "（現在のアカウントから差し引かれます）、提案が成功した後、それを抽出する必要があります",
     "Cost": "CORALは、CORAL DAOによる提案の具体的な実施の費用として使用されます。提案が失敗した場合、すべてが返されます。",
-    "exceed": "提案を成功させるための基準：総投票数が",
+    "exceed": "提案を成功させるための基準:総投票数が",
     "successfulvotesexceeds": "投票、成功した投票の数は超えています",
     "defaultvalidityperiodis": "プロポーザルのデフォルトの有効期間は",
     "currenAdditionalpledgetRatio": "日数、有効期間内に追加の誓約が必要です",
@@ -93,5 +93,10 @@
     "Pleasekeyinnumbers": "数字を入力してください！!",
     "Numberofredemptiontickets": "償還チケットの数",
     "Governance": "ガバナンス",
-    "cost": "費用"
+    "cost": "費用",
+
+    "price": "Price",
+    "tolerance": "スリッページトレランス",
+    "tolerance_desc": "価格がこのパーセンテージを超えて不利に変化した場合、トランザクションは元に戻ります。",
+    "minReceived": "最小受信数"
 }

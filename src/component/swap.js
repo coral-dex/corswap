@@ -4,7 +4,7 @@ import i18n from "../i18n";
 import {showValue,toValue,fromValue} from "./utils/common";
 import abi from "./abi";
 import BigNumber from "bignumber.js";
-import {Button, Flex, InputItem, List, Toast} from "antd-mobile";
+import {Button, Flex, InputItem, List,Slider, Toast} from "antd-mobile";
 import SelectToken from "./selectToken";
 
 class Swap extends React.Component{
@@ -23,7 +23,8 @@ class Swap extends React.Component{
         showSelectTokenTo:"",
 
         estimate:"",
-        initValue:""
+        initValue:"",
+        percent: 96
     }
 
     async init (pkey) {
@@ -236,12 +237,14 @@ class Swap extends React.Component{
 
     swap = ()=>{
         const that = this;
-        const {tokenTo,tokenFrom,tokenToValue,tokenFromValue,estimate,account} = this.state;
+        const {tokenTo,tokenFrom,tokenToValue,percent,tokenFromValue,estimate,account} = this.state;
         let amount = new BigNumber(0)
         if(estimate){
             amount = toValue(tokenFromValue,abi.getDecimalLocal(tokenFrom));
         }
-        abi.swap(account.pk,account.mainPKr,tokenFrom,tokenTo,amount,function (hash) {
+        const toAmount = toValue(tokenToValue,abi.getDecimalLocal(tokenTo)).multipliedBy(percent).dividedBy(100).toFixed(0,1);
+
+        abi.swap(account.pk,account.mainPKr,tokenFrom,tokenTo,amount,toAmount,function (hash) {
             if(hash){
                 Toast.loading(i18n.t("pending"),60)
                 that.startGetTxReceipt(hash,()=>{
@@ -288,7 +291,7 @@ class Swap extends React.Component{
     }
 
     render() {
-        const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate,initValue} = this.state;
+        const {tokenFrom,tokenTo,tokens,account,showSelectTokenFrom,showSelectTokenTo,tokenFromValue,tokenToValue,estimate,initValue,percent} = this.state;
         return (
             <Layout selectedTab="1" doUpdate={()=>this.init()}>
                 <div style={{padding:"10px"}} className="flex-center fontSize am-center">
@@ -360,15 +363,62 @@ class Swap extends React.Component{
                                 </Flex>
                             </div>
                         </div>
-                        <div style={{padding:"12px"}} className="color">
-                            {tokenToValue && tokenFromValue ?`1 ${tokenFrom} = ${(tokenToValue/tokenFromValue).toFixed(6)} ${tokenTo}`:initValue && `1 ${tokenFrom} = ${initValue} ${tokenTo}` }
+                        <div style={{padding:"12px 12px 30px"}} className="color">
+                            <Flex>
+                                <Flex.Item style={{flex:1}}>
+                                    {i18n.t("tolerance")}
+                                </Flex.Item>
+                                <Flex.Item style={{flex:2,textAlign:"right"}}>
+                                    {percent}%<br/>
+                                </Flex.Item>
+                            </Flex>
+                            <div style={{float:"left"}}>0</div><div style={{float:"right"}}>100</div>
+                            <Slider
+                                defaultValue={percent}
+                                min={0}
+                                max={100}
+                                step={0.01}
+                                onChange={(v)=>{
+                                    this.setState({
+                                        percent:v
+                                    })
+                                }}
+                            />
                         </div>
-
                         <div className="text-center">
                             <Button type="primary" onClick={()=>this.swap()} disabled={!tokenToValue || !tokenFromValue}>确认</Button>
                         </div>
 
+                        <div style={{padding:"12px 12px 24px",border:"1px dashed #ddd",margin:"12px 0 0"}} className="color">
+                            { tokenTo&&tokenToValue && <div>
+                                <Flex>
+                                    <Flex.Item style={{flex:1}}>
+                                        {i18n.t("price")}
+                                    </Flex.Item>
+                                    <Flex.Item style={{flex:2,textAlign:"right"}}>
+                                        {tokenToValue && tokenFromValue ?`${(tokenToValue/tokenFromValue).toFixed(6)} ${tokenTo} per ${tokenFrom}`:initValue && `${initValue} ${tokenTo} per ${tokenFrom}` }
+                                    </Flex.Item>
+                                </Flex>
+
+                                <Flex>
+                                    <Flex.Item style={{flex:1}}>
+                                        {i18n.t("minReceived")}
+                                    </Flex.Item>
+                                    <Flex.Item style={{flex:2,textAlign:"right"}}>
+                                        {new BigNumber(tokenToValue).multipliedBy(percent).div(100).toFixed(6,1)} {tokenTo}
+                                    </Flex.Item>
+                                </Flex>
+
+
+                            </div>}
+                            <div style={{paddingTop:"12px"}} className="color">
+                                <small>{i18n.t("tolerance_desc")}</small>
+                            </div>
+                        </div>
+
                     </div>
+
+
                 </div>
 
                 <SelectToken visible={showSelectTokenFrom} onOk={this.setTokenFrom} onClose={this.setShowSelectTokenFrom}  tokens={tokens} balance={account&&account.balances}/>

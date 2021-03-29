@@ -93,5 +93,10 @@
     "Pleasekeyinnumbers": "숫자를 입력하세요!!!",
     "Numberofredemptiontickets": "교환권 수",
     "Governance": "통치",
-    "cost": "비용"
+    "cost": "비용",
+
+    "price": "가격",
+    "tolerance": "슬립 허용 오차",
+    "tolerance_desc": "가격이이 비율 이상으로 불리하게 변경되면 거래가 되돌아갑니다.",
+    "minReceived": "최소 수신"
 }

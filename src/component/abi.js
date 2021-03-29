@@ -240,13 +240,18 @@ class Abi {
         });
     }
 
-    callMethod(contract, _method, from, _args, callback) {
+    callMethod(contract, _method, from, _args, callback,value,tokenName) {
 		let packData = contract.packData(_method, _args, true);
         let callParams = {
             from: from,
             to: contract.address,
-            data: packData
+            data: packData,
         };
+        if(value){
+            // eslint-disable-next-line no-unused-expressions
+            callParams.value ="0x" + value.toString(16),
+            callParams.cy = tokenName
+        }
 
         seropp.call(callParams, function (callData) {
             if (callData !== "0x") {
@@ -271,7 +276,7 @@ class Abi {
             to: contract.address,
             value: "0x" + value.toString(16),
             data: packData,
-            gasPrice: "0x" + new BigNumber("1000000000").toString(16),
+            gasPrice: "0x" + new BigNumber("12000000000").toString(16),
             cy: tokenName,
         };
         let estimateParam = {
@@ -279,7 +284,7 @@ class Abi {
             to: contract.address,
             value: "0x" + value.toString(16),
             data: packData,
-            gasPrice: "0x" + new BigNumber("1000000000").toString(16),
+            gasPrice: "0x" + new BigNumber("12000000000").toString(16),
             cy: tokenName,
         };
 
@@ -300,15 +305,23 @@ class Abi {
 
     estimateSwap(from, tokenA, tokenB, tokenIn, amountIn, callback) {
         let key = hashKey(tokenA, tokenB);
-        this.callMethod(contract, 'estimateSwap', from, [key, tokenToBytes(tokenIn), amountIn], function (ret) {
+        let timeOut = Math.round(new Date() / 1000) + 600;
+        // this.executeMethod(contract, 'swap', pk, mainPKr, [key, 0, timeOut, mainPKr], tokenA, amount, callback);
+        this.callMethod(contract, 'swap', from, [key, 0, timeOut, from], function (ret) {
             callback(ret[0]);
-        });
+        },amountIn,tokenA);
+
     }
     estimateSwapBuy(from, tokenA, tokenB, tokenOut, amountOut, callback){
         let key = hashKey(tokenA, tokenB);
-        this.callMethod(contract, 'estimateSwapBuy', from, [key, tokenToBytes(tokenOut), amountOut], function (ret){
+        let timeOut = Math.round(new Date() / 1000) + 600;
+        this.callMethod(contract, 'swap', from, [key, 0, timeOut, from], function (ret) {
             callback(ret[0]);
-        })
+        },amountOut,tokenOut);
+
+        // this.callMethod(contract, 'estimateSwapBuy', from, [key, tokenToBytes(tokenOut), amountOut], function (ret){
+        //     callback(ret[0]);
+        // })
     }
 
    
@@ -474,11 +487,17 @@ class Abi {
         })
     }
 
-    swap(pk, mainPKr, tokenA, tokenB, amount, callback) {
+    swap(pk, mainPKr, tokenA, tokenB, amount,mint, callback) {
         let key = hashKey(tokenA, tokenB);
         let timeOut = Math.round(new Date() / 1000) + 600;
-        this.executeMethod(contract, 'swap', pk, mainPKr, [key, 0, timeOut, mainPKr], tokenA, amount, callback);
+        this.executeMethod(contract, 'swap', pk, mainPKr, [key, mint, timeOut, mainPKr], tokenA, amount, callback);
     }
+
+    // swapCall(mainPKr, tokenA, tokenB, amount, callback) {
+    //     let key = hashKey(tokenA, tokenB);
+    //     let timeOut = Math.round(new Date() / 1000) + 600;
+    //     this.callMethod(contract, 'swap', mainPKr, [key, 0, timeOut, mainPKr], callback);
+    // }
 
     async withdrawShareReward(pk, mainPKr, tokenA, tokenB) {
         return new Promise((resovle,reject)=>{

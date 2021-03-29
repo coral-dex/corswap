@@ -93,5 +93,10 @@
   "Pleasekeyinnumbers": "Please key in numbers!",
   "Numberofredemptiontickets": "Number of redemption tickets",
   "Governance": "Governance",
-  "cost": "cost"
+  "cost": "cost",
+
+  "price": "Price",
+  "tolerance": "Slippage tolerance",
+  "tolerance_desc": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
+  "minReceived": "Minimum received"
 }

@@ -93,5 +93,10 @@
     "Pleasekeyinnumbers": "请输入数字!",
     "Numberofredemptiontickets": "兑换票数",
     "Governance": "治理",
-    "cost": "费用"
+    "cost": "费用",
+
+    "price": "价格",
+    "tolerance": "滑点容差",
+    "tolerance_desc": "如果价格变动幅度超过滑点容差百分比，您的交易将被撤回。",
+    "minReceived": "最小获得量"
 }
