@@ -276,7 +276,7 @@ class Abi {
             to: contract.address,
             value: "0x" + value.toString(16),
             data: packData,
-            gasPrice: "0x" + new BigNumber("12000000000").toString(16),
+            gasPrice: "0x" + new BigNumber("1000000000").toString(16),
             cy: tokenName,
         };
         let estimateParam = {
@@ -284,7 +284,7 @@ class Abi {
             to: contract.address,
             value: "0x" + value.toString(16),
             data: packData,
-            gasPrice: "0x" + new BigNumber("12000000000").toString(16),
+            gasPrice: "0x" + new BigNumber("1000000000").toString(16),
             cy: tokenName,
         };
 

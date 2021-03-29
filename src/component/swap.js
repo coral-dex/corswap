@@ -24,7 +24,7 @@ class Swap extends React.Component{
 
         estimate:"",
         initValue:"",
-        percent: 96
+        percent: 4
     }
 
     async init (pkey) {
@@ -242,7 +242,7 @@ class Swap extends React.Component{
         if(estimate){
             amount = toValue(tokenFromValue,abi.getDecimalLocal(tokenFrom));
         }
-        const toAmount = toValue(tokenToValue,abi.getDecimalLocal(tokenTo)).multipliedBy(percent).dividedBy(100).toFixed(0,1);
+        const toAmount = toValue(tokenToValue,abi.getDecimalLocal(tokenTo)).multipliedBy((100-percent)).dividedBy(100).toFixed(0,1);
 
         abi.swap(account.pk,account.mainPKr,tokenFrom,tokenTo,amount,toAmount,function (hash) {
             if(hash){
@@ -405,11 +405,9 @@ class Swap extends React.Component{
                                         {i18n.t("minReceived")}
                                     </Flex.Item>
                                     <Flex.Item style={{flex:2,textAlign:"right"}}>
-                                        {new BigNumber(tokenToValue).multipliedBy(percent).div(100).toFixed(6,1)} {tokenTo}
+                                        {new BigNumber(tokenToValue).multipliedBy((100-percent)).div(100).toFixed(6,1)} {tokenTo}
                                     </Flex.Item>
                                 </Flex>
-
-
                             </div>}
                             <div style={{paddingTop:"12px"}} className="color">
                                 <small>{i18n.t("tolerance_desc")}</small>
