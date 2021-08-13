@@ -3,10 +3,8 @@ import BigNumber from "bignumber.js";
 const keccak256 = require("keccak256");
 
 export function bytes32ToToken(data) {
-    let index = data.indexOf("00", 2);
-    let bytes = Buffer.from(data.substring(2, index), "hex");
-
-    return String.fromCharCode.apply(String, bytes).trim();
+    let bytes = Buffer.from(data.slice(2), "hex");
+    return bytes.toString().split("\x00")[0];
 }
 
 
