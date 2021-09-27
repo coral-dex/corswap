@@ -115,7 +115,7 @@ class Layout extends React.Component{
                         <div className="text-right shares">
                             {/*{this.props.selectedTab == "3"?<div style={{color:"#f75552"}} >初始化资金池</div>:""}*/}
                             <img width="16%" src={require("../images/icon2.png")} onClick={()=>this.showModal2()}/>
-                            <img width="16%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>
+                            {/*<img width="16%" src={require("../images/icon6.png")} onClick={()=>this.showModal()}/>*/}
                         </div>
                     </Flex.Item>
                 </Flex>
@@ -147,18 +147,18 @@ class Layout extends React.Component{
                     {/*        </div>:""*/}
                     {/*}*/}
 
-                    <Modal
-                        visible={this.state.modal1}
-                        transparent
-                        maskClosable={false}
-                        onClose={this.onClose('modal1')}
-                        title=""
-                        footer={[{ text: 'OK', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}
-                    >
-                        <div style={{ minHeight: 150, width:"auto",textAlign:"center"}}>
-                            <img width="40%" src={require('../images/wx.jpg')}/>
-                        </div>
-                    </Modal>
+                    {/*<Modal*/}
+                    {/*    visible={this.state.modal1}*/}
+                    {/*    transparent*/}
+                    {/*    maskClosable={false}*/}
+                    {/*    onClose={this.onClose('modal1')}*/}
+                    {/*    title=""*/}
+                    {/*    footer={[{ text: 'OK', onPress: () => { console.log('ok'); this.onClose('modal1')(); } }]}*/}
+                    {/*>*/}
+                    {/*    <div style={{ minHeight: 150, width:"auto",textAlign:"center"}}>*/}
+                    {/*        <img width="40%" src={require('../images/wx.jpg')}/>*/}
+                    {/*    </div>*/}
+                    {/*</Modal>*/}
 
                     <Modal
                         visible={this.state.modal2}
